@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Martin R. Smith" />
+
+<meta name="date" content="2020-06-29" />
+
+<title>Comparing splits using information theory</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Comparing splits using information theory</h1>
+<h4 class="author">Martin R. Smith</h4>
+<h4 class="date">2020-06-29</h4>
+
+
+
+<p>To understand the <a href="Generalized-RF.html">information-based metrics</a> implemented in ‘<a href="Using-TreeDist.html">TreeDist</a>’, it is useful to recall some basic concepts of information theory (see <span class="citation">MacKay (2003)</span> for an introduction).</p>
+<div id="shannon-information" class="section level2">
+<h2>Shannon information</h2>
+<p>Information is usually measured in <em>bits</em>. One bit is the amount of information generated by tossing a fair coin: to record the outcome of a coin toss, I must record either a <code>H</code> or a <code>T</code>, and with each of the two symbols equally likely, there is no way to compress the results of multiple tosses.</p>
+<p>The Shannon <span class="citation">(1948)</span> information content of an outcome <span class="math inline">\(x\)</span> is defined to be <span class="math inline">\(h(x) = -\log_2{P(x)}\)</span>, which simplifies to <span class="math inline">\(\log_2{n}\)</span> when all <span class="math inline">\(n\)</span> outcomes are equiprobable. Thus, the information content of a fair coin toss is <span class="math inline">\(\log_2{2} = 1\textrm{ bit}\)</span>; the information content of rolling a six-sided die is <span class="math inline">\(\log_2{6} \approx 2.58\textrm{ bits}\)</span>; and the information content of selecting at random any one of the 105 unrooted binary six-leaf trees is <span class="math inline">\(\log_2{105} \approx 6.71\textrm{ bits}\)</span>.</p>
+<div id="application-to-splits" class="section level3">
+<h3>Application to splits</h3>
+<p>The split <span class="math inline">\(S_1 =\)</span> <code>AB|CDEF</code> is found in 15 of the 105 six-leaf trees; as such, the probability that a randomly drawn tree contains <span class="math inline">\(S_1\)</span> is <span class="math inline">\(P(S_1) = \frac{15}{105}\)</span>, and the information content <span class="math inline">\(h(S_1) = -\log_2{\frac{15}{105}} \approx 2.81\textrm{ bits}\)</span>. <span class="citation">Steel &amp; Penny (2006)</span> dub this quantity the phylogenetic information content.</p>
+<p>Likewise, the split <span class="math inline">\(S_2 =\)</span> <code>ABC|DEF</code> occurs in nine six-leaf trees, so <span class="math inline">\(h(S_2) = -\log_2{\frac{9}{105}} \approx 3.54\textrm{ bits}\)</span>. Three six-leaf trees contain both splits, so in combination the splits deliver <span class="math inline">\(h(S_1,S_2) = -\log_2{\frac{3}{105}} \approx 5.13\textrm{ bits}\)</span> of information.</p>
+<p>Because <span class="math inline">\(h(S_1,S_2) &lt; h(S_1) + h(S_2)\)</span>, some of the information in <span class="math inline">\(S_1\)</span> is also present in <span class="math inline">\(S_2\)</span>. The information in common between <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is <span class="math inline">\(h_{shared}(S_1, S_2) = h(S_1) + h(S_2) - h(S_1,S_2) \approx 1.22\textrm{ bits}\)</span>. The information unique to <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is <span class="math inline">\(h_{different}(S_1,S_2) = 2h(S_1,S_2) - h(S_1) - h(S_2) \approx 3.91\textrm{ bits}\)</span>.</p>
+<p>These quantities can be calculated using functions in the ‘<a href="https://ms609.github.io/TreeTools">TreeTools</a>’ package.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(<span class="st">&#39;TreeTools&#39;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(<span class="st">&#39;TreeDist&#39;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>treesMatchingSplit &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">AB.CDEF =</span> <span class="kw">TreesMatchingSplit</span>(<span class="dv">2</span>, <span class="dv">4</span>),</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="dt">ABC.DEF =</span> <span class="kw">TreesMatchingSplit</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb1-6"><a href="#cb1-6"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a>treesMatchingSplit</span></code></pre></div>
+<pre><code>## AB.CDEF ABC.DEF 
+##      15       9</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>proportionMatchingSplit &lt;-<span class="st"> </span>treesMatchingSplit <span class="op">/</span><span class="st"> </span><span class="kw">NUnrooted</span>(<span class="dv">6</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>proportionMatchingSplit</span></code></pre></div>
+<pre><code>##    AB.CDEF    ABC.DEF 
+## 0.14285714 0.08571429</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>splitInformation &lt;-<span class="st"> </span><span class="op">-</span><span class="kw">log2</span>(proportionMatchingSplit)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>splitInformation</span></code></pre></div>
+<pre><code>##  AB.CDEF  ABC.DEF 
+## 2.807355 3.544321</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>treesMatchingBoth &lt;-<span class="st"> </span><span class="kw">TreesConsistentWithTwoSplits</span>(<span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>combinedInformation &lt;-<span class="st"> </span><span class="op">-</span><span class="kw">log2</span>(treesMatchingBoth <span class="op">/</span><span class="st"> </span><span class="kw">NUnrooted</span>(<span class="dv">6</span>))</span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a>sharedInformation &lt;-<span class="st"> </span><span class="kw">sum</span>(splitInformation) <span class="op">-</span><span class="st"> </span>combinedInformation</span>
+<span id="cb7-5"><a href="#cb7-5"></a>sharedInformation</span></code></pre></div>
+<pre><code>## [1] 1.222392</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Or more concisely:</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">SplitSharedInformation</span>(<span class="dt">n =</span> <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## [1] 1.222392</code></pre>
+<!--The more similar the splits, the more information they will have in common;
+the shared information is maximised when $S_1 = S_2$, and $h_{common} = h(S_1)$.
+Likewise, more even splits contain more information than less even splits
+(i.e. _h_(`AB|CDEF`) < _h_(`ABC|DEF`)).-->
+</div>
+</div>
+<div id="entropy" class="section level2">
+<h2>Entropy</h2>
+<p>Entropy is the average information content of each outcome, weighted by its probability: <span class="math inline">\(\sum{-p \log_2(p)}\)</span>. Where all <span class="math inline">\(n\)</span> outcomes are equiprobable, this simplifies to <span class="math inline">\(\log_2{n}\)</span>.</p>
+<p>Consider a case in which Jane rolls a dice, and makes two true statements about the outcome <span class="math inline">\(x\)</span>:</p>
+<p><span class="math inline">\(S_1\)</span>: “Is the roll even?”.</p>
+<ul>
+<li>Two equally-possible outcomes: yes or no</li>
+<li>Entropy: <span class="math inline">\(H(S_1) = \log_2{2} = 1\textrm{ bit}\)</span>.</li>
+</ul>
+<p><span class="math inline">\(S_2\)</span>: “Is the roll greater than 3?”</p>
+<ul>
+<li>Two equally-possible outcomes: yes or no</li>
+<li>Entropy: <span class="math inline">\(H(S_2) = \log_2{2} = 1\textrm{ bit}\)</span>.</li>
+</ul>
+<p>The joint entropy of <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is the entropy of the association matrix that considers each possible outcome:</p>
+<table>
+<thead>
+<tr class="header">
+<th> </th>
+<th><span class="math inline">\(S_1: x\)</span> odd</th>
+<th><span class="math inline">\(S_1: x\)</span> even</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(S_2: x \le 3\)</span></td>
+<td><span class="math inline">\(x \in {1, 3}; p = \frac{2}{6}\)</span></td>
+<td><span class="math inline">\(x = 2; p = \frac{1}{6}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(S_2: x &gt; 3\)</span></td>
+<td><span class="math inline">\(x = 5; p = \frac{1}{6}\)</span></td>
+<td><span class="math inline">\(x \in {4, 6}; p = \frac{2}{6}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\begin{aligned} H(S_1, S_2) = \frac{2}{3}\log_2{\frac{2}{3}} + \frac{1}{3}\log_2{\frac{1}{3}} + \frac{1}{3}\log_2{\frac{1}{3}} + \frac{2}{3}\log_2{\frac{2}{3}} \approx 1.84 \textrm{ bits} \end{aligned}\)</span></p>
+<p>Note that this less than the <span class="math inline">\(\log_2{6} \approx 2.58\textrm{ bits}\)</span> we require to determine the exact value of the roll: knowledge of <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is not guaranteed to be sufficient to unambiguously identify <span class="math inline">\(x\)</span>.</p>
+<p>The mutual information between <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> describes how much knowledge of <span class="math inline">\(S_1\)</span> reduces our uncertainty in <span class="math inline">\(S_2\)</span> (or <em>vice versa</em>). So if we learn that <span class="math inline">\(S_1\)</span> is ‘even’, we become a little more confident that <span class="math inline">\(S_2\)</span> is ‘greater than three’.</p>
+<p>The mutual information <span class="math inline">\(I(S_1;S_2)\)</span> corresponds to the sum of the individual entropies, minus the joint entropy:</p>
+<span class="math display">\[\begin{aligned}
+I(S_1;S_2) = H(S_1) + H(S_2) - H(S_1, S_2)
+\end{aligned}\]</span>
+<p>The entropy distance, also termed the variation of information <span class="citation">(Meilă, 2007)</span>, is the information that <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> do <em>not</em> have in common:</p>
+<span class="math display">\[\begin{aligned}
+H_D(S_1, S_2) = H(S_1, S_2) - I(S_1;S_2) = 2H(S_1, S_2) - H(S_1) - H(S_2)
+\end{aligned}\]</span>
+<p><img src="data:image/png;base64,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" width="50%" style="display: block; margin: auto;" /></p>
+<div id="application-to-splits-1" class="section level3">
+<h3>Application to splits</h3>
+<p>Let split <span class="math inline">\(S\)</span> divides <span class="math inline">\(n\)</span> leaves into two partitions <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>. The probability that a randomly chosen leaf <span class="math inline">\(x\)</span> is in partition <span class="math inline">\(k\)</span> is <span class="math inline">\(P(x \in k) = \frac{|k|}{n}\)</span>. <span class="math inline">\(S\)</span> thus corresponds to a random variable with entropy <span class="math inline">\(H(S) = -\frac{|A|}{n} \log_2{\frac{|A|}{n}} - \frac{|B|}{n}\log_2{\frac{|B|}{n}}\)</span> <span class="citation">(Meilă, 2007)</span>.</p>
+<p>The entropy of a split corresponds to the average number of bits necessary to transmit the partition label for a given leaf.</p>
+<p>The joint entropy of two splits, <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span>, corresponds to the entropy of the association matrix of probabilities that a randomly selected leaf belongs to each pair of partitions:</p>
+<table>
+<colgroup>
+<col width="23%"></col>
+<col width="44%"></col>
+<col width="32%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th> </th>
+<th><span class="math inline">\(S_1: x \in A_1\)</span></th>
+<th><span class="math inline">\(S_1: x \in B_1\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(S_2: x \in A_2\)</span></td>
+<td><span class="math inline">\(P(A_1,A_2) = \frac{|A_1 \cap A_2|}{n}\)</span></td>
+<td><span class="math inline">\(P(B_1,A_2) = \frac{|B_1 \cap A_2|}{n}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(S_2: x \in B_2\)</span></td>
+<td><span class="math inline">\(P(A_1,B_2) = \frac{|A_1 \cap B_2|}{n}\)</span></td>
+<td><span class="math inline">\(P(B_1,B_2) = \frac{|B_1 \cap B_2|}{n}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(H(S_1, S_2) = P(A_1,A_2) \log_2 {P(A_1,A_2)} + P(B_1,A_2) \log_2 {P(B_1,A_2)}\)</span></p>
+<p><span class="math inline">\(+ P(A_1,B_2)\log_2{P(A_1,B_2)} + P(B_1,B_2)\log_2{P(B_1,B_2)}\)</span></p>
+<p>These values can then be substituted into the definitions of mutual information and entropy distance given above.</p>
+<p>As <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> become more different, the disposition of <span class="math inline">\(S_1\)</span> gives less information about the configuration of <span class="math inline">\(S_2\)</span>, and the mutual information decreases accordingly.</p>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references hanging-indent">
+<div id="ref-Mackay2003">
+<p>MacKay, D. J. C. (2003). <em>Information theory, inference, and learning algorithms</em>. Cambridge: Cambridge University Press. Retrieved from <a href="https://www.inference.org.uk/itprnn/book.pdf">https://www.inference.org.uk/itprnn/book.pdf</a></p>
+</div>
+<div id="ref-Meila2007">
+<p>Meilă, M. (2007). Comparing clusterings—an information based distance. <em>Journal of Multivariate Analysis</em>, <em>98</em>(5), 873–895. doi:<a href="https://doi.org/10.1016/j.jmva.2006.11.013">10.1016/j.jmva.2006.11.013</a></p>
+</div>
+<div id="ref-Shannon1948">
+<p>Shannon, C. E. (1948). A mathematical theory of communication. <em>Bell System Technical Journal</em>, <em>27</em>, 379–423, 623–656.</p>
+</div>
+<div id="ref-Steel2006">
+<p>Steel, M. A., &amp; Penny, D. (2006). Maximum parsimony and the phylogenetic information in multistate characters. In V. A. Albert (Ed.), <em>Parsimony, phylogeny, and genomics</em> (pp. 163–178). Oxford: Oxford University Press.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

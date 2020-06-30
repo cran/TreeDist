@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Martin R. Smith" />
+
+<meta name="date" content="2020-06-29" />
+
+<title>Calculate tree similarity with ‘TreeDist’</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Calculate tree similarity with ‘TreeDist’</h1>
+<h4 class="author">Martin R. Smith</h4>
+<h4 class="date">2020-06-29</h4>
+
+
+
+<p>This document should contain all you need to get started measuring tree distances with ‘TreeDist’. If you get stuck, please <a href="https://github.com/ms609/TreeDist/issues/new?title=Suggestion:+">let me know</a> so I can improve this documentation.</p>
+<div id="loading-trees" class="section level2">
+<h2>Loading trees</h2>
+<p>Instructions for loading phylogenetic trees into R can be found in a <a href="https://ms609.github.io/TreeTools/articles/load-trees.html">separate vignette</a>. For these examples, we’ll enter two simple trees by hand:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>tree1 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text =</span> <span class="st">&#39;(A, ((B, (C, (D, E))), ((F, G), (H, I))));&#39;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>tree2 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text =</span> <span class="st">&#39;(A, ((B, (C, (D, (H, I)))), ((F, G), E)));&#39;</span>)</span></code></pre></div>
+</div>
+<div id="calculating-distances" class="section level2">
+<h2>Calculating distances</h2>
+<p>We can calculate distances between pairs of trees using the ‘TreeDist’ package.</p>
+<p>First we’ll install the package. We can either install the stable version (coming 2020) from the CRAN repository:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">install.packages</span>(<span class="st">&#39;TreeDist&#39;</span>)</span></code></pre></div>
+<p>or the development version, from GitHub – which will contain the latest features but may not be as extensively tested:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;ms609/TreeDist&#39;</span>)</span></code></pre></div>
+<p>Then we’ll load the package in to R’s working environment:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">library</span>(<span class="st">&#39;TreeDist&#39;</span>)</span></code></pre></div>
+<p>Now the package’s functions are available within R. Let’s proceed to calculate some tree distances.</p>
+<div id="pairs-of-trees" class="section level3">
+<h3>Pairs of trees</h3>
+<p>Calculating the distance between two trees is as simple as:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>distance &lt;-<span class="st"> </span><span class="kw">TreeDistance</span>(tree1, tree2)</span></code></pre></div>
+<p>The convenience function <code>TreeDistance()</code> returns the variation of clustering information between two trees, <a href="using-distances.html#normalizing">normalized</a> against the total information content of all splits.</p>
+</div>
+<div id="multiple-comparisons" class="section level3">
+<h3>Multiple comparisons</h3>
+<p>If you have more than two trees to compare, you can send a list of trees (class: <code>list</code> or <code>multiPhylo</code>) to the distance comparison function. The function will then calculate the distance between each tree in the first list and each tree in the second.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>oneTree &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">rtree</span>(<span class="dv">11</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>twoTrees &lt;-<span class="st"> </span><span class="kw">structure</span>(<span class="kw">list</span>(<span class="dt">one =</span> ape<span class="op">::</span><span class="kw">rtree</span>(<span class="dv">11</span>), <span class="dt">two =</span> ape<span class="op">::</span><span class="kw">rtree</span>(<span class="dv">11</span>)),</span>
+<span id="cb6-3"><a href="#cb6-3"></a>                      <span class="dt">class =</span> <span class="st">&#39;multiPhylo&#39;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>threeTrees &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a =</span> ape<span class="op">::</span><span class="kw">rtree</span>(<span class="dv">11</span>), <span class="dt">b =</span> ape<span class="op">::</span><span class="kw">rtree</span>(<span class="dv">11</span>), <span class="dt">c =</span> ape<span class="op">::</span><span class="kw">rtree</span>(<span class="dv">11</span>))</span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">TreeDistance</span>(oneTree, twoTrees)</span></code></pre></div>
+<pre><code>##       one       two 
+## 0.3085886 0.1529431</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">TreeDistance</span>(twoTrees, threeTrees)</span></code></pre></div>
+<pre><code>##             a         b         c
+## one 0.2665116 0.1919722 0.1350852
+## two 0.4491738 0.2882737 0.2483527</code></pre>
+</div>
+</div>
+<div id="visualizing-a-matching" class="section level2">
+<h2>Visualizing a matching</h2>
+<p><a href="Generalized-RF.html">Generalized Robinson-Foulds metrics</a>, such as the variation of clustering information, rely on matching each split within a tree with another split in the other tree.<br />
+We can view an optimal matching:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">VisualizeMatching</span>(ClusteringInfoDistance, tree1, tree2)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" width="90%" style="display: block; margin: auto;" /></p>
+<p>This shows the six splits in tree 1, and the paired splits in tree two.<br />
+Each split is labelled with a measure of its similarity, which is its contribution to the total tree similarity score.</p>
+<p>We can view this information in a format accessible for further examination in R with:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">ClusteringInfoDistance</span>(tree1, tree2, <span class="dt">reportMatching =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<pre><code>## [1] 6.960578
+## attr(,&quot;matching&quot;)
+## [1] 1 2 3 5 6 4
+## attr(,&quot;pairScores&quot;)
+##             [,1]        [,2]       [,3]       [,4]       [,5]       [,6]
+## [1,] 0.091091008 0.007214618 0.01831078 0.22478751 0.01831078 0.22478751
+## [2,] 0.018310782 0.072780226 0.00000000 0.15200728 0.00000000 0.15200728
+## [3,] 0.002565287 0.002565287 0.02475761 0.09288851 0.02475761 0.09288851
+## [4,] 0.007214618 0.007214618 0.07278023 0.31976006 0.07278023 0.31976006
+## [5,] 0.319760062 0.224787510 0.15200728 0.09288851 0.45810590 0.76420451
+## [6,] 0.224787510 0.319760062 0.45810590 0.76420451 0.15200728 0.09288851
+## attr(,&quot;matchedSplits&quot;)
+## [1] &quot;B C D E | A F G H I =&gt; B C D H I | A E F G&quot;
+## [2] &quot;C D E | A B F G H I =&gt; C D H I | A B E F G&quot;
+## [3] &quot;D E | A B C F G H I =&gt; D H I | A B C E F G&quot;
+## [4] &quot;F G H I | A B C D E =&gt; E F G | A B C D H I&quot;
+## [5] &quot;F G | A B C D E H I =&gt; F G | A B C D E H I&quot;
+## [6] &quot;H I | A B C D E F G =&gt; H I | A B C D E F G&quot;</code></pre>
+<p>Here, the <code>pairScores</code> attribute lists the score of each possible matching of splits.</p>
+<p>We can identify the splits with:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>splits &lt;-<span class="st"> </span><span class="kw">as.character</span>(TreeTools<span class="op">::</span><span class="kw">as.Splits</span>(tree2))</span>
+<span id="cb13-2"><a href="#cb13-2"></a>splits</span></code></pre></div>
+<pre><code>##                    12                    13                    14 
+## &quot;B C D H I | A F G E&quot; &quot;C D H I | A B F G E&quot; &quot;D H I | A B C F G E&quot; 
+##                    15                    16                    17 
+## &quot;H I | A B C D F G E&quot; &quot;F G E | A B C D H I&quot; &quot;F G | A B C D H I E&quot;</code></pre>
+<p>The names of the splits correspond to the number of an associated node in the original tree:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>oldPar &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">plot</span>(tree2)</span>
+<span id="cb15-3"><a href="#cb15-3"></a>ape<span class="op">::</span><span class="kw">nodelabels</span>()</span>
+<span id="cb15-4"><a href="#cb15-4"></a>ape<span class="op">::</span><span class="kw">nodelabels</span>(splits, <span class="kw">as.integer</span>(<span class="kw">names</span>(splits)), </span>
+<span id="cb15-5"><a href="#cb15-5"></a>                <span class="dt">adj =</span> <span class="kw">c</span>(<span class="fl">1.1</span>, <span class="fl">-0.2</span>), <span class="dt">cex =</span> <span class="fl">0.8</span>, <span class="dt">frame =</span> <span class="st">&#39;none&#39;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" width="80%" style="display: block; margin: auto;" /></p>
+<p>Note that strictly, (informative) splits are associated with (internal) edges. To avoid listing the same split twice, nodes close to the root (here, 10 and 11) will not be associated with a split.</p>
+</div>
+<div id="what-next" class="section level2">
+<h2>What next?</h2>
+<p>You may wish to:</p>
+<ul>
+<li><p><a href="using-distances.html">Provide context</a> for tree distances</p></li>
+<li><p>Review <a href="https://ms609.github.io/TreeDist/index.html">available distance measures</a> and the corresponding <a href="https://ms609.github.io/TreeDist/reference/index.html#section-tree-distance-measures">functions</a></p></li>
+<li><p><a href="Tree-distance-interpretation.html">Interpret tree distance metrics</a></p></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

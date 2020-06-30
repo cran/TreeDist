@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Martin R. Smith" />
+
+<meta name="date" content="2020-06-29" />
+
+<title>Extending the Robinson-Foulds metric</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Extending the Robinson-Foulds metric</h1>
+<h4 class="author">Martin R. Smith</h4>
+<h4 class="date">2020-06-29</h4>
+
+
+
+<div id="the-robinson-foulds-distance" class="section level1">
+<h1>The Robinson-Foulds distance</h1>
+<p>An intuitive way to calculate the similarity between two trees is to calculate the resolution of their strict consensus, which corresponds to the number of splits that occur in both trees <span class="citation">(Schuh &amp; Polhemus, 1980)</span>. The corresponding distance measure, the Robinson-Foulds distance <span class="citation">(Robinson &amp; Foulds, 1981)</span>, counts the number of splits that are unique to one of the two trees.</p>
+<p>It is important to remember that counting splits is not the same as counting clades, edges or nodes. If a tree is drawn as rooted (even without a root edge), then the number of splits is one less than the number of edges or clades, and two less than the number of nodes. For example, the trees below have one split, two edges and three nodes in common.</p>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>The simplicity of counting splits is appealing, but limited by the underlying assumption that all splits are equivalent.</p>
+<p>As an example, a split that separates eight leaves into two sets of four (as in the right-hand tree above) has a <span class="math inline">\(\frac{1}{35}\)</span> chance of being compatible with the reference tree. In contrast, a split that separates two leaves from the other six has a <span class="math inline">\(\frac{1}{7}\)</span> chance of matching the reference tree: the similarity observed is five times more likely to have arisen by chance. In other words, failure to match an even split is less noteworthy than failure to match an uneven one.</p>
+<p>As a consequence, trees whose splits are less even will, on average, exhibit higher Robinson-Foulds distances with comparison trees. Compare a balanced and an unbalanced eight-taxon tree:</p>
+<p><img src="data:image/png;base64,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WZa6tt0CBBo5tgItylJXt9uAQCPHVqCpsZLPlLCqDwQaOZYCGWWpK9utJC3Qi++6g/H6b1n9kheBBr1yklgKZJalJpWoTlug9/Bhk7+/wWrwxI9AQ145SaL3A9kN7vtF/hlf/ZjVhcCjQJavnCRDBZoQa5z3C2Q10dUv6jrwJqtf8nkFsnvlJIk+lGE5U9ornxUtkTs+YHVGFIF6+d2QV06S3ATycEgL5HXgxXf7voUFeuUkgUDzVz/6KZtf8iiQ5SsnSQoCXd0piqMX4gnkvREd6JWTJAGBru5s7e/vxSj7Lf+Mv3ij78UVAr1ykiQgkKza/MC5CAKJpqxlZ4wfgYa8cpIkIJDgyl0RBBrEOo1TELAR6GCzKPRkUr1dW2NjCaJA104fy2W1GAhUwUag2cbydnWNjWVoAnF/IFCW2Ag02V3arq2xsQxJoCubW/ksuQiBKlgIdHj23vIOVtl2vQJdvuVcRmt2QqAKFgKJ8nA8h6Oybayx0QRBINZ+zmnRVwhUwfYpTM1mr2x3TUYmCLQnx+JPQKAcsU5pNZY+0NtdyyEkPZQxCAhUwUKgskClsW2usdGI53wgCJQaNo1oYz0NvV1fY2MJv/kX7Yt9rA4IVMHmFsaLdOv1NPS2XmNjRUCg1Fh9GqATECg1IJAtEKhCXIH4jbDsA6CsUg+BUiOqQKI7cqoMIq1SD4FSI6pAZcfAhDDHVQCBUiN+G0iZQ1ulHgKlRnSBDs/IxBDaKvUQKDViC6T9Ia5SD4FSI7JAB5s6FYS2Sj0ESo24As0Wz+20Veq9CzSzrm9HE8h+v5kSVSDzyYu2Sr1vgQ7PfLwro7sJkkAD9pspUQUqF4jhfUCkVep9C3Rw/InjlnNrSAIN2G+mxG5EW+J7bH+6odcZIdO/csKlS0P2mymZCeQZ3okZokxiqP0myHoLxP/IXelwqe03QdZaIN7sKronRia13xRZa4EOREPXf63oUPtNkbUWaCKvEd6bu6H2myLrLJCaIOC9RmKo/SZJPIFqyzLICz4lqQykRDyBqssyyLo/pKQykBLRBKotyyDq/qxHs3NcRG0DLa5Asu7PmvS9jYqIAhnLMqi6P7SkMpASkdM5lC2q7g8tqQykRFyBVP6PrvtDSyoDKRFNIHNZBp3WQUsqAykRTaD6sgz8CkRLKgMpEbcjUS/VMFeP9aSkMpAS6zyUATwAgYATEAg4AYGAExAIOAGBgBMQCDgBgYATEAg4AYGAExAIOAGBgBMQCDgBgYATEAg4AYGAExAIOAGBgBMQCDgBgYATEAg4AYGAExAIOAGBgBMQCDgBgYATEAg4AYGAExAIOAGBgBMQCDgBgYATEAg4AYGAExAIOAGBgBMQCDgBgYATEAg4AYGAExAIOAGBgBP/BwkgzfKQLCr7AAAAAElFTkSuQmCC" style="display: block; margin: auto;" /></p>
+<p>Each tree divides the eight taxa into five splits. The <a href="information.html">phylogenetic information content</a> of a split is a function of the probability that the split will match a uniformly chosen random tree, i.e. the proportion of eight-leaf binary trees that contain the split in question. (Information content, in bits, is defined as <span class="math inline">\(-\log_2(\textrm{probability})\)</span>.) This, in turn, is a function of the evenness of the split:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Matching trees</th>
+<th align="left"><em>P</em>(Match in random tree)</th>
+<th align="left">Phylogenetic information content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Split size: 2:6</td>
+<td align="left">945 / 10 395</td>
+<td align="left">0.0909</td>
+<td align="left">3.46 bits</td>
+</tr>
+<tr class="even">
+<td align="left">Split size: 3:5</td>
+<td align="left">315 / 10 395</td>
+<td align="left">0.0303</td>
+<td align="left">5.04 bits</td>
+</tr>
+<tr class="odd">
+<td align="left">Split size: 4:4</td>
+<td align="left">225 / 10 395</td>
+<td align="left">0.0216</td>
+<td align="left">5.53 bits</td>
+</tr>
+</tbody>
+</table>
+<p>In the first tree, split 1 is even, dividing four taxa from four others (<code>4|4</code>); splits 2–5 are maximally uneven (<code>2|6</code>). If each split is treated as independent, then the total information content of the five splits is 19.37 bits, whereas that of the five splits in the second tree, of sizes <code>2|6</code>, <code>3|5</code>, <code>4|4</code>, <code>3|5</code> and <code>2|6</code>, is 22.54 bits. Put another way, a random tree will on average share more splits with the balanced tree (whose splits are predominantly uneven and thus likely to be matched) than the asymmetric tree (which contains more even splits that are less likely to occur in a random tree).</p>
+<p>Indeed, of the 10 395 eight-leaf trees, many more bear at least one split in common with a balanced tree than with an asymmetric tree:</p>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+<div id="information-corrected-robinson-foulds-distance" class="section level1">
+<h1>Information-corrected Robinson-Foulds distance</h1>
+<p>This differing information content can be accommodated by weighting each split according to the amount of phylogenetic information it contains <span class="citation">(Smith, 2020)</span>. The two tree pairs below both have a Robinson-Foulds distance of two, but the first pair differ with regard to an uneven split (<code>ABCDEF|GH</code>), so obtain a total difference of 22.54 − (3.46 + 5.04 + 5.53 + 5.04) = 3.46 bits:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>tree1 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text=</span><span class="st">&#39;(1, (2, (3, (4, (5, (6, (7, 8)))))));&#39;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>tree2 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text=</span><span class="st">&#39;(1, (2, (3, (4, (5, (7, (6, 8)))))));&#39;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>tree3 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text=</span><span class="st">&#39;(1, (2, (3, (5, (4, (6, (7, 8)))))));&#39;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">VisualizeMatching</span>(InfoRobinsonFoulds, tree1, tree2, </span>
+<span id="cb1-6"><a href="#cb1-6"></a>                  <span class="dt">Plot =</span> TreeDistPlot, <span class="dt">prune =</span> <span class="dv">12</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>whereas the second pair differ in the resolution of a more even, and thus more information-rich, split (<code>ABCD|EFGH</code>), and so receive a distance score of 5.53 bits:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">VisualizeMatching</span>(InfoRobinsonFoulds, tree1, tree3, </span>
+<span id="cb2-2"><a href="#cb2-2"></a>                  <span class="dt">Plot =</span> TreeDistPlot, <span class="dt">prune =</span> <span class="dv">8</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+<div id="generalized-robinson-foulds-distances" class="section level1">
+<h1>Generalized Robinson-Foulds distances</h1>
+<p>Even when accounting for the information content of splits in this way, the Robinson-Foulds distance is readily saturated: the maximum value can be obtained by moving a single leaf.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>tree1 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text=</span><span class="st">&#39;(1, (2, (3, (4, (5, (6, (7, 8)))))));&#39;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>tree2 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text=</span><span class="st">&#39;(8, (1, (2, (3, (4, (5, (6, 7)))))));&#39;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="kw">VisualizeMatching</span>(RobinsonFouldsMatching, tree1, tree2, <span class="dt">Plot =</span> TreeDistPlot)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>Generalized Robinson-Foulds distances <span class="citation">(Böcker, Canzar, &amp; Klau, 2013; Nye, Liò, &amp; Gilks, 2006)</span> seek to address this issue. This category of metrics aim to acknowledge semblances between similar-but-not-quite-identical pairs of splits, which would contribute zero to tree similarity under the standard Robinson-Foulds measure.</p>
+<p>Generalized RF distances work by finding a <em>matching</em> that pairs splits from one tree with splits in the other. Each pairing is scored according to the similarity of the paired splits; the sum of these scores is the score of the matching. The tree distance is given by the score of the optimal matching.</p>
+<div id="constructing-a-matching" class="section level2">
+<h2>Constructing a matching</h2>
+<p>Let’s consider two trees that differ in the position of one wildcard leaf, and in the resolution of a clade:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>tree1 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text=</span><span class="st">&#39;((A, B), ((C, (D, E)), (F, (G, (H, I)))));&#39;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a>tree2 &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.tree</span>(<span class="dt">text=</span><span class="st">&#39;((A, B), ((C, D, (E, I)), (F, (G, H))));&#39;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">Plot</span>(tree1, tree2, <span class="dt">highlight =</span> <span class="st">&#39;I&#39;</span>, <span class="dt">prune =</span> <span class="kw">list</span>(<span class="dv">8</span>, <span class="kw">integer</span>(<span class="dv">0</span>)))</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAEgCAMAAABrWDzDAAABVlBMVEUAAAAAABgAACsAAFUAK4AASUkASWcASYYAVaoAZ6QAhsIAkpIAkqQAnnMApMkAttsrAAArACsrgNQrkpIrpOErye1JAJJJAKRJK8lVAABVSUlVVStVkpJVqv9Vwv9V2/9ngO1ttv9twv9tzv+AKwCApJKA1P+A4f+A7f+Ftv+F2/+SAACSACuSAFWSK4CSVaqetv+e5/+kAACkgNSk1P+qVQCqhkmqtpKq1ICq//+2AAC2bf+2hf+2qv+2wv+22/+24f+25//CVZLJKwDJ1P/Ozv/O///UgCvUpGfUyaTU///VXgDbVQDb4f/b///h///jmdvnnv/n2//n5//n///tgCvt///z////qlX/ttv/tuH/tuf/wob/wtv/wu3/ztv/zvP/1ID/27b/29v/2+H/2/n/5+f/5///7cn/8+3/8////6r//8L//9T//9v//+3///n///8sAlPDAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAJkElEQVR4nO3caXcURRSA4QiiYozigoobRo3bsCOoqLhABNkUFAQ3DC4oETH//4vpZJJYwsnUrdtV91b1+xyFczzdU92Xl5membRTS4DClPUBoG4EBBUCggoBQYWAoEJAUCEgqBAQVAgIKgQEFQKCCgFBhYBWXR7tu2J9DL6c/3Tlt68/+XbTzQho1bnRfutDcIaAJBaPjQ5bH4MzAw5oRmxp4dCek9aH7cxwA5L3MzNzebT3gvVx5zCVbAsBSZ6BWr0EUvzxnv941SADku5y+0Sjl0CagIb8DCTdpdlLIAJKkBDQ1UYvgQgoRUJA51r9GJGAEsgDavYSiIBSyANaODT6KMuhmCOgBAkvYc3K/8dLQE0joAQEtIGAEhDQBgJKQEAbCCgBAW0goI7we+SZqeYCSv9SPf+hZV9BT3qMNZyTTPIZEVCHgAhIhYAISIWACEiFgAhIhYAISIWACEiFgAhIJX9AkT/7YsYooAOzs7OvfJNzhTIIyCSgS7MHl389Pvt5thVKISCLgG69dXDl9+Ov5lqhGAKyCGh+/OJ16WCuFYoRByQVexuvmfSAkm05/nbeQyso/zFG3sZrxuJP6cDBqM0IqNPsM5DCSkDzy+/DNr+KJqAOAd3twPgl7CYBTUZAd1u7iCagCAR0t7W38QQUgYDu4dJs9yI2P+vucyD5W8rsh1QmoPT31EZ/zQ9MvIS2CSj7Dk6ln4fjCRBQOQRktKTj8YkQkNGSjscnQkBGSzoenwgBGS3peHwiBGS0pOPxiRCQ0ZKOxydCQEZLOh6fCAEZLel4fCIEZLSk4/GJEJDRko7HJ0JARks6Hp8IARkt6Xh8IgRktGTKMcbcVFmaRUAXP1g1n/wIE7QZUNxNlaWZBPRh5p+RazKgyJsqSyMgoyXFO0TeVFkaARktKd4h8qbK0gjIaEnpDxBvjbypsjRFQMkIKEXkTZWlWbwZv5j5TVijAcXdVFmaSUAVPAOJn1b1S04QeVNlaQTUz0Pkn2PkTZWlEVA/D1FgjnE3VZZGQP08RJE5xtxUWRoB9fMQjr8ZzKvJEyegcpo8cQIqp8kTJ6BymjxxAiqnyRMnoHKaPHECKqfJEyegcpo8cQIqp8kTJ6BymjxxAiqnyRMnoHKaPHECKqfJEyegcpo8cQIqp8kTryKg7PfnllFbQJdH+65M3KiOgHL/VFQZtQV0brR/8kYEVE5lAS0eGx2evBUBlVNZQAuH9pycvBUBlWMQ0Ey65UugvRcmr2ARkL/7c8soH5Cin5mZqEsgi4Dkst+fKyHvv9wdlf+n6ef2iZhLoEoC8vQMZPH/2EjVvRKlirsEIiCxoQR0NeoSiIDEhhLQuZiPEQlIbiABRV4CEZDYQAJaODT6KGa7KgJyZSABxSIgKQIKEJAUAQUISIqAAgQkRUABApIioAABSVkElPrl28wUAbljElD5JQuuQEB+9yQgfwio7xUIyO+eFgFV8HNSpghowgriNQnI754E5A8BTViBgDZHQBNWaCCgz55e9eyXGR58KAFFDrHNgLKUMzaYgOKGSEBSBDRhBQLaHAFNWIGANkdAE1bwF5D4k82167+XsxxNTXvKPxWWDrGKgKQ78AzUg5aegaQ7EFAPCCgTAgoQkBQBBQhIioACbQY0fgPxzDsejsZ0z3SRQ2wyoKyGElAkApIioAABSRFQgICkCChAQFIEFKghoLO5FxAhoIBBQNJv9c6edVUQAQUsAhJuT0AEpNqegAhItT0BEZBqewIiINX2BERAqu0JiIBU2xMQAam2JyACUm0vD+j6tRU3hbvFUWSQLnnNrKPotBnQT92vf177WbhfFItnA0VAOUfRaTigpd+/uyXcMUaNAWUaRaflgP75McffuyoDyjOKTh0BCY2ntja9flUZUJ5RdJoM6KvxtH79XrhUDJOAkl3POYqVQ4v4L+KH6Hd7eUFZp1bnM9CgAxLjJWwdL2EpuIhex0V0Ct7Gr+NtfIq1T89+y/HgNQaUaRSdPgIq9rl8LKdfZVisWcNXGfolq1JXQNkRkBQBBQhIioACBCRFQAECkiKgAAFJEVCAgKQIKEBAUgQUICApAgoQkBQBBQhIioACBCRFQAECkiKgAAFJEVCAgKQIKFBJQHfmpqenHz3T+7EkqC2gzKOrI6Ab0zuXf333kTd7Pxi5ygLKPboqAvrjyd3db3fmPDwH1RVQ9tFVEdAX47P/5f2+jyVBXQFlH51FQFL3zT2W+5gETAJKlX90BgGJ/f3CTutD+A9/89lE/tERkJS/+WyCgDp3Bv8Sliz/6GoIaP1K8Mb0buMjWXI5n01kH10VAQ3+bXy6Ft/GJ1j5NOzO3GA/SFTIPbo6Alq+GBz0VxkamUdXSUCOMJ8AAUkxnwABSTGfAAFJMZ8AAUkxnwABSTGfAAFJMZ8AAUkxnwABSTGfAAFJMZ8AAUkxnwABSTGfAAFJMZ8AAUkxnwABSTGfgEVAR7d1Hngj+0JZmATkd2QmAW3vfrzptMdxRLAJyO3I7AL667mnsq+Ug2FAHkdmGdBL2VfKwTQgfyPrISDx/bbj5+OH+zj+8tIDSr5B2fPI+ghIusPqFeG27S5+Rl5MEVD6on5HZhLQyhx+2Obw71MEm4DcjswuoKWjD3r4v7WIGQbkcWSGAZ32N40YlgE5HJnlM5DDV/QIps9A/kZmeQ3k7z1pDNNrIH8js3sX5vBT1SiG78I8jswioLqZBOQXAUkRUICApAgoQEBSBBQgICkCChCQFAEF7hGQmMFhG1J8p2596Dn0cFJNziWHJgdFQOU0OSgCKqfJQRFQOU0OioDKaXJQBFROk4MioHKaHBQBldPkoIwCOjL1hH7h2uhm7XRkNgEtPP78Vnc/3ZudatZeR2YT0Kmt7+14Ub9yZVSz9joyk4Buv/bQ8j/6lSujmbXbkfURkPg7xatbXl86tfzvwGi+hnU7MpN3BkfuP7O0uMvlNaFXbkdmEdDCjm4QR1xeEzrld2QWAZ0aPy97vCZ0yu/IDAIaXwwu7vJ4TeiT45EZBHR1fC3o8prQJ8cjMwioux7srL6uI4LjkZUPaGH98zCP14QueR5Zk1/woRwCggoBQYWAoEJAUCEgqBAQVAgIKgQEFQKCCgFBhYCgQkBQISCoEBBUCAgqBAQVAoIKAUGFgKBCQFAhIKgQEFQICCoEBBUCggoBQYWAoEJAUCEgqBAQVAgIKgQEFQKCCgFBhYCgQkBQISCoEBBUCAgqBAQVAoIKAUGFgKBCQFAhIKgQEFQICCr/AhsBjyDg1kMQAAAAAElFTkSuQmCC" style="display: block; margin: auto;" /></p>
+<p>These trees obtain a Robinson-Foulds distance of nine: a large distances, as the maximum possible for trees of this resolution is eleven. <code>AB|CDEFGHI</code> is the only split in common between the two trees:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">TwoTreePlot</span>()</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">VisualizeMatching</span>(RobinsonFouldsMatching, tree1, tree2)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>This distance score is higher than might be expected, given how much the trees have in common; removing the single leaf ‘I’ results in two trees that differ only in the resolution of a single node:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">TwoTreePlot</span>()</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">VisualizeMatching</span>(RobinsonFouldsMatching,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>                  <span class="kw">drop.tip</span>(tree1, <span class="st">&#39;I&#39;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4"></a>                  <span class="kw">drop.tip</span>(tree2, <span class="st">&#39;I&#39;</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAEgCAMAAABrWDzDAAABg1BMVEUAAAAAABEAABwAACYAACsAADcAAEgAAEsAAFUAJIAAKHEAKysAK1UAK4AAS28AT5cAVVUAVaoYAAAYd7wlAAAlACslbNQlcYoqABEqTBErAAArACsrAEgrAFUrKwArK1UrVVUrVYArVaorZrMrgKorgNQxAAAxnuJJKABJlqZJxeJKAABKj/9LAFVUAABVAABVKwBVKytVgKpVgNRVqtRVqv9hTwBh7eJuJgBuu6ZvJABvSABvs/96dyZ67eKAKwCAVSuAqtSA1KqA1P+SnkuSxXGS7ZeS7byS7eKTSACTSwCT4aap4zOqVQCqVSuqqqqqqsaqxuOqy9eq1P+q//+3cRy4bCu4qsa41fG41//GqqrGqrjTcgnUgCvUqlXUqoDUqqrU///VuKrV8f/cljfcu1Pc4Yrc4abdj1Xds4Dd16rd19Td1//jxqrj///x1bj9vRr94yL94zP/h0j/qWz/qlX/y4//y9f/1ID/1Kr/1NT/8dX//6r//9T//+P///H///8lzv2KAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAPFUlEQVR4nO2di3cbVxGHfwmGvqAQUmgiCJDSAgUSl0cfAVIXKGAgboDiQiFqY2gb3iQKBgXsVn86lrSyfa+k+9q59+7MzndymnPt1czs19Fqd+2dYKIoLUDtAhTeoHYBCm9QuwCFN6hdgMIb1C5A4Q1qF6DwBrULUHiD2gUovEHtAhTeoHYBCm9QuwCFN6hdgMIb1C5A4Q1qF6DwBrULqMXB5jPG34pJqB8UqKWTjAfPz/7ex/OVK+kmoX5QoJZOsr/xw9nfw4d/XbmSbhLqBwVqyQhOE/XKhZidj+1lqKsr5PcTF7Vz4G8n4PTXfRxuzcUcbp2rU3kZ8vuB+9tdZ60g3wsPNheqRJ9D5/fjjdRtkgWNB3Mxi496oeT3443UbZIF9eQcOr8fb6RusxD000fejBPUj3PoAn68kbpNI+hPiBS0OEc82BR9Dl3Ajy9Sx5kL+svXYgUtxCxul0klvx9fpI4zF/TGI9+NFHR8n1X2OXQBP75IHWcm6M+f+l70Z3xPyO+HLlIVpoL++p1Px58k9oT8fugiVQGzA/Sb2kBryO+HLlIVMDtAJ1ym9oT8fugiVeFI0BvNLfev4/TXK9XTNfL7oYtUkNExxo2y0amvj2rXWJOSfkAVqByjUYigUW9bqKwf0IQpyChUUE87qLAfkEQpyUpBsx8WagNNKewHJFEKMjIFncYW1MsOKu0HFEFKMgpCG6iUH1AEKYk2kBttIA8RgmqXWoXSfkASpSArfdy9cEMbaE5pPyCJUpBVfu5dPbNCUO1K61DaD2jClGOFn1u4uPwOq11nLUr7AVWgUpyysPjS7b3xJetXv1G4qu5Q2g9dpEKsEDSZaAMdU9oPXaSk7PFP3vaqgRj4oYuUlH37hMBK+tVA3fdDFykpe/cFVYWBH7pISdm7L6gqDPzQRUrK3n1BVWHghy5SUvapmevAh77aTtBy4IBID14ZYOOpTj/ZzMBPYFmZmAq6/tCL268eGQqshEzQ/uDpvcmDrU4/G8/AT2BZmTgS9OMvnd/e/slXPl5aUPPsZbdnbDLwE1hWJhaf8eUFHU/e6vR4DgZ+AsvKxELQ9eKH6PFnODwUz8CPN1JW5oJeBc5TnyT64DFYioGfwLIycXKIfvTlwErCBHkZTo/MO1NVXZ7vwsBPYFmZOL7PcXSZEVgJpaBJ10fcMfATWFYUo2COBf3ok1+Gf3OLNjUuBNU4hxblB22yrCRmFzFTM32HPfRiWUHNSWKFq3hhftAmyyqidnH6Dnvh0ZePPuPPb5cVNBlufH8yefu54qdA0vygVZYVRAvafuHoTO3oXVZY0OStzwGPXX6dZq/DkeYH7bIsEbeLxg8LCwuqgzg/II4XKWjNk7fe15UTRIw4PyCOFycolb40EAM/II5XUBBx5WUQ5wfE8cQJIkacHxDHS9rfpSdvQwQRF14IcX5AHC/Fz/KTt35BxGUXQ5wfEMc7tRehLxniC/av7PpAZFXdQZwf6lQJglY8eesDkVV1B3F+qFMlCFrx0IAPxG3eIcT5oU4lThAx4vxQpxIniBhxfqhTiRNEjDg/1KnECSJGnB/qVOIEESPOD3WqJEHRIGPsvIjzQ51KnCBixPmhTiVOEDHi/FCnEieIGHF+qFOJE0SMOD/UqcQJIkacH+pU4gQRI84PdSpxgogR54c6lThBxIjzQ52Kj6Dh/GGZcwShIhDnhyLVadgIOqwzHVGcH4JUBmwEVRqOKM4PQSoDNoKaIZKlEeeHIJVBIUGtqTVZSpwfEJdeRhABlaazivMD4rxcBB1szt9phS/C5PkBcWIugiqdAsnzA+LEXAQNN+rMiRbnB8SJuQiqNaBenB8QJ2Yi6GCz9MlPgzg/IM7MRFCtUyB5fkCcmYmgaojzA+J44gQRI84PiOOJE0SMOD8gjidOEDHi/IA4njhBxIjzA+J44gQRI84PiOOJE0SMOD8gjidOEDHi/IA4njhBxIjzA+J44gQtMyKi9n7QAOJ44gTZULWPFD8gjidOkAVd/wjxA+J44gRZaANZgDieOEEmhP0jxA+Wv6SC1kPlRo4f2F9QQS7o7EjxA2utgpwQ6hHiB9ZaBTkh1CPED8ylCnKjfmxgLlWQG/VjA3Opgty03j1xfmAutYHcaAPZwFxqA7nRBrKBuexPAy2mB8Q94tyfBgr1A3PZnwZKe7SwPw2UOGCqP4L2k6YrqB8bmMv+CNpJmlCmfmxgLnsj6HArabqC+rGBuZQiyDsDcHGOGHkcYuKn/YzEYD8wl0wEeYFvg8TxHEz8oHWE1AllTAR5gW+DtHNoLn7QOkKwHysVE0Fe4NsgccovEz9oHSHYj5WKiSAv8Hw/9R86YOIHbQOE+7FSMRHkBZ7vp/5DB0z8oG2AcD9WKiaCvMDz/fGgudqI7CMmftA2QLgfKxUTQV6QKS4TP8gY252KiSAvyBSXiR9kjO1OxUSQF2SKy8QPMsZ2p2IiyAsyxWXiBxlju1MxEeQFmeIy8YOMsd2pmAjygkxxmfhBxtjuVEwEmfzz5s2bvzW/hEypmPhBxtjuVEwEeUGmuEz8IGNsdyomgrwgU1wmfpAxtjsVE0FekCkuEz/IGNudiomgKz6QKXFhP8bveEVkidm2JVYqLg3k2wCZEpduoDsnICJLzLYtsVJpA7nRBvKk0gZyow3kScWygT74w81f/MPcAJkSawN5UrFsoL//cvrHAJkSV2ig9146OoF+UhuIFKOB3v/9Hyf/+415CEKmxOUb6L2Xzl67s4vHtYEoMRpo2jzTJjoNMiUu30DvPvHs0WFo98M/R0SWmG1bYqXSBnJT4SNsxjtnryEiS8y2LbFSlRaUeKOsdw30Mz0Crc6eeJXRtwZ65+gsGhFZYrZtiZWKYwPJPome98/jehW2OjtFAwm/jJ8ff7SBVmcnaaD3f8fyRmIAMz+7s/65g5jXlftVCKzdv7R48Q2UcqOM4kcZ+7Mz98txTzhXaKBdPHsnvoHaXwQH+sHa/UtLG91ASTfKKBpoNj7gcCfuGfnyDfTuE0/eSWqgth0U6Adr9y8tbXQDJd0oI2igZgRX5EPy5Rtod36P4+y1wg0U6gdr9y8tb3QDJd0oI2ighZmdqFF35Rvo5BwxtoHadVCoH6zdv7S8iQ0UeaPM30A+jicoDaM+w0o30GlSX5dEsB/kExSwdeqNMm8D+VlMUOp0A6VCcAQK9YO1+5eWNy5A6o2y9g10PIW08EdYmQ5qfw4U7Adrdy8tcUoDxd8oa99A48H8I770SXRSA929cKN0AwX7wdrdS0scuaOJN8qutL/L0XzE78fNSmztJ6WD7l09k9BAqfXNCfaDtXuXljhyRxNvlF1pLagZxH6wGTftt7UfK0gIt3Ax/giUXt2cYD9Yu29piSN3NPFG2ZX0Auc0H/EPnis94i6B23vjS5EjZdE2Z7gfK1X5Bkq6Uda6geYzADcuv56+e23SR1K+gcL9WKlKN1DifY4rpf8Xrti9glnLN1ByqsINlArBfY7Wu1cwqzaQNlAr+tRAXG6Utd+7glm1gTxUuFHWfu8KZu1VAzG5UdZ+56rkDwTVUpEIiuyfKjfK2u9apQqCQLVUNQTVuFGWijaQJ1UdQdpAxKBaKm0gN9pAnlTaQG60gTyptIHcaAN5UmkDudEG8qTSBnKjDeRJpYLcqB9PKhXkRv14UqkgN+rHk0oFuVE/nlQqyI368aRSQW7UjyeVCnKjfjypVJAb9eNJpYLcqB9Pqj4JOnxtAHw+7skw9eNJ1SNB48FTe5PDneYZ8EDUjydVfwQ1YyeOx5iEoX48qfojaDE9chg1nkP9eFL1RlDsWI4G9eNJxUVQa/bjzn0WqJ+lVOaSiaD2RA6WWqB+bGAuVZAb9WMDc9kfQc0hOvJcSP3YwFz2RtBieGTclF/1swTMZW8ETfbx9N7kv698NO6TTP3YwFz2R9Bk/A1g45tx/1iP+lkC5rJHgpJQPzYwlyrIjfqxgblUQW7Ujw3MpQpyo35sYC5VkBv1YwNzqYLcqB8bmEsV5Eb92MBcqiA36scG5lIFuVE/NjCXKsiN+rGBuVRBbtSPDcylCnKjfmxgLlWQG/VjA3OpgtyoHxuYSxXkRv3YwFyqIDfqxwbmUgW5UT82MJcqyI36sYG5VEFu1I8NzKUKcqN+bGAuVZAb9WMDc6mC3KgfG5hLFeRG/djAXKogN+rHBuayP4IOt6ZTTDa+Ffcq9WMDc9kfQfOHv98exM2ZUj82MJf9EbSPqZrDrWeiXqV+bGAu+yNoOJtfshhCEYr6sYG5zCzImKKWI8HKRKuYD5E8fC1yzpT6WYpkLnML+s8J8G7dJpFvg/k5Ih6OnJSofjyReiNoPJgemzt3BOLnx4rUG0HNCLfYab/qxxOpN4Ka+dnaQGsI9mNFKiLoX5/9VXVBzSD22GGt6scTqYSgf29+pLqg5vL0rUHcVbz68UUqIOg+UF/QeDC7yHjs25Fx1Y8nUn5B9/HF+/UFpaJ+PJGKfMazEmSifjyRVJAb9eOJpILcqB9PJBXkRv14Io3yYgjKmijTD8tz1jxi6QdSBeU5ROSsecTSD+QKytFBOWsesfQDFRRDzppHLP2grKDTZE00+y+JIfXjBEUFFYNpAxVDG8iDNpCbbA0kxVCucyD1Y4MKgu5euJE7BesGYuUH5Q3du3qmiCASP0vkrpybHxRXdAsXS7zDaPSsInPpzPyAKlAwt/fGl+J+jzQB5E6QD2Z+6CKFw0pQBVj5oYsUDitBFWDlhy5SOKwEVYCVH7pI4bASVAFWfugihcNKUAVY+aGLFA4rQRVg5YcuUqdAyEbjwUbkcA4xIGSjID9BkfiBkI12PhH5ZLwcELJRkJ+gSPxAwDb7Gz+InE8mBwRsE+YnJBJD4N/kcOvc0Z/slXQT+DcJ9BMQiSPwbzKdgNPMoOgf8G8S6CcgEkf8MwBn765h5HQXMdD5QYFqO8lsBNd+by/DvIT6QYFausj8430cOWe8PwT7Qf5aOsmwOVT39TLMR7AfFCimgxxszq4v+nsZ5iHcD7LX0kmGzYd7by/DPIT7QfZaukjzBuvxZZibCD/IXYsiG9QuQOENaheg8Aa1C1B4g9oFKLxB7QIU3qB2AQpvULsAhTeoXYDCG9QuQOENaheg8Aa1C1B4g9oFKLz5P3T/L2c4Ykz4AAAAAElFTkSuQmCC" style="display: block; margin: auto;" /></p>
+<p>This hidden similarity can be better reflected if similar, but non-identical, splits are assigned non-zero similarity scores.</p>
+<p>There are various ways to score the similarity between two splits. One is to build on the idea introduced above, where identical splits are scored according to their phylogenetic information content. Non-matching splits can be scored according to the amount of phylogenetic information that they hold in common, which is a function of the proportion of trees that are consistent with both splits. (A full explanation is provided in the discussion of <a href="Generalized-RF.html">Generalized Robinson-Foulds distances</a>.)</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">TwoTreePlot</span>()</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">VisualizeMatching</span>(SharedPhylogeneticInfo, tree1, tree2)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>Here, the split <code>AB|CDEFGHI</code> occurs in both trees, and, as it happens, makes the largest contribution to the tree similarity score (3.70) for this particular pair of trees. This is the same contribution it would have made to the information-corrected Robinson-Foulds similarity.</p>
+<p>The split <code>ABCDEF|GHI</code> in the left-hand tree is paired with the split <code>ABCDEFI|GH</code> in the right-hand tree. Had <code>ABCDEF|GHI</code> been available in the right-hand tree, then this perfect match would have been assigned a similarity of <code>SplitInformation(3, 6)</code> = 5.57 bits. The partial match is instead allocated a lower score of 2.12 bits. Pairings of incompatible splits, i.e. those that cannot co-exist on a tree, such as <code>ABCDEFG|HI</code> - <code>ABCDFGH|EI</code>, have no phylogenetic information in common. (<a href="information.html">clustering information</a> is an alternative way to think about split similarity that recognizes similarity even between incompatible splits.)</p>
+<p>The matching depicted above is one of many. It happens to be optimal: an optimal matching can be found by considering the similarity score of each possible pairing, and solving a linear assignment problem to find the optimal set of pairings.</p>
+<p>We can view the splits in each tree, named according to the number of their associated node:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">summary</span>(TreeTools<span class="op">::</span><span class="kw">as.Splits</span>(tree1, LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>]))</span></code></pre></div>
+<pre><code>## 6 bipartition splits dividing 9 tips, A .. I
+##      123456789
+##  11  **.......
+##  13  ..***....
+##  14  ...**....
+##  15  .....****
+##  16  ......***
+##  17  .......**
+## 
+##  Tip 1: A     Tip 2: B    Tip 3: C    Tip 4: D    Tip 5: E   
+##  Tip 6: F     Tip 7: G    Tip 8: H    Tip 9: I   </code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">summary</span>(TreeTools<span class="op">::</span><span class="kw">as.Splits</span>(tree2, LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>]))</span></code></pre></div>
+<pre><code>## 5 bipartition splits dividing 9 tips, A .. I
+##      123456789
+##  11  **.......
+##  13  ..***...*
+##  14  ....*...*
+##  15  .....***.
+##  16  ......**.
+## 
+##  Tip 1: A     Tip 2: B    Tip 3: C    Tip 4: D    Tip 5: E   
+##  Tip 6: F     Tip 7: G    Tip 8: H    Tip 9: I   </code></pre>
+<p>We can then see the similarity scores for each pair of splits, along with the optimal matching:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">attributes</span>(<span class="kw">SharedPhylogeneticInfo</span>(tree1, tree2, <span class="dt">reportMatching =</span> <span class="ot">TRUE</span>))</span></code></pre></div>
+<pre><code>## $matching
+## [1]  1  2 NA  4  5  3
+## 
+## $pairScores
+##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 3.7004397 0.8930848 0.2410081 0.5305147 0.2410081
+## [2,] 0.5305147 3.2529807 0.0000000 1.1825914 0.5305147
+## [3,] 0.2410081 1.3785116 0.0000000 0.5305147 0.2410081
+## [4,] 0.8930848 0.0000000 0.0000000 3.2529807 1.3785116
+## [5,] 0.5305147 0.0000000 0.0000000 0.0000000 2.1154772
+## [6,] 0.2410081 0.0000000 0.0000000 0.0000000 0.0000000
+## 
+## $matchedSplits
+## [1] &quot;A B | C D E F G H I =&gt; A B | C D E F G H I&quot;
+## [2] &quot;C D E | A B F G H I =&gt; C D E I | A B F G H&quot;
+## [3] &quot;F G H I | A B C D E =&gt; F G H | A B C D E I&quot;
+## [4] &quot;G H I | A B C D E F =&gt; G H | A B C D E F I&quot;
+## [5] &quot;H I | A B C D E F G .. E I | A B C D F G H&quot;</code></pre>
+<p><code>..</code> denotes that the fifth matching contributes zero to similarity score; an alternative optimal matching would leave these splits unpaired.</p>
+</div>
+<div id="what-next" class="section level2">
+<h2>What next?</h2>
+<ul>
+<li>Alternatives measures of split similarity, such as <a href="information.html">mutual clustering information</a>, give rise to other <a href="Generalized-RF.html">Generalized Robinson-Foulds distances</a>.</li>
+</ul>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references hanging-indent">
+<div id="ref-Bocker2013">
+<p>Böcker, S., Canzar, S., &amp; Klau, G. W. (2013). The generalized Robinson-Foulds metric. In A. Darling &amp; J. Stoye (Eds.), <em>Algorithms in Bioinformatics. WABI 2013. Lecture Notes in Computer Science, vol 8126</em> (pp. 156–169). Berlin, Heidelberg: Springer. doi:<a href="https://doi.org/10.1007/978-3-642-40453-5_13">10.1007/978-3-642-40453-5_13</a></p>
+</div>
+<div id="ref-Nye2006">
+<p>Nye, T. M. W., Liò, P., &amp; Gilks, W. R. (2006). A novel algorithm and web-based tool for comparing two alternative phylogenetic trees. <em>Bioinformatics</em>, <em>22</em>(1), 117–119. doi:<a href="https://doi.org/10.1093/bioinformatics/bti720">10.1093/bioinformatics/bti720</a></p>
+</div>
+<div id="ref-Robinson1981">
+<p>Robinson, D. F., &amp; Foulds, L. R. (1981). Comparison of phylogenetic trees. <em>Mathematical Biosciences</em>, <em>53</em>(1-2), 131–147. doi:<a href="https://doi.org/10.1016/0025-5564(81)90043-2">10.1016/0025-5564(81)90043-2</a></p>
+</div>
+<div id="ref-Schuh1980">
+<p>Schuh, R. T., &amp; Polhemus, J. T. (1980). Analysis of taxonomic congruence among morphological, ecological and biogeographic data sets for the Leptopodomorpha (Hemiptera). <em>Systematic Biology</em>, <em>29</em>(1), 1–26. doi:<a href="https://doi.org/10.1093/sysbio/29.1.1">10.1093/sysbio/29.1.1</a></p>
+</div>
+<div id="ref-SmithDist">
+<p>Smith, M. R. (2020). Information theoretic Generalized Robinson-Foulds metrics for comparing phylogenetic trees. <em>Bioinformatics</em>, in production. doi:<a href="https://doi.org/10.1093/bioinformatics/btaa614">10.1093/bioinformatics/btaa614</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
