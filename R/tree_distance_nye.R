@@ -59,7 +59,8 @@
 #' @references \insertRef{Nye2006}{TreeDist}
 #' @family tree distances
 #' 
-#' @importFrom TreeTools NSplits
+#' @encoding UTF-8
+#' @importFrom TreeTools NSplits SplitsInBinaryTree
 #' @export
 NyeSimilarity <- function (tree1, tree2 = tree1, similarity = TRUE,
                            normalize = FALSE,

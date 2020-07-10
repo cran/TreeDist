@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2020-06-29" />
+<meta name="date" content="2020-07-09" />
 
 <title>Comparing splits using information theory</title>
 
@@ -26,22 +26,6 @@ document.addEventListener('DOMContentLoaded', function(e) {
     if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
     a = h.attributes;
     while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
   }
 });
 </script>
@@ -331,7 +315,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Comparing splits using information theory</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2020-06-29</h4>
+<h4 class="date">2020-07-09</h4>
 
 
 
@@ -346,31 +330,31 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Likewise, the split <span class="math inline">\(S_2 =\)</span> <code>ABC|DEF</code> occurs in nine six-leaf trees, so <span class="math inline">\(h(S_2) = -\log_2{\frac{9}{105}} \approx 3.54\textrm{ bits}\)</span>. Three six-leaf trees contain both splits, so in combination the splits deliver <span class="math inline">\(h(S_1,S_2) = -\log_2{\frac{3}{105}} \approx 5.13\textrm{ bits}\)</span> of information.</p>
 <p>Because <span class="math inline">\(h(S_1,S_2) &lt; h(S_1) + h(S_2)\)</span>, some of the information in <span class="math inline">\(S_1\)</span> is also present in <span class="math inline">\(S_2\)</span>. The information in common between <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is <span class="math inline">\(h_{shared}(S_1, S_2) = h(S_1) + h(S_2) - h(S_1,S_2) \approx 1.22\textrm{ bits}\)</span>. The information unique to <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is <span class="math inline">\(h_{different}(S_1,S_2) = 2h(S_1,S_2) - h(S_1) - h(S_2) \approx 3.91\textrm{ bits}\)</span>.</p>
 <p>These quantities can be calculated using functions in the ‘<a href="https://ms609.github.io/TreeTools">TreeTools</a>’ package.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(<span class="st">&#39;TreeTools&#39;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(<span class="st">&#39;TreeDist&#39;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>treesMatchingSplit &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
-<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">AB.CDEF =</span> <span class="kw">TreesMatchingSplit</span>(<span class="dv">2</span>, <span class="dv">4</span>),</span>
-<span id="cb1-5"><a href="#cb1-5"></a>  <span class="dt">ABC.DEF =</span> <span class="kw">TreesMatchingSplit</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
-<span id="cb1-6"><a href="#cb1-6"></a>)</span>
-<span id="cb1-7"><a href="#cb1-7"></a>treesMatchingSplit</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(<span class="st">&#39;TreeTools&#39;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">library</span>(<span class="st">&#39;TreeDist&#39;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>treesMatchingSplit &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>  <span class="dt">AB.CDEF =</span> <span class="kw">TreesMatchingSplit</span>(<span class="dv">2</span>, <span class="dv">4</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  <span class="dt">ABC.DEF =</span> <span class="kw">TreesMatchingSplit</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>treesMatchingSplit</span></code></pre></div>
 <pre><code>## AB.CDEF ABC.DEF 
 ##      15       9</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>proportionMatchingSplit &lt;-<span class="st"> </span>treesMatchingSplit <span class="op">/</span><span class="st"> </span><span class="kw">NUnrooted</span>(<span class="dv">6</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a>proportionMatchingSplit</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>proportionMatchingSplit &lt;-<span class="st"> </span>treesMatchingSplit <span class="op">/</span><span class="st"> </span><span class="kw">NUnrooted</span>(<span class="dv">6</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>proportionMatchingSplit</span></code></pre></div>
 <pre><code>##    AB.CDEF    ABC.DEF 
 ## 0.14285714 0.08571429</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>splitInformation &lt;-<span class="st"> </span><span class="op">-</span><span class="kw">log2</span>(proportionMatchingSplit)</span>
-<span id="cb5-2"><a href="#cb5-2"></a>splitInformation</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>splitInformation &lt;-<span class="st"> </span><span class="op">-</span><span class="kw">log2</span>(proportionMatchingSplit)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>splitInformation</span></code></pre></div>
 <pre><code>##  AB.CDEF  ABC.DEF 
 ## 2.807355 3.544321</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>treesMatchingBoth &lt;-<span class="st"> </span><span class="kw">TreesConsistentWithTwoSplits</span>(<span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
-<span id="cb7-2"><a href="#cb7-2"></a>combinedInformation &lt;-<span class="st"> </span><span class="op">-</span><span class="kw">log2</span>(treesMatchingBoth <span class="op">/</span><span class="st"> </span><span class="kw">NUnrooted</span>(<span class="dv">6</span>))</span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a>sharedInformation &lt;-<span class="st"> </span><span class="kw">sum</span>(splitInformation) <span class="op">-</span><span class="st"> </span>combinedInformation</span>
-<span id="cb7-5"><a href="#cb7-5"></a>sharedInformation</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>treesMatchingBoth &lt;-<span class="st"> </span><span class="kw">TreesConsistentWithTwoSplits</span>(<span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>combinedInformation &lt;-<span class="st"> </span><span class="op">-</span><span class="kw">log2</span>(treesMatchingBoth <span class="op">/</span><span class="st"> </span><span class="kw">NUnrooted</span>(<span class="dv">6</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>sharedInformation &lt;-<span class="st"> </span><span class="kw">sum</span>(splitInformation) <span class="op">-</span><span class="st"> </span>combinedInformation</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>sharedInformation</span></code></pre></div>
 <pre><code>## [1] 1.222392</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Or more concisely:</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">SplitSharedInformation</span>(<span class="dt">n =</span> <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="co"># Or more concisely:</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="kw">SplitSharedInformation</span>(<span class="dt">n =</span> <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## [1] 1.222392</code></pre>
 <!--The more similar the splits, the more information they will have in common;
 the shared information is maximised when $S_1 = S_2$, and $h_{common} = h(S_1)$.
@@ -433,9 +417,9 @@ H_D(S_1, S_2) = H(S_1, S_2) - I(S_1;S_2) = 2H(S_1, S_2) - H(S_1) - H(S_2)
 <p>The joint entropy of two splits, <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span>, corresponds to the entropy of the association matrix of probabilities that a randomly selected leaf belongs to each pair of partitions:</p>
 <table>
 <colgroup>
-<col width="23%"></col>
-<col width="44%"></col>
-<col width="32%"></col>
+<col width="23%" />
+<col width="44%" />
+<col width="32%" />
 </colgroup>
 <thead>
 <tr class="header">

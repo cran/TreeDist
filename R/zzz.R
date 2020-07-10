@@ -21,6 +21,7 @@ release_questions <- function() {
 #
 # run_examples()
 # build_vignettes()
+# build_manual() # PDF support for special characters
 #
 # devtools::check_win_devel(quiet = TRUE); rhub::check_for_cran()
 # rhub::check_with_valgrind() # runs the build and check on Linux, in valgrind to find memory leaks and pointer errors.
@@ -30,5 +31,6 @@ release_questions <- function() {
 #
 # codemetar::write_codemeta()
 #
-# tools::resaveRdaFiles('R', compress='auto') - is default bzip2 the optimal?
-# tools::checkRdaFiles('R') - set optimal compression in `data-raw`
+# # Unnecessary:
+# # tools::resaveRdaFiles('R', compress='auto') - is default bzip2 the optimal?
+# # tools::checkRdaFiles('R') - set optimal compression in `data-raw`
