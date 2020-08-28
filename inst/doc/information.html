@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2020-07-09" />
+<meta name="date" content="2020-08-28" />
 
 <title>Comparing splits using information theory</title>
 
@@ -315,7 +315,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Comparing splits using information theory</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2020-07-09</h4>
+<h4 class="date">2020-08-28</h4>
 
 
 
@@ -329,7 +329,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>The split <span class="math inline">\(S_1 =\)</span> <code>AB|CDEF</code> is found in 15 of the 105 six-leaf trees; as such, the probability that a randomly drawn tree contains <span class="math inline">\(S_1\)</span> is <span class="math inline">\(P(S_1) = \frac{15}{105}\)</span>, and the information content <span class="math inline">\(h(S_1) = -\log_2{\frac{15}{105}} \approx 2.81\textrm{ bits}\)</span>. <span class="citation">Steel &amp; Penny (2006)</span> dub this quantity the phylogenetic information content.</p>
 <p>Likewise, the split <span class="math inline">\(S_2 =\)</span> <code>ABC|DEF</code> occurs in nine six-leaf trees, so <span class="math inline">\(h(S_2) = -\log_2{\frac{9}{105}} \approx 3.54\textrm{ bits}\)</span>. Three six-leaf trees contain both splits, so in combination the splits deliver <span class="math inline">\(h(S_1,S_2) = -\log_2{\frac{3}{105}} \approx 5.13\textrm{ bits}\)</span> of information.</p>
 <p>Because <span class="math inline">\(h(S_1,S_2) &lt; h(S_1) + h(S_2)\)</span>, some of the information in <span class="math inline">\(S_1\)</span> is also present in <span class="math inline">\(S_2\)</span>. The information in common between <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is <span class="math inline">\(h_{shared}(S_1, S_2) = h(S_1) + h(S_2) - h(S_1,S_2) \approx 1.22\textrm{ bits}\)</span>. The information unique to <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is <span class="math inline">\(h_{different}(S_1,S_2) = 2h(S_1,S_2) - h(S_1) - h(S_2) \approx 3.91\textrm{ bits}\)</span>.</p>
-<p>These quantities can be calculated using functions in the ‘<a href="https://ms609.github.io/TreeTools">TreeTools</a>’ package.</p>
+<p>These quantities can be calculated using functions in the ‘<a href="https://ms609.github.io/TreeTools/">TreeTools</a>’ package.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(<span class="st">&#39;TreeTools&#39;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">library</span>(<span class="st">&#39;TreeDist&#39;</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>treesMatchingSplit &lt;-<span class="st"> </span><span class="kw">c</span>(</span>

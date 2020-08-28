@@ -1,6 +1,23 @@
+# TreeDist 1.2.0
+
+- `TreeDistance()` and related functions now return a `dist` object when 
+  computing all distances between all pairs of trees in a list.
+
+- Improve floating-point arithmetic in `TreeDistance()` functions.
+
+- `TreeDistance()` now returns a distance (as documented), rather than a
+  similarity.
+
+- Fix rounding error in NNI 'Li' upper estimate, and improve NNI performance.
+
+- Reduce precision of LAPJV so rounding errors do not result in interminable run
+  times.
+
+
 # TreeDist 1.1.1
 
 - Fix range errors when calculating tree distances.
+
 
 # TreeDist 1.1.0
 
@@ -18,7 +35,8 @@
   
 - Fix memory-handling bug in `lapjv()`.
 
+
 # TreeDist 1.0.0
 
 - Initial release, building on some draft functions included in 
-  '[TreeSearch](https://ms609.github.io/TreeSearch)' 0.3.2.9005.
+  '[TreeSearch](https://ms609.github.io/TreeSearch/)' 0.3.2.9005.
