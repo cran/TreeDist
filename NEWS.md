@@ -1,3 +1,7 @@
+# TreeDist 1.2.1
+
+- Import RdMacros package 'RdPack'.
+
 # TreeDist 1.2.0
 
 - `TreeDistance()` and related functions now return a `dist` object when 
