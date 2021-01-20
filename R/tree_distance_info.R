@@ -1,11 +1,11 @@
-#' Information-based generalized Robinson-Foulds distances
+#' Information-based generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds distances
 #'
 #' Calculate tree similarity and distance measures based on the amount of 
 #' phylogenetic or clustering information that two trees hold in common, as
 #' proposed in Smith (2020).
 #' 
 #' 
-#' [Generalized Robinson-Foulds distances](https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances)
+#' [Generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds distances](https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances)
 #' calculate tree similarity by finding an
 #' optimal matching that the similarity between a split on one tree
 #' and its pair on a second, considering all possible ways to pair splits 
@@ -79,8 +79,24 @@
 #' splits in the most or least informative tree, use `normalize = `[`pmax`] or 
 #' [`pmin`] respectively.
 #' To calculate the relative similarity against a reference tree that is known
-#' to be 'correct', use `normalize = ``SplitwiseInfo(trueTree)` (SPI, MSI) or
+#' to be 'correct', use `normalize = SplitwiseInfo(trueTree)` (SPI, MSI) or
 #' `ClusteringEntropy(trueTree)` (MCI).
+#' 
+#' # Troubleshooting
+#' 
+#' Trees being compared must have identical tips.
+#' (If you have a use case for comparing trees with non-identical tips, do file a 
+#' [GitHub issue](https://github.com/ms609/TreeDist/issues/new?title=Non-identical+tips)
+#' or drop the maintainer an e-mail.)
+#' 
+#' To determine which tips do not occur in both trees, try:
+#' 
+#' ```r
+#' library('TreeTools')
+#' setdiff(TipLabels(tree1), TipLabels(tree2)) # In tree1 but not tree2
+#' setdiff(TipLabels(tree2), TipLabels(tree1)) # In tree2 but not tree1
+#' ```
+#' 
 #' 
 #' @template tree12ListParams
 #' 
@@ -145,6 +161,8 @@
 #' @template MRS 
 #' 
 #' @references 
+#'  * \insertRef{Day1985}{TreeDist}
+#'  
 #'  * \insertRef{Mackay2003}{TreeDist}
 #'  
 #'  * \insertRef{Meila2007}{TreeDist}
@@ -162,7 +180,7 @@ TreeDistance <- function (tree1, tree2 = tree1) {
 
 #' @rdname TreeDistance
 #' @export
-SharedPhylogeneticInfo <- function (tree1, tree2 = tree1, normalize = FALSE,
+SharedPhylogeneticInfo <- function (tree1, tree2 = NULL, normalize = FALSE,
                                     reportMatching = FALSE, diag = TRUE) {
   unnormalized <- CalculateTreeDistance(SharedPhylogeneticInfoSplits, tree1,
                                         tree2, reportMatching = reportMatching)
@@ -179,7 +197,7 @@ SharedPhylogeneticInfo <- function (tree1, tree2 = tree1, normalize = FALSE,
 
 #' @rdname TreeDistance
 #' @export
-DifferentPhylogeneticInfo <- function (tree1, tree2 = tree1, normalize = FALSE,
+DifferentPhylogeneticInfo <- function (tree1, tree2 = NULL, normalize = FALSE,
                                        reportMatching = FALSE) {
   spi <- SharedPhylogeneticInfo(tree1, tree2, normalize = FALSE, diag = FALSE,
                                 reportMatching = reportMatching)
@@ -204,7 +222,7 @@ PhylogeneticInfoDistance <- DifferentPhylogeneticInfo
 #' @rdname TreeDistance
 #' @aliases ClusteringInfoDist
 #' @export
-ClusteringInfoDistance <- function (tree1, tree2 = tree1, normalize = FALSE,
+ClusteringInfoDistance <- function (tree1, tree2 = NULL, normalize = FALSE,
                                        reportMatching = FALSE) {
   mci <- MutualClusteringInfo(tree1, tree2, normalize = FALSE, diag = FALSE,
                               reportMatching = reportMatching)
@@ -274,11 +292,11 @@ ExpectedVariation <- function (tree1, tree2, samples = 1e+4) {
 #' @rdname TreeDistance
 #' @aliases MutualClusteringInformation
 #' @export
-MutualClusteringInfo <- function (tree1, tree2 = tree1, normalize = FALSE,
+MutualClusteringInfo <- function (tree1, tree2 = NULL, normalize = FALSE,
                                   reportMatching = FALSE, diag = TRUE) {
   unnormalized <- CalculateTreeDistance(MutualClusteringInfoSplits, tree1, tree2,
                                         reportMatching)
-  if (diag && identical(tree1, tree2) && !inherits(tree1, 'phylo')) {
+  if (diag && is.null(tree2)) {
     unnormalized <- as.matrix(unnormalized)
     diag(unnormalized) <- ClusteringEntropy(tree1)
   }

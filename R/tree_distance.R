@@ -1,11 +1,12 @@
-#' Generalized Robinson-Foulds distance
+#' Generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds distance
 #' 
-#' An internal function to calculate Generalized Robinson-Foulds distance from
+#' An internal function to calculate Generalized 
+#' Robinson\ifelse{html}{&#ndash;}{--}Foulds distances from
 #' splits.
 #'
-#' Note that no checks will be made to confirm that splits1 and splits2 contain
-#' the same leaves in the same order.  This is the responsibility of the calling
-#' function.
+#' Note that no checks will be made to confirm that `splits1` and `splits2`
+#' contain the same leaves in the same order.
+#' This is the responsibility of the calling function.
 #' 
 #' @inheritParams SharedPhylogeneticInfoSplits
 #' @param nTip Integer specifying the number of leaves in each split.
@@ -27,6 +28,7 @@
 #' 
 #' @keywords internal
 #' @template MRS
+#' @encoding UTF-8
 #' @export
 #' @references \insertRef{Jonker1987}{TreeDist}
 GeneralizedRF <- function (splits1, splits2, nTip, PairScorer, 
@@ -39,7 +41,7 @@ GeneralizedRF <- function (splits1, splits2, nTip, PairScorer,
   
   if (reportMatching) {
     matching <- solution$matching
-    matching[matching > nSplits2] <- NA
+    matching[matching > nSplits2 | matching == 0L] <- NA
     if (nSplits1 < nSplits2) {
       matching <- matching[seq_len(nSplits1)]
     }
@@ -74,11 +76,12 @@ GeneralizedRF <- function (splits1, splits2, nTip, PairScorer,
 }
 
 .MaxValue <- function (tree1, tree2, Value) {
-  maxValue <- outer(Value(tree1), Value(tree2), '+')[, , drop = TRUE]
-  if (!inherits(tree1, 'phylo') && identical(tree1, tree2)) {
+  value1 <- Value(tree1)
+  if (is.null(tree2)) {
+    maxValue <- outer(value1, value1, '+')[, , drop = TRUE]
     maxValue[lower.tri(maxValue)]
   } else {
-    maxValue
+    outer(value1, Value(tree2), '+')[, , drop = TRUE]
   }
 }
 

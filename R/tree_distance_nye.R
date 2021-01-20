@@ -1,7 +1,7 @@
 #' Nye _et al_. (2006) tree comparison
 #' 
 #' `NyeSimilarity()` and `NyeSplitSimilarity()` implement the 
-#' [Generalized Robinson-Foulds](https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances)
+#' [Generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds](https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances)
 #' tree comparison metric of Nye _et al_. (2006).
 #' In short, this finds the optimal matching that pairs each branch from
 #' one tree with a branch in the second, where matchings are scored according to
@@ -62,7 +62,7 @@
 #' @encoding UTF-8
 #' @importFrom TreeTools NSplits SplitsInBinaryTree
 #' @export
-NyeSimilarity <- function (tree1, tree2 = tree1, similarity = TRUE,
+NyeSimilarity <- function (tree1, tree2 = NULL, similarity = TRUE,
                            normalize = FALSE,
                            normalizeMax = !is.logical(normalize),
                            reportMatching = FALSE,
@@ -72,7 +72,7 @@ NyeSimilarity <- function (tree1, tree2 = tree1, similarity = TRUE,
                                         reportMatching)
   if (similarity) {
     InfoInTree <- if (normalizeMax) SplitsInBinaryTree else NSplits
-    if (diag && identical(tree1, tree2) && !inherits(tree1, 'phylo')) {
+    if (diag && is.null(tree2)) {
       unnormalized <- as.matrix(unnormalized)
       diag(unnormalized) <- InfoInTree(tree1)
     }
@@ -103,14 +103,14 @@ NyeSplitSimilarity <- function (splits1, splits2,
                 reportMatching = reportMatching)
 }
 
-#' Jaccard-Robinson-Foulds metric
+#' Jaccard\ifelse{html}{&#ndash;}{--}Robinson\ifelse{html}{&#ndash;}{--}Foulds metric
 #' 
 #' Calculate the 
-#' [Jaccard-Robinson-Foulds metric](https://ms609.github.io/TreeDist/articles/Generalized-RF.html#jaccard-robinson-foulds-metric)
+#' [Jaccard\ifelse{html}{&#ndash;}{--}Robinson\ifelse{html}{&#ndash;}{--}Foulds metric](https://ms609.github.io/TreeDist/articles/Generalized-RF.html#jaccard-robinson-foulds-metric)
 #' (B&ouml;cker _et al_. 2013), a 
-#' [Generalized Robinson-Foulds metric](https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances).
+#' [Generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds metric](https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances).
 #' 
-#' In short, the Jaccard-Robinson-Foulds metric is a generalized Robinson-Foulds
+#' In short, the Jaccard\ifelse{html}{&#ndash;}{--}Robinson\ifelse{html}{&#ndash;}{--}Foulds metric is a generalized Robinson-Foulds
 #' metric: it finds the optimal matching that pairs each split in one tree with
 #' a similar split in the second.
 #' Matchings are scored according to the size of the largest split that is 
@@ -132,7 +132,7 @@ NyeSplitSimilarity <- function (splits1, splits2,
 #' @param k An arbitrary exponent to which to raise the Jaccard index.
 #' Integer values greater than one are anticipated by B&ouml;cker _et al_.
 #' The Nye _et al_. metric uses `k = 1`.
-#' As k increases towards infinity, the metric converges to the Robinson-Foulds
+#' As k increases towards infinity, the metric converges to the Robinson\ifelse{html}{&#ndash;}{--}Foulds
 #' metric.
 #' @param allowConflict Logical specifying whether to allow conflicting splits
 #' to be paired. If `FALSE`, such pairings will be allocated a similarity
@@ -174,7 +174,7 @@ NyeSplitSimilarity <- function (splits1, splits2,
 #' @encoding UTF-8
 #' @importFrom TreeTools NSplits
 #' @export
-JaccardRobinsonFoulds <- function (tree1, tree2 = tree1, k = 1L, 
+JaccardRobinsonFoulds <- function (tree1, tree2 = NULL, k = 1L, 
                                    allowConflict = TRUE, similarity = FALSE,
                                    normalize = FALSE, reportMatching = FALSE) {
   unnormalized <- CalculateTreeDistance(JaccardSplitSimilarity, tree1, tree2, 

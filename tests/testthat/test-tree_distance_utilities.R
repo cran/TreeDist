@@ -15,6 +15,11 @@ test_that('Tree normalization works', {
                              InfoInTree = I, Combine = pmax))
 })
 
+test_that("CalculateTreeDistance() errs appropriately", {
+  expect_error(CalculateTreeDistance(RobinsonFouldsSplits, 'Not a tree'))
+  expect_error(CalculateTreeDistance(RobinsonFouldsSplits, 'Not a tree', BalancedTree(8)))
+  expect_error(CalculateTreeDistance(RobinsonFouldsSplits, BalancedTree(8), 'Not a tree'))
+})
 
 test_that('CalculateTreeDistance() handles splits appropriately', {
   set.seed(101)
@@ -33,6 +38,7 @@ test_that('CalculateTreeDistance() handles splits appropriately', {
   splits10.4 <- as.Splits(trees10.4)
   
   expect_equal(0, CalculateTreeDistance(RobinsonFouldsSplits, splits10, splits10))
+  expect_equal(dist(0), CalculateTreeDistance(RobinsonFouldsSplits, splits10, NULL))
   expect_equal(seq_len(7),
                attr(CalculateTreeDistance(RobinsonFouldsSplits, 
                                           splits10, splits10, TRUE), 'matching')
@@ -44,10 +50,10 @@ test_that('CalculateTreeDistance() handles splits appropriately', {
   
   expect_equivalent(
     CalculateTreeDistance(RobinsonFouldsSplits, splits10.3, splits10.3),
-    as.dist(CalculateTreeDistance(RobinsonFouldsSplits, splits10.3, trees10.3)))
+    CalculateTreeDistance(RobinsonFouldsSplits, splits10.3, trees10.3))
   
   expect_equivalent(
-    CalculateTreeDistance(RobinsonFouldsSplits, trees10.3, splits10.3),
+    as.matrix(CalculateTreeDistance(RobinsonFouldsSplits, trees10.3)),
     as.matrix(CalculateTreeDistance(RobinsonFouldsSplits, trees10.3, trees10.3)))
   
   expect_equivalent(

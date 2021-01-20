@@ -16,13 +16,13 @@
 \alias{MatchingSplitInfo}
 \alias{MatchingSplitInfoDistance}
 \alias{MatchingSplitInfoSplits}
-\title{Information-based generalized Robinson-Foulds distances}
+\title{Information-based generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds distances}
 \usage{
 TreeDistance(tree1, tree2 = tree1)
 
 SharedPhylogeneticInfo(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   normalize = FALSE,
   reportMatching = FALSE,
   diag = TRUE
@@ -30,21 +30,21 @@ SharedPhylogeneticInfo(
 
 DifferentPhylogeneticInfo(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   normalize = FALSE,
   reportMatching = FALSE
 )
 
 PhylogeneticInfoDistance(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   normalize = FALSE,
   reportMatching = FALSE
 )
 
 ClusteringInfoDistance(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   normalize = FALSE,
   reportMatching = FALSE
 )
@@ -53,7 +53,7 @@ ExpectedVariation(tree1, tree2, samples = 10000)
 
 MutualClusteringInfo(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   normalize = FALSE,
   reportMatching = FALSE,
   diag = TRUE
@@ -75,7 +75,7 @@ MutualClusteringInfoSplits(
 
 MatchingSplitInfo(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   normalize = FALSE,
   reportMatching = FALSE,
   diag = TRUE
@@ -83,7 +83,7 @@ MatchingSplitInfo(
 
 MatchingSplitInfoDistance(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   normalize = FALSE,
   reportMatching = FALSE
 )
@@ -97,7 +97,9 @@ MatchingSplitInfoSplits(
 }
 \arguments{
 \item{tree1, tree2}{Trees of class \code{phylo}, with leaves labelled identically,
-or lists of such trees to undergo pairwise comparison.}
+or lists of such trees to undergo pairwise comparison.  Where implemented,
+\code{tree2 = NULL} will compute distances between each pair of trees in the list
+\code{tree1} using a fast algorithm based on Day (1985).}
 
 \item{normalize}{If a numeric value is provided, this will be used as a
 maximum value against which to rescale results.
@@ -138,7 +140,7 @@ phylogenetic or clustering information that two trees hold in common, as
 proposed in Smith (2020).
 }
 \details{
-\href{https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances}{Generalized Robinson-Foulds distances}
+\href{https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances}{Generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds distances}
 calculate tree similarity by finding an
 optimal matching that the similarity between a split on one tree
 and its pair on a second, considering all possible ways to pair splits
@@ -211,9 +213,21 @@ Alternatively, to scale against the information content or entropy of all
 splits in the most or least informative tree, use \verb{normalize = }\code{\link{pmax}} or
 \code{\link{pmin}} respectively.
 To calculate the relative similarity against a reference tree that is known
-to be 'correct', use \verb{normalize = ``SplitwiseInfo(trueTree)} (SPI, MSI) or
+to be 'correct', use \code{normalize = SplitwiseInfo(trueTree)} (SPI, MSI) or
 \code{ClusteringEntropy(trueTree)} (MCI).
 }
+}
+
+\section{Troubleshooting}{
+Trees being compared must have identical tips.
+(If you have a use case for comparing trees with non-identical tips, do file a
+\href{https://github.com/ms609/TreeDist/issues/new?title=Non-identical+tips}{GitHub issue}
+or drop the maintainer an e-mail.)
+
+To determine which tips do not occur in both trees, try:\if{html}{\out{<div class="r">}}\preformatted{library('TreeTools')
+setdiff(TipLabels(tree1), TipLabels(tree2)) # In tree1 but not tree2
+setdiff(TipLabels(tree2), TipLabels(tree1)) # In tree2 but not tree1
+}\if{html}{\out{</div>}}
 }
 
 \examples{
@@ -256,6 +270,7 @@ MutualClusteringInfoSplits(splits1, splits2)
 }
 \references{
 \itemize{
+\item \insertRef{Day1985}{TreeDist}
 \item \insertRef{Mackay2003}{TreeDist}
 \item \insertRef{Meila2007}{TreeDist}
 \item \insertRef{SmithDist}{TreeDist}

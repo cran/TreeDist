@@ -1,9 +1,11 @@
-#' Robinson-Foulds distances, with adjustments for phylogenetic information
+#' Robinson\ifelse{html}{&#ndash;}{--}Foulds distances, with adjustments for phylogenetic information
 #' content
 #' 
-#' Calculate the Robinson-Foulds distance, or the equivalent similarity 
-#' measure, with options to (i) annotate matched splits; (ii) weight splits
-#' according to their phylogenetic information content (Smith 2020).
+#' Calculate the Robinson\ifelse{html}{&#ndash;}{--}Foulds distance, or
+#' the equivalent similarity measure, with options to
+#' (i) annotate matched splits; 
+#' (ii) weight splits according to their phylogenetic information content 
+#' (Smith 2020).
 #' 
 #' Note that if `reportMatching = TRUE`, the `pairScores` attribute returns
 #' a logical matrix specifying whether each pair of splits is identical.
@@ -13,6 +15,9 @@
 #' identical in both trees.  Consequently, splits that are more likely
 #' to be identical by chance alone make a smaller contribution to overall
 #' tree distance, because their similarity is less remarkable.
+#' 
+#' Rapid comparison between multiple pairs of trees employs the Day (1985)
+#' linear-time algorithm.
 #' 
 #' @inheritParams TreeDistance
 #' @param similarity Logical specifying whether to report the result as a tree
@@ -32,6 +37,8 @@
 #' @references 
 #' 
 #' \insertRef{Robinson1981}{TreeDist}
+#' 
+#' \insertRef{Day1985}{TreeDist}
 #' 
 #' \insertRef{Steel2006}{TreeDist}
 #' 
@@ -55,11 +62,12 @@
 #' @seealso Display paired splits: [`VisualizeMatching()`]
 #' 
 #' @export
+#' @encoding UTF-8
 #' @name Robinson-Foulds
 
 #' @aliases RobinsonFouldsInfo
 #' @rdname Robinson-Foulds
-InfoRobinsonFoulds <- function (tree1, tree2 = tree1, similarity = FALSE,
+InfoRobinsonFoulds <- function (tree1, tree2 = NULL, similarity = FALSE,
                                 normalize = FALSE, reportMatching = FALSE) {
   unnormalized <- CalculateTreeDistance(InfoRobinsonFouldsSplits, tree1, tree2, 
                                         reportMatching) * 2
@@ -93,14 +101,28 @@ InfoRobinsonFouldsSplits <- function (splits1, splits2,
 #' @rdname Robinson-Foulds
 #' @importFrom TreeTools NSplits
 #' @export
-RobinsonFoulds <- function (tree1, tree2 = tree1, similarity = FALSE,
+RobinsonFoulds <- function (tree1, tree2 = NULL, similarity = FALSE,
                             normalize = FALSE, reportMatching = FALSE) {
-  unnormalized <- CalculateTreeDistance(RobinsonFouldsSplits, tree1, tree2, 
-                                        reportMatching)
-  
-  if (similarity) {
-    unnormalized <- .MaxValue(tree1, tree2, NSplits) - unnormalized
+  if (is.null(tree2)) {
+    ct <- as.ClusterTable(tree1)
+    rf <- robinson_foulds_all_pairs(if(is.list(ct)) ct else list(ct))
+    if (similarity) {
+      unnormalized <- structure(rf + rf, Size = length(tree1), class = 'dist')
+    } else {
+      splits <- NSplits(tree1)
+      nSplits <- outer(splits, splits, '+')
+      unnormalized <- structure(nSplits[lower.tri(nSplits)] - rf - rf,
+                                Size = length(tree1),
+                                class = 'dist')
+    }
+  } else {
+    unnormalized <- CalculateTreeDistance(RobinsonFouldsSplits, tree1, tree2,
+                                          reportMatching)
+    if (similarity) {
+      unnormalized <- .MaxValue(tree1, tree2, NSplits) - unnormalized
+    }
   }
+  
   
   # Return:
   NormalizeInfo(unnormalized, tree1, tree2, how = normalize,
@@ -112,7 +134,7 @@ RobinsonFoulds <- function (tree1, tree2 = tree1, similarity = FALSE,
 #' @param \dots Not used.
 #' @importFrom TreeTools NSplits
 #' @export
-RobinsonFouldsMatching <- function (tree1, tree2 = tree1, similarity = FALSE,
+RobinsonFouldsMatching <- function (tree1, tree2, similarity = FALSE,
                                     normalize = FALSE, ...) {
   ret <- CalculateTreeDistance(RobinsonFouldsSplits, tree1, tree2,
                                reportMatching = TRUE)

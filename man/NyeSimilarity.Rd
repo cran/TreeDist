@@ -8,7 +8,7 @@
 \usage{
 NyeSimilarity(
   tree1,
-  tree2 = tree1,
+  tree2 = NULL,
   similarity = TRUE,
   normalize = FALSE,
   normalizeMax = !is.logical(normalize),
@@ -25,10 +25,14 @@ NyeSplitSimilarity(
 }
 \arguments{
 \item{tree1}{Trees of class \code{phylo}, with leaves labelled identically,
-or lists of such trees to undergo pairwise comparison.}
+or lists of such trees to undergo pairwise comparison.  Where implemented,
+\code{tree2 = NULL} will compute distances between each pair of trees in the list
+\code{tree1} using a fast algorithm based on Day (1985).}
 
 \item{tree2}{Trees of class \code{phylo}, with leaves labelled identically,
-or lists of such trees to undergo pairwise comparison.}
+or lists of such trees to undergo pairwise comparison.  Where implemented,
+\code{tree2 = NULL} will compute distances between each pair of trees in the list
+\code{tree1} using a fast algorithm based on Day (1985).}
 
 \item{similarity}{Logical specifying whether to report the result as a tree
 similarity, rather than a difference.}
@@ -75,7 +79,7 @@ or \code{splits1} and \code{splits2}.
 }
 \description{
 \code{NyeSimilarity()} and \code{NyeSplitSimilarity()} implement the
-\href{https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances}{Generalized Robinson-Foulds}
+\href{https://ms609.github.io/TreeDist/articles/Robinson-Foulds.html#generalized-robinson-foulds-distances}{Generalized Robinson\ifelse{html}{&#ndash;}{--}Foulds}
 tree comparison metric of Nye \emph{et al}. (2006).
 In short, this finds the optimal matching that pairs each branch from
 one tree with a branch in the second, where matchings are scored according to

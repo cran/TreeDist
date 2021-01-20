@@ -1,6 +1,27 @@
+# TreeDist 2.0.0
+
+- `Project()` launches 'shiny' app for projection and analysis of tree space.
+
+- `ProjectionQuality()` calculates trustworthiness and continuity of tree 
+  space projections.
+  
+- Faster calculation of Robinson–Foulds distance (using algorithm of Day (1985))
+  and clustering information distance.
+  
+- New class `ClusterTable` to allow faster distance computation with Day (1985)
+  algorithm.
+  
+- Improve error messages in `CalculateTreeDist()`.
+
+- Improvements to vignettes.
+
+- Use package 'vdiffr' conditionally.
+
+
 # TreeDist 1.2.1
 
 - Import RdMacros package 'RdPack'.
+
 
 # TreeDist 1.2.0
 

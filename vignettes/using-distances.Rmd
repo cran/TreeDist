@@ -1,7 +1,6 @@
 ---
 title: "Contextualizing tree distances"
-author: "[Martin R. Smith](https://community.dur.ac.uk/martin.smith/)"
-date: "`r Sys.Date()`"
+author: "[Martin R. Smith](https://smithlabdurham.github.io/)"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 csl: ../inst/apa-old-doi-prefix.csl
@@ -399,5 +398,9 @@ You may wish to:
 
 - Review [available distance measures](https://ms609.github.io/TreeDist/index.html)
   and the corresponding [TreeDist functions](https://ms609.github.io/TreeDist/reference/index.html#section-tree-distance-measures)
+
+- Construct [tree spaces](treespace.html) to visualize landscapes of
+  phylogenetic trees
+
 
 ## References

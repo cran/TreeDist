@@ -39,13 +39,14 @@ JRF2(tree1, tree2)
 VisualizeMatching(JRF2, tree1, tree2,
                   Plot = TreeDistPlot, matchZeros = FALSE)
 
-## ---- fig.width=6, fig.height = 4,fig.align='center', echo=FALSE--------------
+## ---- fig.width=6, fig.height = 4,fig.align = 'center', echo = FALSE----------
 oldPar <- par(mar = c(4, 4, 0, 0))
 x <- seq(1, 20, by = 0.1)
 cbPalette8 <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                 "#0072B2", "#D55E00", "#CC79A7") # dput(Ternary::cbPalette8)
 plot(0, xlim = range(x), ylim = c(3.5, 9.5),
-     xlab = expression(italic('k')), ylab = 'Jaccard-Robinson-Foulds distance',
+     xlab = expression(italic('k')),
+     ylab = 'Jaccard\u2013Robinson\u2013Foulds distance',
      pch = 3, type = 'n')
 
 abline(h = RobinsonFoulds(tree1, tree2),
@@ -58,7 +59,7 @@ lines(x = x, y = vapply(x, JaccardRobinsonFoulds, tree1 = tree1, tree2 = tree2,
 lines(x = x, y = vapply(x, JaccardRobinsonFoulds, tree1 = tree1, tree2 = tree2,
                         0), col = cbPalette8[4])
 
-legend('right', c('Robinson-Foulds', 'JRF, no conflict', 'JRF, conflict ok', 'Nye et al.'),
+legend('right', c('Robinson\u2013Foulds', 'JRF, no conflict', 'JRF, conflict ok', 'Nye et al.'),
        lty = c('dashed', 'solid', 'solid', 'dotted'), 
        col = cbPalette8[c(6, 4, 5, 8)], bty = 'n')
 par(oldPar)
