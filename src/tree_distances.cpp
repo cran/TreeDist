@@ -1,3 +1,4 @@
+#include <memory> /* for unique_ptr, make_unique */
 #include <cmath>
 #include <Rcpp.h>
 #include "tree_distances.h"
@@ -399,11 +400,11 @@ List cpp_mutual_clustering (const RawMatrix x, const RawMatrix y,
     throw std::invalid_argument("Input splits must address same number of tips.");
   }
   const SplitList a(x), b(y);
-  const bool b_has_fewer_splits = (a.n_splits > b.n_splits);
+  const bool a_has_more_splits = (a.n_splits > b.n_splits);
   const int16
-    most_splits = b_has_fewer_splits ? a.n_splits : b.n_splits,
-    a_extra_splits = b_has_fewer_splits ? most_splits - b.n_splits : 0,
-    b_extra_splits = b_has_fewer_splits ? 0 : most_splits - a.n_splits,
+    most_splits = a_has_more_splits ? a.n_splits : b.n_splits,
+    a_extra_splits = a_has_more_splits ? most_splits - b.n_splits : 0,
+    b_extra_splits = a_has_more_splits ? 0 : most_splits - a.n_splits,
     last_bin = a.n_bins - 1,
     n_tips = nTip[0],
     unset_tips = (n_tips % BIN_SIZE) ? BIN_SIZE - n_tips % BIN_SIZE : 0
@@ -481,6 +482,9 @@ List cpp_mutual_clustering (const RawMatrix x, const RawMatrix y,
     }
   }
   if (exact_matches == b.n_splits || exact_matches == a.n_splits) {
+    for (int16 i = most_splits; i--; ) delete[] score[i];
+    delete[] score;
+    
     return List::create(
       Named("score") = NumericVector::create(exact_match_score / n_tips),
       _["matching"] = a_match);
@@ -522,16 +526,35 @@ List cpp_mutual_clustering (const RawMatrix x, const RawMatrix y,
     for (int16 i = most_splits; i--; ) delete[] score[i];
     delete[] colsol; delete[] u; delete[] v; delete[] score;
     
-    std::unique_ptr<int16[]> no_match = std::make_unique<int16[]>(b.n_splits);
-    int16 match = 0;
+    std::unique_ptr<int16[]> lap_decode = std::make_unique<int16[]>(lap_dim);
+    int16 fuzzy_match = 0;
     for (int16 bi = 0; bi != b.n_splits; bi++) {
-      if (!b_match[bi]) no_match[match++] = bi + 1;
+      if (!b_match[bi]) {
+        lap_decode[fuzzy_match++] = bi + 1;
+      } else {
+      }
     }
     
-    match = 0;
-    NumericVector final_matching (most_splits);
+    fuzzy_match = 0;
+    NumericVector final_matching(most_splits);
     for (int16 i = 0; i != most_splits; i++) {
-      final_matching[i] = a_match[i] ? a_match[i] : no_match[rowsol[match++]];
+      if (a_match[i]) {
+        // Rcout << "a" << (1+i) << " exactly matches b" << a_match[i]<< "\n";
+        final_matching[i] = a_match[i];
+      } else {
+        const int16 this_sol = rowsol[fuzzy_match++];
+        // Rcout << "a"<<(1+i) << " fuzzily matches rowsol[" << this_sol <<"] == "
+        //       << rowsol[this_sol] << "; ";
+        if (rowsol[this_sol] >= lap_dim - a_extra_splits) {
+          // Rcout << " unmatched (NA)\n";
+          final_matching[i] = 0;
+        } else {
+          // Rcout << " matched with b" << lap_decode[rowsol[this_sol]] <<".\n";
+          final_matching[i] = lap_decode[rowsol[this_sol]];
+        }
+      }
+      // Rcout << " ";
+      // if (final_matching[i] > 0) Rcout << final_matching[i]; else Rcout << "NA";
     }
     
     delete[] rowsol;
@@ -639,10 +662,10 @@ List cpp_shared_phylo (const RawMatrix x, const RawMatrix y,
   
   NumericVector final_matching (most_splits);
   
-  for (int16 i = 0; i != most_splits; i++) delete[] score[i];
+  for (int16 i = most_splits; i--; ) delete[] score[i];
   delete[] score;
   
-  for (int16 i = 0; i != most_splits; i++) {
+  for (int16 i = most_splits; i--; ) {
     final_matching[i] = rowsol[i] + 1;
   }
   

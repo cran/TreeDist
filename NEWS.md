@@ -1,3 +1,10 @@
+# TreeDist 2.0.2
+
+- Diagnose and fix memory leaks
+
+- Explicitly import shiny/shinyjs functions
+
+
 # TreeDist 2.0.0
 
 - `Project()` launches 'shiny' app for projection and analysis of tree space.
