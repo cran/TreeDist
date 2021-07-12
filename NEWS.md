@@ -1,8 +1,30 @@
+# TreeDist 2.1.0
+
+## New features
+
+- `ConsensusInfo()` quickly calculates the splitwise information content of the
+  consensus of a set of trees, after Smith (forthcoming).
+- `SplitwiseInfo()` and `ClusteringInfo()` gain a `p` parameter to reflect the
+  reduced information content of splits with lower support values, and a `sum`
+  parameter to allow return of individual split information content.
+- `KCDiameter()` approximates the diameter of the Kendall-Colijn metric.
+- `Plot3()` (experimental) provides pseudo-3D plotting.
+
+## Renamed functions
+- `Project()`/`ProjectionQuality()` re-named to `MapTrees()`/`MappingQuality()`.
+- `SpectralClustering()` re-named to `SpectralEigens()`.
+
+## Improvements
+
+- Add self-organizing map example to treespace vignette.
+- Allow the specification of custom vectors in the Kendall--Colijn metric.
+- Faster all-to-all tree distance calculation.
+
 # TreeDist 2.0.3
 
 - Diagnose and fix memory leaks, including over-long reported matchings.
 
-- Explicitly import shiny/shinyjs functions
+- Explicitly import shiny/shinyjs functions.
 
 
 # TreeDist 2.0.0
@@ -10,7 +32,7 @@
 - `Project()` launches 'shiny' app for projection and analysis of tree space.
 
 - `ProjectionQuality()` calculates trustworthiness and continuity of tree 
-  space projections.
+  space mappings.
   
 - Faster calculation of Robinson–Foulds distance (using algorithm of Day (1985))
   and clustering information distance.

@@ -5,6 +5,7 @@
 \alias{SplitDifferentInformation}
 \alias{TreesConsistentWithTwoSplits}
 \alias{LnTreesConsistentWithTwoSplits}
+\alias{Log2TreesConsistentWithTwoSplits}
 \title{Shared information content of two splits}
 \usage{
 SplitSharedInformation(n, A1, A2 = A1)
@@ -14,6 +15,10 @@ SplitDifferentInformation(n, A1, A2 = A1)
 TreesConsistentWithTwoSplits(n, A1, A2 = A1)
 
 LnTreesConsistentWithTwoSplits(n, A1, A2 = A1)
+
+Log2TreesConsistentWithTwoSplits(n, A1, A2 = A1)
+
+Log2TreesConsistentWithTwoSplits(n, A1, A2 = A1)
 }
 \arguments{
 \item{n}{Integer specifying the number of leaves}
@@ -54,7 +59,13 @@ Thus, all taxa in the smaller of \emph{A1} and \emph{A2} also occur in the large
 splits.
 
 \item \code{LnTreesConsistentWithTwoSplits}: Natural logarithm of
-\code{TreesConsistentWithTwoSplits}.
+\code{TreesConsistentWithTwoSplits()}.
+
+\item \code{Log2TreesConsistentWithTwoSplits}: Base two logarithm of
+\code{TreesConsistentWithTwoSplits()}.
+
+\item \code{Log2TreesConsistentWithTwoSplits}: Base 2 logarithm of
+\code{TreesConsistentWithTwoSplits()}.
 }}
 
 \examples{
@@ -78,9 +89,8 @@ splits.
 }
 \seealso{
 Other information functions: 
-\code{\link{ClusteringEntropy}()},
 \code{\link{SplitEntropy}()},
-\code{\link{SplitwiseInfo}()}
+\code{\link{TreeInfo}}
 }
 \author{
 \href{https://orcid.org/0000-0001-5660-1727}{Martin R. Smith}

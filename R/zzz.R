@@ -6,7 +6,7 @@
 release_questions <- function() {
   c(
     "Is the code free of #TODOs?",
-    "Have you updated README.md, inst/REFERENCES.bib & inst/CITATION with a citation to the published studies?"
+    "Have you updated README.md, inst/REFERENCES.bib, man/KendallColijn & inst/CITATION with a citation to the published studies?"
     )
 }
 
@@ -26,9 +26,6 @@ release_questions <- function() {
 # devtools::check_win_devel(quiet = TRUE); rhub::check_for_cran()
 # Check valgrind section of GitHub actions for memcheck errors
 # 
-# rhub::check_with_sanitizers() # runs all package package tests, examples and 
-# vignettes with Address Sanitizer and Undefined Behavior Sanitizer.
-#
 # revdepcheck::revdep_check()
 #
 # codemetar::write_codemeta()

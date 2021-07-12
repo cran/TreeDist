@@ -287,8 +287,7 @@ test_that('MatchingSplitInfo() is correctly calculated', {
                MatchingSplitInfo(treeAbc.Defgh, treeAb.Cdefgh))
   expect_equal(MatchingSplitInfo(treeAbcd.Efgh, treeAb.Cdefgh),
                MatchingSplitInfo(treeAb.Cdefgh, treeAbcd.Efgh))
-  expect_equal(-(TreeTools::LnTreesMatchingSplit(2, 5) - LnUnrooted.int(7)) / 
-                 log(2), 
+  expect_equal(-(TreeTools::Log2TreesMatchingSplit(2, 5) - Log2Unrooted.int(7)), 
                MatchingSplitInfo(treeAb.Cdefgh, treeAbc.Defgh),
                tolerance = 1e-7)
   expect_true(MatchingSplitInfo(treeSym8, treeBal8) > 
@@ -737,8 +736,7 @@ test_that('Robinson Foulds Info is correctly calculated', {
 
 
 test_that('Kendall-Colijn distance is correctly calculated', {
-  
-    # Expected values calculated using treespace::treeDist(treeSym8, treeBal8)
+  # Expected values calculated using treespace::treeDist(treeSym8, treeBal8)
   expect_equal(2.828427, KendallColijn(treeSym8, treeBal8), tolerance=1e-06)
   expect_equal(2.828427, KendallColijn(treeCat8, treeBal8), tolerance=1e-06)
   expect_equal(7.211103, KendallColijn(treeSym8, treeOpp8), tolerance=1e-06)

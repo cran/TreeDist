@@ -5,19 +5,19 @@ set.seed(0)
 library('TreeTools', quietly = TRUE, warn.conflicts = FALSE)
 treeNumbers <- c(1:220)
 trees <- as.phylo(treeNumbers, 8)
-spectrum <- viridisLite::plasma(220)
+spectrum <- hcl.colors(220, 'plasma')
 treeCols <- spectrum[treeNumbers]
 
 ## ----calculate-distances------------------------------------------------------
 library('TreeDist')
 distances <- ClusteringInfoDistance(trees)
 
-## ----projection---------------------------------------------------------------
-projection <- cmdscale(distances, k = 12)
+## ----map----------------------------------------------------------------------
+mapping <- cmdscale(distances, k = 12)
 
-## ----plot-projection-2d, fig.asp = 1, fig.width = 3, fig.align='center'-------
+## ----plot-mapping-2d, fig.asp = 1, fig.width = 3, fig.align='center'----------
 par(mar = rep(0, 4))
-plot(projection,
+plot(mapping,
      asp = 1, # Preserve aspect ratio - do not distort distances
      ann = FALSE, axes = FALSE, # Don't label axes: dimensions are meaningless
      col = treeCols, pch = 16
@@ -71,8 +71,8 @@ plot(consensus(trees[cluster == 2]), edge.color = col2, edge.width = 2, tip.colo
 
 ## ----how-many-dims, fig.align='center'----------------------------------------
 txc <- vapply(1:12, function (k) {
-  newDist <- dist(projection[, seq_len(k)])
-  ProjectionQuality(distances, newDist, 10)['TxC']
+  newDist <- dist(mapping[, seq_len(k)])
+  MappingQuality(distances, newDist, 10)['TxC']
 }, 0)
 plot(txc, xlab = 'Dimension')
 abline(h = 0.9, lty = 2)
@@ -80,7 +80,7 @@ abline(h = 0.9, lty = 2)
 ## ----calculate-MST------------------------------------------------------------
 mstEnds <- MSTEdges(distances)
 
-## ----plot-projection-5d, fig.asp = 1, fig.align='center'----------------------
+## ----plot-mapping-5d, fig.asp = 1, fig.align='center'-------------------------
 plotSeq <- matrix(0, 5, 5)
 plotSeq[upper.tri(plotSeq)] <- seq_len(5 * (5 - 1) / 2)
 plotSeq <- t(plotSeq[-5, -1])
@@ -90,21 +90,21 @@ par(mar = rep(0.1, 4))
 
 for (i in 2:5) for (j in seq_len(i - 1)) {
   # Set up blank plot
-  plot(projection[, j], projection[, i], ann = FALSE, axes = FALSE, frame.plot = TRUE,
-       type = 'n', asp = 1, xlim = range(projection), ylim = range(projection))
+  plot(mapping[, j], mapping[, i], ann = FALSE, axes = FALSE, frame.plot = TRUE,
+       type = 'n', asp = 1, xlim = range(mapping), ylim = range(mapping))
   
   # Plot MST
   apply(mstEnds, 1, function (segment)
-    lines(projection[segment, j], projection[segment, i], col = "#bbbbbb", lty = 1))
+    lines(mapping[segment, j], mapping[segment, i], col = "#bbbbbb", lty = 1))
   
   # Add points
-  points(projection[, j], projection[, i], pch = 16, col = treeCols)
+  points(mapping[, j], mapping[, i], pch = 16, col = treeCols)
 
   # Mark clusters
   for (clI in unique(cluster)) {
     inCluster <- cluster == clI
-    clusterX <- projection[inCluster, j]
-    clusterY <- projection[inCluster, i]
+    clusterX <- mapping[inCluster, j]
+    clusterY <- mapping[inCluster, i]
     hull <- chull(clusterX, clusterY)
     polygon(clusterX[hull], clusterY[hull], lty = 1, lwd = 2,
             border = '#54de25bb')
@@ -121,20 +121,40 @@ text(0, 0, 'Dimension 4')
 ## ----pid, fig.asp = 1, fig.width = 4, fig.align = 'center', echo = FALSE------
 library('TreeDist')
 pid_distances <- PhylogeneticInfoDistance(trees)
-pid_projection <- cmdscale(pid_distances, k = 6)
+pid_mapping <- cmdscale(pid_distances, k = 6)
 pid_cluster <- cutree(protoclust::protoclust(pid_distances), k = 2)
 
 par(mar = rep(0, 4))
-plot(pid_projection, ann = FALSE, axes = FALSE, asp = 1,
+plot(pid_mapping, ann = FALSE, axes = FALSE, asp = 1,
      col = treeCols, pch = 16)
-MSTEdges(pid_distances, TRUE, pid_projection[, 1], pid_projection[, 2],
+MSTEdges(pid_distances, TRUE, pid_mapping[, 1], pid_mapping[, 2],
          col = "#bbbbbb", lty = 1)
 for (clI in 1:2) {
   inCluster <- pid_cluster == clI
-  clusterX <- pid_projection[inCluster, 1]
-  clusterY <- pid_projection[inCluster, 2]
+  clusterX <- pid_mapping[inCluster, 1]
+  clusterY <- pid_mapping[inCluster, 2]
   hull <- chull(clusterX, clusterY)
   polygon(clusterX[hull], clusterY[hull], lty = 1, lwd = 2,
           border = '#54de25bb')
+}
+
+## ----umatrix, fig.asp = 1, fig.align = "center"-------------------------------
+umatrixInstalled <- requireNamespace('Umatrix', quietly = TRUE)
+if (umatrixInstalled) {
+  map <- Umatrix::esomTrain(as.matrix(distances), Key = seq_along(trees),
+                            Epochs = 5, # Increase for better results
+                            Lines = 42,
+                            Columns = 42,
+                            Toroid = FALSE)
+  
+  Umatrix::plotMatrix(Matrix = map$Umatrix,
+                      Toroid = FALSE, FixedRatio = TRUE,
+                      TransparentContours = FALSE, Clean = TRUE) +
+  ggplot2::geom_point(data = data.frame(x = map$BestMatches[, 3],
+                                        y = map$BestMatches[, 2]),
+                      shape = 19, color = treeCols, size = 2)
+
+} else {
+  message("Install the 'Umatrix' package to run this example")
 }
 

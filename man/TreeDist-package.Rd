@@ -5,12 +5,13 @@
 \name{TreeDist-package}
 \alias{TreeDist}
 \alias{TreeDist-package}
-\title{TreeDist:  Distances between Phylogenetic Trees}
+\title{TreeDist: Distances between Phylogenetic Trees}
 \description{
 'TreeDist' is an R package that implements a suite of metrics that quantify the
 topological distance between pairs of unweighted phylogenetic trees.
 It also includes a simple 'Shiny' application to allow the visualization of
-distance-based tree spaces.
+distance-based tree spaces, and functions to calculate the information content
+of trees and splits.
 }
 \details{
 'TreeDist' primarily employs metrics in the category of
@@ -82,9 +83,9 @@ the package '\href{https://ms609.github.io/TBRDist/index.html}{TBRDist}'.
 }
 }
 \section{Tree space analysis}{
-Project tree spaces and readily visualize projected landscapes, avoiding
+Map tree spaces and readily visualize mapped landscapes, avoiding
 common analytical pitfalls (Smith, forthcoming),
-using the inbuilt graphical user interface:\if{html}{\out{<div class="r">}}\preformatted{TreeDist::Project()
+using the inbuilt graphical user interface:\if{html}{\out{<div class="r">}}\preformatted{TreeDist::MapTrees()
 }\if{html}{\out{</div>}}
 
 Serious analysts should consult the

@@ -1,5 +1,7 @@
-library("shiny", exclude = 'runExample')
-library("shinyjs", exclude = 'runExample', warn.conflicts = FALSE)
+suppressPackageStartupMessages({
+  library("shiny", exclude = 'runExample')
+  library("shinyjs", exclude = 'runExample', warn.conflicts = FALSE)
+})
 library("TreeTools", quietly = TRUE, warn.conflicts = FALSE)
 library("TreeDist")
 
@@ -9,7 +11,6 @@ if (!requireNamespace('MASS', quietly = TRUE)) install.packages('MASS')
 if (!requireNamespace('Quartet', quietly = TRUE)) install.packages('Quartet')
 if (!requireNamespace('rgl', quietly = TRUE)) install.packages('rgl')
 if (!requireNamespace('readxl', quietly = TRUE)) install.packages('readxl')
-if (!requireNamespace('viridisLite', quietly = TRUE)) install.packages('viridisLite')
 
 # Allow large files to be submitted
 options(shiny.maxRequestSize = 100 * 1024^2)
@@ -74,6 +75,29 @@ Bien2011 <- Reference(
   doi = "10.1198/jasa.2011.tm10183",
   pages = c(1075, 1084),
   journal = "Journal of the American Statistical Association")
+
+Day1985 <- Reference(
+  title = "Optimal algorithms for comparing trees with labeled leaves",
+  author = "Day, W.H.E.", year = 1985,
+  volume = 2,
+  pages = c(7, 28),
+  doi = "10.1007/BF01908061",
+  journal = "Journal of Classification")
+Estabrook1985 <- Reference(
+  c("Estabrook, G.F.", "McMorris, F.R.", "Meacham, C.A."), 1985,
+  title = "Comparison of undirected phylogenetic trees based on subtrees of four evolutionary units",
+  volume = 34,
+  pages = c(193, 200),
+  doi = "10.2307/sysbio/34.2.193",
+  journal = "Systematic Zoology"
+)
+Farris1973 <- Reference(title = "On comparing the shapes of taxonomic trees",
+                        author = "Farris, J.S.",
+                        year = 1973,
+                        volume = 22,
+                        pages = c(50, 54),
+                        doi = "10.2307/2412378",
+                        journal = "Systematic Zoology")
 Gower1966 <- Reference(  title = "Some distance properties of latent root and vector methods used in multivariate analysis",
                          author = "Gower, J.C.",
                          year = 1966,
@@ -86,6 +110,11 @@ Gower1969 <- Reference(
   author = c("Gower, J.C.", "Ross, G.J.S."),
   year = 1969, volume = 18, pages = c(54, 64), doi = "10.2307/2346439",
   journal = "Journal of the Royal Statistical Society. Series C (Applied Statistics)")
+Kendall2016 <- Reference(
+  c('Kendall, M.', 'Colijn, C'), 2016,
+  "Mapping phylogenetic trees to reveal distinct patterns of evolution",
+  "Molecular Biology and Evolution", 33, c(2735, 2743),
+  doi = "10.1093/molbev/msw124")
 Kruskal1964 <- Reference(
   title = "Multidimensional scaling by optimizing goodness of fit to a nonmetric hypothesis",
   author = "Kruskal, J.B.", year = 1964, volume = 29, pages = c(1, 27),
@@ -126,29 +155,7 @@ Venna2001 <- Reference(
   publisher = "Springer, Berlin",
   doi = "10.1007/3-540-44668-0_68")
 
-            
-Day1985 <- Reference(
-  title = "Optimal algorithms for comparing trees with labeled leaves",
-  author = "Day, W.H.E.", year = 1985,
-  volume = 2,
-  pages = c(7, 28),
-  doi = "10.1007/BF01908061",
-  journal = "Journal of Classification")
-Estabrook1985 <- Reference(
-  c("Estabrook, G.F.", "McMorris, F.R.", "Meacham, C.A."), 1985,
-  title = "Comparison of undirected phylogenetic trees based on subtrees of four evolutionary units",
-  volume = 34,
-  pages = c(193, 200),
-  doi = "10.2307/sysbio/34.2.193",
-  journal = "Systematic Zoology"
-)
-Farris1973 <- Reference(title = "On comparing the shapes of taxonomic trees",
-                        author = "Farris, J.S.",
-                        year = 1973,
-                        volume = 22,
-                        pages = c(50, 54),
-                        doi = "10.2307/2412378",
-                        journal = "Systematic Zoology")
+ 
 Sand2014 <- Reference(
     author = c("Sand, A.", "Holt, M.K.", "Johansen, J.", "Brodal, G.S.",
                "Mailund, T.", "Pedersen, C.N.S."),
@@ -171,6 +178,16 @@ SmithDist <- Reference('Smith, M.R.', 2020,
 SmithQuartet <- Reference('Smith, M.R.', 2019,
   'Quartet: comparison of phylogenetic trees using quartet and split measures',
   'Comprehensive R Archive Network', doi = "10.5281/zenodo.2536318")
+Steel1993 <- Reference(
+  c('Steel, M.', 'Penny, D'), 1993,
+  "Distributions of tree comparison metrics\u2212some new results",
+  "Systematic Biology", 42, c(126, 141),
+  doi = "10.1093/sysbio/42.2.126")
+Stockham2002 <- Reference(
+  author = c('Stockham, C.', 'Wang, L.-S.', 'Warnow, T.'), 2002,
+  "Statistically based postprocessing of phylogenetic analysis by clustering",
+  "Bioinformatics", 18, c('S285', 'S293'),
+  doi = "10.1093/bioinformatics/18.suppl_1.S285")
 Ward1963 <- Reference('Ward, J.H.', 1963,
                       'Hierarchical grouping to optimize an objective function',
                       'Journal of the American Statistical Association',
@@ -201,7 +218,7 @@ ui <- fluidPage(theme = 'treespace.css',
                       label = "Trees to analyse:",
                       min = 1,
                       max = 90,
-                      value = c(0, 90)),
+                      value = c(1, 90)),
           sliderInput(inputId = "thinTrees",
                       label = "Sample every:",
                       min = 0,
@@ -232,13 +249,14 @@ ui <- fluidPage(theme = 'treespace.css',
                        choices = list("Clustering information" = 'cid',
                                       "Phylogenetic information" = 'pid',
                                       "Quartet (slow)" = 'qd',
+                                      "Kendall\u2212Colijn (rooted)" = 'kc',
                                       "Path" = 'path',
                                       "Robinson\u2212Foulds" = 'rf'),
                        selected = 'cid'),
           
-          textOutput(outputId = "projectionStatus"),
+          textOutput(outputId = "mappingStatus"),
           fluidRow(plotOutput(outputId = "pcQuality", height = "72px")),
-          selectInput("projection", "Projection method",
+          selectInput("mapping", "Mapping method",
                        choices = list("Princ. comps (classical MDS)" = 'pca',
                                       "Sammon mapping mMDS" = 'nls',
                                       "Kruskal-1 nmMDS (slow)" = 'k'
@@ -348,6 +366,7 @@ server <- function(input, output, session) {
     r$clust_cid = NULL
     r$clust_pid = NULL
     r$clust_qd = NULL
+    r$clust_kc = NULL
     r$clust_path = NULL
     r$clust_rf = NULL
   }
@@ -356,6 +375,7 @@ server <- function(input, output, session) {
     r$mst_cid = NULL
     r$mst_pid = NULL
     r$mst_qd = NULL
+    r$mst_kc = NULL
     r$mst_path = NULL
     r$mst_rf = NULL
   }
@@ -364,24 +384,28 @@ server <- function(input, output, session) {
     r$dist_cid = NULL
     r$dist_pid = NULL
     r$dist_qd = NULL
+    r$dist_kc = NULL
     r$dist_path = NULL
     r$dist_rf = NULL
     
     r$proj_pca_cid = NULL
     r$proj_pca_pid = NULL
     r$proj_pca_qd = NULL
+    r$proj_pca_kc = NULL
     r$proj_pca_path = NULL
     r$proj_pca_rf = NULL
     
     r$proj_k_cid = NULL
     r$proj_k_pid = NULL
     r$proj_k_qd = NULL
+    r$proj_k_kc = NULL
     r$proj_k_path = NULL
     r$proj_k_rf = NULL
     
     r$proj_nls_cid = NULL
     r$proj_nls_pid = NULL
     r$proj_nls_qd = NULL
+    r$proj_nls_kc = NULL
     r$proj_nls_path = NULL
     r$proj_nls_rf = NULL
     
@@ -509,8 +533,9 @@ server <- function(input, output, session) {
            cid = "Clustering information distance",
            pid = "Phylogenetic information distance",
            qd = "Quartet divergence",
+           kc = "Kendall\u2212Colijn distance",
            path = "Path distance",
-           rf = "Robinson\u2212Founds distance")
+           rf = "Robinson\u2212Foulds distance")
   }
   
   distances <- reactive({
@@ -530,10 +555,16 @@ server <- function(input, output, session) {
                  if (is.null(r$dist_qd)) r$dist_qd = as.dist(Quartet::QuartetDivergence(
                    Quartet::ManyToManyQuartetAgreement(r$allTrees), similarity = FALSE))
                  r$dist_qd
-               }, 'path' = {
+               },
+               'kc' = {
+                 if (is.null(r$dist_kc)) r$dist_kc = KendallColijn(r$allTrees)
+                 r$dist_kc
+               },
+               'path' = {
                  if (is.null(r$dist_path)) r$dist_path = PathDist(r$allTrees)
                  r$dist_path
-               }, 'rf' = {
+               },
+               'rf' = {
                  if (is.null(r$dist_rf)) r$dist_rf = RobinsonFoulds(r$allTrees)
                  r$dist_rf
                }
@@ -546,14 +577,14 @@ server <- function(input, output, session) {
   })
   
   ##############################################################################
-  # Projection
+  # Mapping
   ##############################################################################
   maxProjDim <- reactive({
     min(15L, length(r$allTrees) - 1L)
   })
   
   nProjDim <- reactive({
-    dim(projection())[2]
+    dim(mapping())[2]
   })
   
   dims <- debounce(reactive({
@@ -562,14 +593,14 @@ server <- function(input, output, session) {
     }
   }), 400)
   
-  projection <- reactive({
+  mapping <- reactive({
     if (maxProjDim() > 1L) {
-      proj_id <- paste0('proj_', input$projection, '_', input$distance)
+      proj_id <- paste0('proj_', input$mapping, '_', input$distance)
       if (is.null(r[[proj_id]])) {
         withProgress(
-          message = 'Projecting distances',
+          message = 'Mapping distances',
           value = 0.99,
-          proj <- switch(input$projection,
+          proj <- switch(input$mapping,
                          'pca' = cmdscale(distances(), k = maxProjDim()),
                          'k' = MASS::isoMDS(distances(), k = maxProjDim())$points,
                          'nls' = MASS::sammon(distances(), k = maxProjDim())$points
@@ -586,10 +617,10 @@ server <- function(input, output, session) {
   })
   
   projQual <- reactive({
-    withProgress(message = "Estimating projection quality", {
+    withProgress(message = "Estimating mapping quality", {
       vapply(seq_len(nProjDim()), function (k) {
         incProgress(1 / nProjDim())
-        ProjectionQuality(distances(), dist(projection()[, seq_len(k)]), 10)
+        MappingQuality(distances(), dist(mapping()[, seq_len(k)]), 10)
       }, numeric(4))
     })
   })
@@ -619,7 +650,7 @@ server <- function(input, output, session) {
          at = ticks[-1] - ((ticks[-1] - ticks[-length(ticks)]) / 2),
          labels = c('', 'dire', '', "ok", "gd", "excellent"))
     axis(3, at = 0.5, tick = FALSE, line = -2, 
-         paste0(dims(), 'D projection quality (trustw. \ud7 contin.):'))
+         paste0(dims(), 'D mapping quality (trustw. \ud7 contin.):'))
   })
   
   
@@ -797,9 +828,9 @@ server <- function(input, output, session) {
           }
           
           if ('spec' %in% input$clustering) {
-            spectralEigens <- SpectralClustering(dists,
-                                                 nn = min(ncol(as.matrix(dists)) - 1L, 10),
-                                                 nEig = 3L)
+            spectralEigens <- SpectralEigens(dists,
+                                             nn = min(ncol(as.matrix(dists)) - 1L, 10),
+                                             nEig = 3L)
             specClusters <- lapply(possibleClusters, function (k) {
               incProgress(kInc / 2, detail = 'spectral clustering')
               cluster::pam(spectralEigens, k = k)
@@ -908,9 +939,9 @@ server <- function(input, output, session) {
     if (length(sil) == 0) sil <- -0.5
     nStop <- 400
     range <- c(0.5, 1)
-    negScale <- viridisLite::plasma(nStop)[seq(range[1] * nStop, 1,
-                                               length.out = nStop * range[1])]
-    posScale <- viridisLite::viridis(nStop)
+    negScale <- hcl.colors(nStop, 'plasma')[seq(range[1] * nStop, 1,
+                                            length.out = nStop * range[1])]
+    posScale <- hcl.colors(nStop, 'viridis')
     
     plot(seq(-range[1], range[2], length.out = nStop * sum(range)),
          rep(0, nStop * sum(range)),
@@ -1010,7 +1041,7 @@ server <- function(input, output, session) {
   
   ContinuousPtCol <- function (dat, bigDark = FALSE) {
     show('pt.col.scale')
-    scale <- substr(viridisLite::plasma(256), 1, 7)
+    scale <- substr(hcl.colors(256, 'plasma'), 1, 7)
     if (bigDark) scale <- rev(scale)
     output$pt.col.scale <- renderPlot({
       par(mar = c(1, 1, 0, 1))
@@ -1107,7 +1138,7 @@ server <- function(input, output, session) {
   ##############################################################################
   treespacePlot <- function() {
     cl <- clusterings()
-    proj <- projection()
+    proj <- mapping()
     
     nDim <- min(dims(), nProjDim())
     plotSeq <- matrix(0, nDim, nDim)
@@ -1158,9 +1189,9 @@ server <- function(input, output, session) {
     if (!mode3D()) {
       if (inherits(distances(), 'dist')) {
         treespacePlot()
-        output$projectionStatus <- renderText('')
+        output$mappingStatus <- renderText('')
       } else {
-        output$projectionStatus <- renderText("No distances available.")
+        output$mappingStatus <- renderText("No distances available.")
       }
     }
   }, width = PlotSize(), height = PlotSize())
@@ -1168,7 +1199,7 @@ server <- function(input, output, session) {
   output$threeDPlot <- rgl::renderRglwidget({
     if (mode3D() && inherits(distances(), 'dist')) {
       cl <- clusterings()
-      proj <- projection()
+      proj <- mapping()
       withProgress(message = 'Drawing 3D plot', {
         rgl::rgl.open(useNULL = TRUE)
         incProgress(0.1)
@@ -1206,7 +1237,7 @@ server <- function(input, output, session) {
   output$savePdf <- downloadHandler(
     filename = 'TreeSpace.pdf',
     content = function (file) {
-      pdf(file, title = paste0('Tree space projection'))
+      pdf(file, title = paste0('Tree space mapping'))
       treespacePlot()
       dev.off()
   })
@@ -1244,34 +1275,36 @@ server <- function(input, output, session) {
       HTML(paste0(Smith2021,
                   Kaski2003, Venna2001, RCoreTeam)),
       HTML(if (mstSize() > 0) Gower1969),
-      HTML(if(input$distance == 'qd') SmithDist),
+      HTML(if(input$distance == 'qd') SmithQuartet),
       tags$h3('Tree distance'),
       HTML(switch(input$distance,
              'cid' = paste0(Smith2020, SmithDist),
              'pid' = paste0(Smith2020, SmithDist),
              'qd' = paste0(Estabrook1985, Sand2014, SmithQuartet),
-             'path' = paste0(Farris1973, SmithDist),
+             'kc' = paste0(Kendall2016),
+             'path' = paste0(Farris1973, Steel1993, SmithDist),
              'rf' = paste0(Robinson1981, Day1985, SmithDist))
       ),
-      tags$h3('Projection'),
-      HTML(switch(input$projection,
+      tags$h3('Mapping'),
+      HTML(switch(input$mapping,
                   'pca' = Gower1966,
                   'k' = paste0(Kruskal1964, Venables2002),
                   'nls' = paste0(Sammon1969, Venables2002)
                   )
            ),
       tags$h3('Clustering'),
-      HTML(paste(c(pam = paste0('Partitioning around medoids:', Maechler2019),
-        hmm = paste0("Hierarchical, minimax linkage:", Bien2011, Murtagh1983),
+      HTML(paste(c(pam = paste0('Partitioning around medoids: ', Maechler2019),
+        hmm = paste0("Hierarchical, minimax linkage: ", Bien2011, Murtagh1983),
         hsi = '',#paste0("Hierarchical, single linkage:"),
         hco = '',#paste0("Hierarchical, complete linkage:"),
         hav = '',#paste0("Hierarchical, average linkage:"),
         hmd = '',#paste0("Hierarchical, median linkage:"),
         hct = '',#paste0("Hierarchical, centroid linkage:"),
-        hwd = paste0("Hierarchical, Ward d\ub2 linkage:", Ward1963),
+        hwd = paste0("Hierarchical, Ward d\ub2 linkage: ", Ward1963),
         kmn = '',#paste0("K-means:"),
         spec = ''#paste0("Spectral:")
-        )[input$clustering]))
+        )[input$clustering])),
+      HTML(paste("Cluster consensus trees:", Stockham2002))
     ))
   })
 }
