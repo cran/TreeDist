@@ -1,5 +1,10 @@
 ## ----secret-header, echo=FALSE------------------------------------------------
 set.seed(0)
+protoclust <- if (requireNamespace('protoclust', quietly = TRUE)) {
+  protoclust::protoclust
+} else {
+  hclust
+}
 
 ## ----generate-trees-----------------------------------------------------------
 library('TreeTools', quietly = TRUE, warn.conflicts = FALSE)
@@ -35,7 +40,7 @@ bestPam <- which.max(pamSils)
 pamSil <- pamSils[bestPam]
 pamCluster <- pamClusters[[bestPam]]$cluster
 
-hTree <- protoclust::protoclust(distances)
+hTree <- protoclust(distances)
 hClusters <- lapply(possibleClusters, function (k) cutree(hTree, k = k))
 hSils <- vapply(hClusters, function (hCluster) {
   mean(cluster::silhouette(hCluster, distances)[, 3])
@@ -66,8 +71,10 @@ points(seq_along(trees), rep(1, length(trees)), pch = 16,
 par(mfrow = c(1, 2), mar = rep(0.2, 4))
 col1 <- spectrum[mean(treeNumbers[cluster == 1])]
 col2 <- spectrum[mean(treeNumbers[cluster == 2])]
-plot(consensus(trees[cluster == 1]), edge.color = col1, edge.width = 2, tip.color = col1)
-plot(consensus(trees[cluster == 2]), edge.color = col2, edge.width = 2, tip.color = col2)
+plot(consensus(trees[cluster == 1], p = 0.5),
+     edge.color = col1, edge.width = 2, tip.color = col1)
+plot(consensus(trees[cluster == 2], p = 0.5),
+     edge.color = col2, edge.width = 2, tip.color = col2)
 
 ## ----how-many-dims, fig.align='center'----------------------------------------
 txc <- vapply(1:12, function (k) {
@@ -122,7 +129,7 @@ text(0, 0, 'Dimension 4')
 library('TreeDist')
 pid_distances <- PhylogeneticInfoDistance(trees)
 pid_mapping <- cmdscale(pid_distances, k = 6)
-pid_cluster <- cutree(protoclust::protoclust(pid_distances), k = 2)
+pid_cluster <- cutree(protoclust(pid_distances), k = 2)
 
 par(mar = rep(0, 4))
 plot(pid_mapping, ann = FALSE, axes = FALSE, asp = 1,
