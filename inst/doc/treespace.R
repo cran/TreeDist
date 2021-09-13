@@ -13,7 +13,7 @@ trees <- as.phylo(treeNumbers, 8)
 spectrum <- hcl.colors(220, 'plasma')
 treeCols <- spectrum[treeNumbers]
 
-## ----calculate-distances------------------------------------------------------
+## ----calculate-distances, message=FALSE---------------------------------------
 library('TreeDist')
 distances <- ClusteringInfoDistance(trees)
 
@@ -77,7 +77,7 @@ plot(consensus(trees[cluster == 2], p = 0.5),
      edge.color = col2, edge.width = 2, tip.color = col2)
 
 ## ----how-many-dims, fig.align='center'----------------------------------------
-txc <- vapply(1:12, function (k) {
+txc <- vapply(seq_len(ncol(mapping)), function (k) {
   newDist <- dist(mapping[, seq_len(k)])
   MappingQuality(distances, newDist, 10)['TxC']
 }, 0)
@@ -88,14 +88,15 @@ abline(h = 0.9, lty = 2)
 mstEnds <- MSTEdges(distances)
 
 ## ----plot-mapping-5d, fig.asp = 1, fig.align='center'-------------------------
-plotSeq <- matrix(0, 5, 5)
-plotSeq[upper.tri(plotSeq)] <- seq_len(5 * (5 - 1) / 2)
-plotSeq <- t(plotSeq[-5, -1])
-plotSeq[c(5, 10, 15)] <- 11:13
+nDim <- which.max(txc > 0.9)
+plotSeq <- matrix(0, nDim, nDim)
+plotSeq[upper.tri(plotSeq)] <- seq_len(nDim * (nDim - 1) / 2)
+plotSeq <- t(plotSeq[-nDim, -1])
+plotSeq[nDim * 1:3] <- (nDim * 2) + 1:3
 layout(plotSeq)
 par(mar = rep(0.1, 4))
 
-for (i in 2:5) for (j in seq_len(i - 1)) {
+for (i in 2:nDim) for (j in seq_len(i - 1)) {
   # Set up blank plot
   plot(mapping[, j], mapping[, i], ann = FALSE, axes = FALSE, frame.plot = TRUE,
        type = 'n', asp = 1, xlim = range(mapping), ylim = range(mapping))
@@ -115,6 +116,7 @@ for (i in 2:5) for (j in seq_len(i - 1)) {
     hull <- chull(clusterX, clusterY)
     polygon(clusterX[hull], clusterY[hull], lty = 1, lwd = 2,
             border = '#54de25bb')
+    text(mean(clusterX), mean(clusterY), clI, col = '#54de25bb', font = 2)
   }
 }
 # Annotate dimensions
@@ -125,7 +127,7 @@ text(0, 0, 'Dimension 3')
 plot(0, 0, type = 'n', ann = FALSE, axes = FALSE)
 text(0, 0, 'Dimension 4')
 
-## ----pid, fig.asp = 1, fig.width = 4, fig.align = 'center', echo = FALSE------
+## ----pid, fig.asp = 1, fig.width = 4, fig.align = 'center', echo = FALSE, message = FALSE----
 library('TreeDist')
 pid_distances <- PhylogeneticInfoDistance(trees)
 pid_mapping <- cmdscale(pid_distances, k = 6)

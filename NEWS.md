@@ -1,8 +1,18 @@
+# TreeDist 2.2.0
+
+- Speed improvements, using optimizations suggested by Alexis Stamatakis'
+  Bioinformatics group.
+  
+- Support for parallel computation via `StartParallel()`.
+  
+- Progress bars.
+
+
 # TreeDist 2.1.1
 
 - Solaris compatibility.
 
-- Modest improvements to vignettes.
+- Modest vignette improvements.
 
 - spic/scic abbreviation recognition.
 
