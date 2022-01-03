@@ -147,6 +147,24 @@ for (clI in 1:2) {
           border = '#54de25bb')
 }
 
+## ----hypervolume, message = FALSE---------------------------------------------
+hypervolumeInstalled <- requireNamespace('hypervolume', quietly = TRUE)
+if (hypervolumeInstalled) {
+  capture.output({
+    library('hypervolume')
+    hv1 <- hypervolume_gaussian(pid_mapping[pid_cluster == 1, 1:3])
+    hv2 <- hypervolume_gaussian(pid_mapping[pid_cluster == 2, 1:3])
+    hv_dist <- hypervolume_distance(hv1, hv2)
+    hyperset <- hypervolume_set(hv1, hv2, check.memory = FALSE)
+    hv_overlap <- hypervolume_overlap_statistics(hyperset)
+  }) -> XX
+  hv_dist
+  hv_overlap
+} else {
+  print("Install the 'hypervolume' package to run this example")
+}
+
+
 ## ----umatrix, fig.asp = 1, fig.align = "center"-------------------------------
 umatrixInstalled <- requireNamespace('Umatrix', quietly = TRUE)
 if (umatrixInstalled) {

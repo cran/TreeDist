@@ -39,13 +39,13 @@ ClusteringInfo(x, p = NULL, sum = TRUE)
 
 \method{ClusteringInfo}{Splits}(x, p = NULL, sum = TRUE)
 
-ConsensusInfo(trees, info = "phylogenetic", check.tips = TRUE)
+ConsensusInfo(trees, info = "phylogenetic", p = 0.5, check.tips = TRUE)
 }
 \arguments{
 \item{x}{A tree of class \code{phylo}, a list of trees, or a \code{multiPhylo} object.}
 
-\item{p}{A vector of probabilities corresponding to each split in \code{x}.
-Specify \code{TRUE} to calculate this vector using the node labels of each tree.}
+\item{p}{Scalar from 0.5 to 1 specifying minimum proportion of trees that
+must contain a split for it to appear within the consensus.}
 
 \item{sum}{Logical: if \code{TRUE}, sum the information content of each split to
 provide the total splitwise information content of the tree.}
@@ -74,7 +74,7 @@ or the consensus of a set of phylogenetic trees (\code{ConsensusInfo()}).
 This value will be greater than the total information
 content of the tree where a tree contains multiple splits, as
 these splits are not independent and thus contain mutual information that is
-counted twice.
+counted more than once
 }
 \section{Clustering information}{
 

@@ -36,7 +36,7 @@ normalizedQD <- QuartetDivergence(QuartetStatus(tree1, tree2),
 
 ## ---- fig.width=7, fig.height=4, message=FALSE--------------------------------
 if (requireNamespace('TreeDistData', quietly = TRUE)) {
-  library('TreeDistData')
+  library('TreeDistData', exclude = 'PairwiseDistances')
   data('randomTreeDistances', package = 'TreeDistData')
   
   methods <- c('pid', 'cid', 'nye', 'qd')
