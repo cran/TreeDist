@@ -32,7 +32,7 @@ Kendall & Colijn 2016).
 \code{PathVector} returns the number of edges between each pair of leaves (per
 Steel & Penny 1993).
 \code{SplitVector} returns the size of the smallest split that contains each
-pair of leaves (per Smith, forthcoming).}
+pair of leaves (per Smith, 2022).}
 
 \item{tree}{A tree of class \code{\link[ape:read.tree]{phylo}}.}
 }
@@ -106,7 +106,7 @@ KCDiameter(4)
 \insertRef{SmithSpace}{TreeDist}
 }
 \seealso{
-\href{https://CRAN.R-project.org/package=treespace/vignettes/introduction.html}{\code{treespace::treeDist}}
+\href{https://CRAN.R-project.org/package=treespace/vignettes/introduction.html}{\code{treespace::treeDist()}}
 is a more sophisticated, if more cumbersome, implementation that supports
 lambda > 0, i.e. use of edge lengths in tree comparison.
 
@@ -122,9 +122,6 @@ Other tree distances:
 \code{\link{TreeDistance}()}
 }
 \author{
-\href{https://orcid.org/0000-0001-5660-1727}{Martin R. Smith}
-(\href{mailto:martin.smith@durham.ac.uk}{martin.smith@durham.ac.uk})
-
 \href{https://orcid.org/0000-0001-5660-1727}{Martin R. Smith}
 (\href{mailto:martin.smith@durham.ac.uk}{martin.smith@durham.ac.uk})
 }

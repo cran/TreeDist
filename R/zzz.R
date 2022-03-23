@@ -1,4 +1,4 @@
-.onUnload <- function (libpath) {
+.onUnload <- function(libpath) {
   StopParallel()
   library.dynam.unload("TreeDist", libpath)
 }
@@ -7,7 +7,7 @@
 release_questions <- function() {
   c(
     "Is the code free of #TODOs?",
-    "Have you updated README.md, DESCRIPTION, inst/REFERENCES.bib, man/KendallColijn & inst/CITATION with a citation to the published studies?"
+    "Have you updated README.md, DESCRIPTION, inst/REFERENCES.bib & inst/CITATION with a citation to the published studies?"
     )
 }
 

@@ -31,8 +31,8 @@ plot(mapping,
 ## ----clustering, fig.align='center'-------------------------------------------
 possibleClusters <- 2:10
 
-pamClusters <- lapply(possibleClusters, function (k) cluster::pam(distances, k = k))
-pamSils <- vapply(pamClusters, function (pamCluster) {
+pamClusters <- lapply(possibleClusters, function(k) cluster::pam(distances, k = k))
+pamSils <- vapply(pamClusters, function(pamCluster) {
   mean(cluster::silhouette(pamCluster)[, 3])
 }, double(1))
 
@@ -41,8 +41,8 @@ pamSil <- pamSils[bestPam]
 pamCluster <- pamClusters[[bestPam]]$cluster
 
 hTree <- protoclust(distances)
-hClusters <- lapply(possibleClusters, function (k) cutree(hTree, k = k))
-hSils <- vapply(hClusters, function (hCluster) {
+hClusters <- lapply(possibleClusters, function(k) cutree(hTree, k = k))
+hSils <- vapply(hClusters, function(hCluster) {
   mean(cluster::silhouette(hCluster, distances)[, 3])
 }, double(1))
 
@@ -77,7 +77,7 @@ plot(consensus(trees[cluster == 2], p = 0.5),
      edge.color = col2, edge.width = 2, tip.color = col2)
 
 ## ----how-many-dims, fig.align='center'----------------------------------------
-txc <- vapply(seq_len(ncol(mapping)), function (k) {
+txc <- vapply(seq_len(ncol(mapping)), function(k) {
   newDist <- dist(mapping[, seq_len(k)])
   MappingQuality(distances, newDist, 10)['TxC']
 }, 0)
@@ -102,8 +102,8 @@ for (i in 2:nDim) for (j in seq_len(i - 1)) {
        type = 'n', asp = 1, xlim = range(mapping), ylim = range(mapping))
   
   # Plot MST
-  apply(mstEnds, 1, function (segment)
-    lines(mapping[segment, j], mapping[segment, i], col = "#bbbbbb", lty = 1))
+  MSTSegments(mapping[, c(j, i)], mstEnds,
+              col = StrainCol(distances, mapping[, c(j, i)]))
   
   # Add points
   points(mapping[, j], mapping[, i], pch = 16, col = treeCols)
@@ -150,14 +150,17 @@ for (clI in 1:2) {
 ## ----hypervolume, message = FALSE---------------------------------------------
 hypervolumeInstalled <- requireNamespace('hypervolume', quietly = TRUE)
 if (hypervolumeInstalled) {
-  capture.output({
-    library('hypervolume')
-    hv1 <- hypervolume_gaussian(pid_mapping[pid_cluster == 1, 1:3])
-    hv2 <- hypervolume_gaussian(pid_mapping[pid_cluster == 2, 1:3])
-    hv_dist <- hypervolume_distance(hv1, hv2)
-    hyperset <- hypervolume_set(hv1, hv2, check.memory = FALSE)
-    hv_overlap <- hypervolume_overlap_statistics(hyperset)
-  }) -> XX
+  library('hypervolume')
+  hv1 <- hypervolume_gaussian(pid_mapping[pid_cluster == 1, 1:3],
+                              verbose = FALSE)
+  hv2 <- hypervolume_gaussian(pid_mapping[pid_cluster == 2, 1:3],
+                              verbose = FALSE)
+  hv_dist <- hypervolume_distance(hv1, hv2)
+  capture.output(
+    hyperset <- hypervolume_set(hv1, hv2, verbose = FALSE,
+                              check.memory = FALSE)
+  ) -> XX_VerboseNotRespected
+  hv_overlap <- hypervolume_overlap_statistics(hyperset)
   hv_dist
   hv_overlap
 } else {
