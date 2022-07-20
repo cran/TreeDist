@@ -1,7 +1,7 @@
 Package: TreeDist
 Type: Package
 Title: Calculate and Map Distances Between Phylogenetic Trees
-Version: 2.4.0
+Version: 2.4.1
 Authors@R: c(person("Martin R.", "Smith",
                   email="martin.smith@durham.ac.uk", 
                   role=c("aut", "cre", "cph", "prg"), 
@@ -39,11 +39,12 @@ BugReports: https://github.com/ms609/TreeDist/issues/
 Additional_repositories: https://ms609.github.io/packages/
 Depends: R (>= 3.4.0), stats,
 Imports: ape (>= 5.0), cli (>= 3.0), colorspace, memoise, phangorn (>=
-        2.2.1), Rdpack (>= 0.7), shiny, shinyjs, TreeTools (>= 1.7.0),
+        2.2.1), Rdpack (>= 0.7), shiny, shinyjs, TreeTools (>=
+        1.7.1.9000),
 Suggests: bookdown, cluster, ggplot2, hypervolume, kdensity, knitr,
         MASS, parallel, protoclust, Quartet, readxl, rmarkdown, Rcpp
-        (>= 1.0.8), rgl, spelling, testthat (>= 3.0), Ternary (>=
-        1.1.2), TreeDistData (> 0.1.0), TreeSearch, Umatrix, uwot,
+        (>= 1.0.8), rgl, Rogue, spelling, testthat (>= 3.0), Ternary
+        (>= 1.1.2), TreeDistData (> 0.1.0), TreeSearch, Umatrix, uwot,
         vdiffr (>= 1.0.0),
 LinkingTo: Rcpp, TreeTools,
 RdMacros: Rdpack
@@ -61,9 +62,9 @@ ByteCompile: true
 Encoding: UTF-8
 Language: en-GB
 X-schema.org-keywords: phylogenetics, tree-distance
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0.9000
 NeedsCompilation: yes
-Packaged: 2022-03-22 10:01:45 UTC; pjjg18
+Packaged: 2022-07-20 09:22:03 UTC; pjjg18
 Author: Martin R. Smith [aut, cre, cph, prg]
     (<https://orcid.org/0000-0001-5660-1727>),
   Roy Jonker [prg, cph],
@@ -71,4 +72,4 @@ Author: Martin R. Smith [aut, cre, cph, prg]
   Yi Cao [ctb, cph]
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2022-03-23 07:50:22 UTC
+Date/Publication: 2022-07-20 14:40:07 UTC
