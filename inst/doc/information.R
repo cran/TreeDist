@@ -1,6 +1,6 @@
 ## -----------------------------------------------------------------------------
-library('TreeTools', quietly = TRUE, warn.conflicts = FALSE)
-library('TreeDist')
+library("TreeTools", quietly = TRUE)
+library("TreeDist")
 treesMatchingSplit <- c(
   AB.CDEF = TreesMatchingSplit(2, 4),
   ABC.DEF = TreesMatchingSplit(3, 3)

@@ -31,6 +31,7 @@ plot(mapping,
 ## ----clustering, fig.align="center"-------------------------------------------
 possibleClusters <- 2:10
 
+# Partitioning around medoids
 pamClusters <- lapply(possibleClusters, function(k) cluster::pam(distances, k = k))
 pamSils <- vapply(pamClusters, function(pamCluster) {
   mean(cluster::silhouette(pamCluster)[, 3])
@@ -40,22 +41,34 @@ bestPam <- which.max(pamSils)
 pamSil <- pamSils[bestPam]
 pamCluster <- pamClusters[[bestPam]]$cluster
 
+# Hierarchical clustering
 hTree <- protoclust(distances)
 hClusters <- lapply(possibleClusters, function(k) cutree(hTree, k = k))
 hSils <- vapply(hClusters, function(hCluster) {
   mean(cluster::silhouette(hCluster, distances)[, 3])
 }, double(1))
 
-
 bestH <- which.max(hSils)
 hSil <- hSils[bestH]
 hCluster <- hClusters[[bestH]]
 
+# k-means++ clustering
+kClusters <- lapply(possibleClusters, function(k) KMeansPP(distances, k = k))
+kSils <- vapply(kClusters, function(kCluster) {
+  mean(cluster::silhouette(kCluster$cluster, distances)[, 3])
+}, double(1))
+
+bestK <- which.max(kSils)
+kSil <- kSils[bestK]
+kCluster <- kClusters[[bestK]]$cluster
+
 plot(pamSils ~ possibleClusters,
      xlab = "Number of clusters", ylab = "Silhouette coefficient",
      ylim = range(c(pamSils, hSils)))
-points(hSils ~ possibleClusters, pch = 2)
-legend("topright", c("PAM", "Hierarchical"), pch = 1:2)
+points(hSils ~ possibleClusters, pch = 2, col = 2)
+points(kSils ~ possibleClusters, pch = 3, col = 3)
+legend("topright", c("PAM", "Hierarchical", "k-means++"),
+       pch = 1:3, col = 1:3)
 
 ## ----chosen-cluster-----------------------------------------------------------
 cluster <- hClusters[[2 - 1]]
@@ -138,7 +151,10 @@ plot(pid_mapping, ann = FALSE, axes = FALSE, asp = 1,
      col = treeCols, pch = 16)
 MSTEdges(pid_distances, TRUE, pid_mapping[, 1], pid_mapping[, 2],
          col = "#bbbbbb", lty = 1)
-for (clI in 1:2) {
+
+
+pid_clusters <- seq_along(unique(pid_cluster))
+for (clI in pid_clusters) {
   inCluster <- pid_cluster == clI
   clusterX <- pid_mapping[inCluster, 1]
   clusterY <- pid_mapping[inCluster, 2]
@@ -167,6 +183,18 @@ if (hypervolumeInstalled) {
   print("Install the 'hypervolume' package to run this example")
 }
 
+
+## ----sum-of-ranges------------------------------------------------------------
+SumOfRanges(pid_mapping, pid_cluster)
+
+## ----cluster-size-------------------------------------------------------------
+SumOfVariances(pid_mapping, pid_cluster)
+MeanCentroidDistance(pid_mapping, pid_cluster)
+DistanceFromMedian(pid_mapping, pid_cluster)
+
+## ----cluster-density----------------------------------------------------------
+MeanNN(pid_mapping, pid_cluster)
+MeanMSTEdge(pid_mapping, pid_cluster)
 
 ## ----umatrix, fig.asp = 1, fig.align = "center"-------------------------------
 umatrixInstalled <- requireNamespace("Umatrix", quietly = TRUE)

@@ -113,7 +113,7 @@ trueTree <- TreeTools::RandomTree(20, root = TRUE)
 ## -----------------------------------------------------------------------------
 treeSearchInstalled <- requireNamespace("TreeSearch", quietly = TRUE)
 if (treeSearchInstalled) {
-  library("TreeSearch", quietly = TRUE, warn.conflict = FALSE) # for TBR, NNI
+  library("TreeSearch", quietly = TRUE) # for TBR, NNI
   oneAway <- structure(lapply(seq_len(200), function(x) {
     tbrTree <- TBR(trueTree)
     ape::consensus(list(tbrTree,

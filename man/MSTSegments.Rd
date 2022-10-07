@@ -45,7 +45,7 @@ stretched or compressed.
 }
 \examples{
 set.seed(0)
-library("TreeTools", quietly = TRUE, warn.conflicts = FALSE)
+library("TreeTools", quietly = TRUE)
 distances <- ClusteringInfoDist(as.phylo(5:16, 8))
 mapping <- cmdscale(distances, k = 2)
 mstEnds <- MSTEdges(distances)
@@ -69,6 +69,7 @@ Other tree space functions:
 \code{\link{MapTrees}()},
 \code{\link{MappingQuality}()},
 \code{\link{SpectralEigens}()},
+\code{\link{cluster-statistics}},
 \code{\link{median.multiPhylo}()}
 }
 \author{
