@@ -15,7 +15,7 @@ test_that("TreeDistPlot works", {
                            leaveRoom = FALSE)
   }
   skip_if_not_installed("vdiffr")
-  skip_if(packageVersion("graphics") < "4.1")
+  skip_if(packageVersion("graphics") < "4.3")
   skip_if(packageVersion("vdiffr") < "1.0")
   
   vdiffr::expect_doppelganger("Test with space", Test1)
@@ -42,7 +42,7 @@ test_that("VisualizeMatching() works", {
                                  setPar = FALSE))
   
   skip_if_not_installed("vdiffr")
-  skip_if(packageVersion("graphics") < "4.1")
+  skip_if(packageVersion("graphics") < "4.3")
   skip_if(packageVersion("vdiffr") < "1.0")
   
   TestVM <- function() {
@@ -138,7 +138,7 @@ test_that("VisualizeMatching() works", {
 })
 
 test_that("MST example plots as expected", {
-  skip_if_not_installed("graphics", "4.1")
+  skip_if_not_installed("graphics", "4.3")
   skip_if_not_installed("vdiffr", "1.0")
   skip_if_not_installed("TreeTools", "1.6.0.9008")
   vdiffr::expect_doppelganger("MST example plot", function() {
@@ -148,7 +148,7 @@ test_that("MST example plots as expected", {
         4.6, 2.6, 2.3, 1.5, 3, 2.6, 1.5, 4.3, 4.7, 1.7, 2.6, 1.5, 3, 1.6, 4.6,
         4.7, 2.3, 2.3, 1.7, 1.7, 4.4, 3.8, 3.1, 3.1, 1.5, 4.4, 4.4, 3.1, 2.6,
         4.2, 4.8, 3, 4.8, 4.2, 4.7, 4.3, 1.6),
-      class = "dist", Size = 12L, diag = FALSE, upper = FALSE
+      class = "dist", Size = 12L, Diag = FALSE, Upper = FALSE
     ) # dput(round(ClusteringInfoDist(as.phylo(5:16, 8)), 1))
     
     mapping <- structure(
@@ -172,4 +172,10 @@ test_that("MST example plots as expected", {
     SpectrumLegend(legend = c("Contracted", "Median", "Extended"),
                    palette = hcl.colors(256L, "RdYlBu", rev = TRUE))
   })
+})
+
+test_that("StrainCol() handles zeroes", {
+  distances <- dist(c(1, 1, 10, 100))
+  mapping <- cmdscale(distances)
+  expect_equal(attr(StrainCol(distances, mapping), "logStrain")[1], Inf)
 })
