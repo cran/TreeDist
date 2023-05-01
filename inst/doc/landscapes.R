@@ -24,16 +24,22 @@ col <- colorRamp(c("orange", "blue"))(scores)
 rgbCol <- rgb(col, maxColorValue = 255)
 
 # Plot trees, coloured by their score
-plot(mapping,
-     asp = 1, # Preserve aspect ratio - do not distort distances
-     ann = FALSE, axes = FALSE, # Don't label axes: dimensions are meaningless
-     col = rgbCol, # Colour trees by score
-     pch = 16
-     )
+plot(
+  mapping,
+  asp = 1, # Preserve aspect ratio - do not distort distances
+  ann = FALSE, axes = FALSE, # Don't label axes: dimensions are meaningless
+  col = rgbCol, # Colour trees by score
+  pch = 16 # Plotting character: Filled circle
+)
 
 # Add a legend
-SpectrumLegend(palette = rgb(colorRamp(c("orange", "blue"))(0:100 / 100) / 255),
-               legend = c(scoreMin, scoreMax))
+PlotTools::SpectrumLegend(
+  "left",
+  title = "Tree balance",
+  palette = rgb(colorRamp(c("orange", "blue"))(0:100 / 100) / 255),
+  legend = floor(seq(scoreMax, scoreMin, length.out = 6)),
+  bty = "n"
+)
 
 ## ----contoured-plot-----------------------------------------------------------
 # Use an inverse distance weighting to interpolate between measured points

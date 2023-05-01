@@ -1,7 +1,7 @@
 Package: TreeDist
 Type: Package
 Title: Calculate and Map Distances Between Phylogenetic Trees
-Version: 2.6.0
+Version: 2.6.1
 Authors@R: c(person("Martin R.", "Smith",
                     email = "martin.smith@durham.ac.uk", 
                     role = c("aut", "cre", "cph", "prg"), 
@@ -39,11 +39,12 @@ BugReports: https://github.com/ms609/TreeDist/issues/
 Additional_repositories: https://ms609.github.io/packages/
 Depends: R (>= 3.4.0), stats,
 Imports: ape (>= 5.0), cli (>= 3.0), colorspace, memoise, phangorn (>=
-        2.2.1), Rdpack (>= 0.7), shiny, shinyjs, TreeTools (>= 1.9.0),
+        2.2.1), Rdpack (>= 0.7), shiny, shinyjs, TreeTools (>=
+        1.7.1.9000),
 Suggests: bookdown, cluster, ggplot2, hypervolume, kdensity, knitr,
-        MASS, parallel, plotly, protoclust, Quartet, readxl, rmarkdown,
-        Rcpp (>= 1.0.8), rgl, Rogue, spelling, testthat (>= 3.0),
-        Ternary (>= 1.1.2), TreeDistData (> 0.1.0), TreeSearch,
+        MASS, parallel, plotly, PlotTools, protoclust, Quartet, readxl,
+        rmarkdown, Rcpp (>= 1.0.8), rgl, Rogue, spelling, testthat (>=
+        3.0), Ternary (>= 1.1.2), TreeDistData (> 0.1.0), TreeSearch,
         Umatrix, uwot, vdiffr (>= 1.0.0),
 LinkingTo: Rcpp, TreeTools,
 RdMacros: Rdpack
@@ -53,7 +54,7 @@ Config/Needs/coverage: covr
 Config/Needs/memcheck: devtools
 Config/Needs/metadata: codemetar
 Config/Needs/revdeps: revdepcheck
-Config/Needs/website: pkgdown, TreeDistData
+Config/Needs/website: pkgdown
 Config/testthat/parallel: false
 Config/testthat/edition: 3
 SystemRequirements: C++17
@@ -63,7 +64,7 @@ Language: en-GB
 X-schema.org-keywords: phylogenetics, tree-distance
 RoxygenNote: 7.2.3
 NeedsCompilation: yes
-Packaged: 2023-02-20 09:11:39 UTC; pjjg18
+Packaged: 2023-04-27 12:48:27 UTC; pjjg18
 Author: Martin R. Smith [aut, cre, cph, prg]
     (<https://orcid.org/0000-0001-5660-1727>),
   Roy Jonker [prg, cph],
@@ -71,4 +72,4 @@ Author: Martin R. Smith [aut, cre, cph, prg]
   Yi Cao [ctb, cph]
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2023-02-20 10:20:03 UTC
+Date/Publication: 2023-05-01 14:30:05 UTC

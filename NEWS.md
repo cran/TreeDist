@@ -1,3 +1,12 @@
+# TreeDist 2.6.1
+
+- `StopParallel()` gains `quietly` argument to suppress unnecessary messages.
+
+- Use "PlotTools" package for spectrum legends.
+
+- Minor documentation tweaks.
+
+
 # TreeDist 2.6.0
 
 - Support comparison of trees with different tips.
@@ -5,7 +14,7 @@
 - Fix caching errors in `MapDist()`
   ([#98](https://github.com/ms609/TreeDist/issues/98)).
 
-- Update tests for compatibility with ape 5.7
+- Update tests for compatibility with ape 5.7.
 
 
 # TreeDist 2.5.0
