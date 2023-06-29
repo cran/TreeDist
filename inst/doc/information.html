@@ -431,31 +431,31 @@ h(S_1,S_2) \approx 1.22\textrm{ bits}\)</span>. The information unique
 to <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> is <span class="math inline">\(h_{different}(S_1,S_2) = 2h(S_1,S_2) - h(S_1) -
 h(S_2) \approx 3.91\textrm{ bits}\)</span>.</p>
 <p>These quantities can be calculated using functions in the ‘<a href="https://ms609.github.io/TreeTools/">TreeTools</a>’ package.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;TreeTools&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;TreeDist&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>treesMatchingSplit <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">AB.CDEF =</span> <span class="fu">TreesMatchingSplit</span>(<span class="dv">2</span>, <span class="dv">4</span>),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ABC.DEF =</span> <span class="fu">TreesMatchingSplit</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>treesMatchingSplit</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;TreeTools&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;TreeDist&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>treesMatchingSplit <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">AB.CDEF =</span> <span class="fu">TreesMatchingSplit</span>(<span class="dv">2</span>, <span class="dv">4</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">ABC.DEF =</span> <span class="fu">TreesMatchingSplit</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>treesMatchingSplit</span></code></pre></div>
 <pre><code>## AB.CDEF ABC.DEF 
 ##      15       9</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>proportionMatchingSplit <span class="ot">&lt;-</span> treesMatchingSplit <span class="sc">/</span> <span class="fu">NUnrooted</span>(<span class="dv">6</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>proportionMatchingSplit</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>proportionMatchingSplit <span class="ot">&lt;-</span> treesMatchingSplit <span class="sc">/</span> <span class="fu">NUnrooted</span>(<span class="dv">6</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>proportionMatchingSplit</span></code></pre></div>
 <pre><code>##    AB.CDEF    ABC.DEF 
 ## 0.14285714 0.08571429</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>splitInformation <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log2</span>(proportionMatchingSplit)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>splitInformation</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>splitInformation <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log2</span>(proportionMatchingSplit)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>splitInformation</span></code></pre></div>
 <pre><code>##  AB.CDEF  ABC.DEF 
 ## 2.807355 3.544321</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>treesMatchingBoth <span class="ot">&lt;-</span> <span class="fu">TreesConsistentWithTwoSplits</span>(<span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>combinedInformation <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log2</span>(treesMatchingBoth <span class="sc">/</span> <span class="fu">NUnrooted</span>(<span class="dv">6</span>))</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>sharedInformation <span class="ot">&lt;-</span> <span class="fu">sum</span>(splitInformation) <span class="sc">-</span> combinedInformation</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>sharedInformation</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>treesMatchingBoth <span class="ot">&lt;-</span> <span class="fu">TreesConsistentWithTwoSplits</span>(<span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>combinedInformation <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">log2</span>(treesMatchingBoth <span class="sc">/</span> <span class="fu">NUnrooted</span>(<span class="dv">6</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>sharedInformation <span class="ot">&lt;-</span> <span class="fu">sum</span>(splitInformation) <span class="sc">-</span> combinedInformation</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>sharedInformation</span></code></pre></div>
 <pre><code>## [1] 1.222392</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Or more concisely:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">SplitSharedInformation</span>(<span class="at">n =</span> <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Or more concisely:</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">SplitSharedInformation</span>(<span class="at">n =</span> <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## [1] 1.222392</code></pre>
 <!--The more similar the splits, the more information they will have in common;
 the shared information is maximised when $S_1 = S_2$, and $h_{common} = h(S_1)$.
