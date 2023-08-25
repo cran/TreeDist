@@ -1,3 +1,10 @@
+# TreeDist 2.6.3 (development)
+
+- Fix bug when comparing a "multiPhylo" object containing a single tree.
+
+- Documentation clarification: finding non-matching leaves.
+
+
 # TreeDist 2.6.2 (2023-06-28)
 
 - Support non-square matrices in `LAPJV()`.
