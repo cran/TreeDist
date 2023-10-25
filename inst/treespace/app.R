@@ -273,7 +273,7 @@ ui <- fluidPage(theme = "treespace.css",
           HTML("<p>Do <a href=\"https://github.com/ms609/TreeTools/issues/new?title=Treespace",
                "app:\" title=\"Suggest improvements\">report</a> any bugs or",
                "feature requests to the maintainer (<a",
-               "href=\"https://community.dur.ac.uk/martin.smith/\"",
+               "href=\"https://smithlabdurham.github.io/\"",
                "title=\"Martin Smith\">Martin R. Smith</a>).</p>"),
         ),
         tabPanel("Analysis",
@@ -1362,9 +1362,9 @@ server <- function(input, output, session) {
       cl <- clusterings()
       proj <- mapping()
       withProgress(message = "Drawing 3D plot", {
-        rgl::rgl.open(useNULL = TRUE)
+        rgl::open3d(useNULL = TRUE)
         incProgress(0.1)
-        rgl::rgl.bg(color = "white")
+        rgl::bg3d(color = "white")
         rgl::plot3d(proj[, 1], proj[, 2], proj[, 3],
              aspect = 1, # Preserve aspect ratio - do not distort distances
              axes = FALSE, # Dimensions are meaningless
@@ -1378,9 +1378,16 @@ server <- function(input, output, session) {
           rgl::text3d(proj[, 1], proj[, 2], proj[, 3], thinnedTrees())
         }
         if (mstSize() > 0) {
-          apply(mstEnds(), 1, function(segment)
-            rgl::lines3d(proj[segment, 1], proj[segment, 2], proj[segment, 3],
-                    col = "#bbbbbb", lty = 1))
+          rgl::segments3d(
+            proj[t(mstEnds()), ],
+            col = if ("mstStrain" %in% input$display) {
+                rep(StrainCol(distances(), proj[, 1:3]), 
+                    each = 2) # each end of each segment
+              } else {
+                "#bbbbbb"
+              },
+            lty = 1
+          )
         }
       })
       rgl::rglwidget()

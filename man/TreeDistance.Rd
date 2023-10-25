@@ -226,6 +226,24 @@ to be "correct", use \code{normalize = SplitwiseInfo(trueTree)} (SPI, MSI) or
 \code{ClusteringEntropy(trueTree)} (MCI).
 }
 
+\section{Distances between large trees}{
+To balance memory demands and runtime with flexibility, these functions are
+implemented for trees with up to 2048 leaves.
+To analyse trees with up to 8192 leaves, you will need to a modified version
+of \pkg{TreeTools}.
+First uninstall \pkg{TreeDist} and \pkg{TreeTools} using \code{remove.packages()}.
+Then use \code{devtools::install_github("ms609/TreeTools", ref = "more-leaves")}
+to install the modified \pkg{TreeTools} package.
+Finally, install \pkg{TreeDist} using
+\code{devtools::install_github("ms609/TreeDist")}.
+(\pkg{TreeDist} will need building from source \emph{after} the modified
+\pkg{TreeTools} package has been installed, as its code links to values
+set in the TreeTools source code.)
+
+Trees with over 8192 leaves require further modification of the source code,
+which the maintainer will attempt on demand; please \href{https://github.com/ms609/TreeTools/issues/141}{comment on GitHub} if you would find this useful.
+}
+
 \examples{
 tree1 <- ape::read.tree(text="((((a, b), c), d), (e, (f, (g, h))));")
 tree2 <- ape::read.tree(text="(((a, b), (c, d)), ((e, f), (g, h)));")

@@ -71,7 +71,9 @@ legend("topright", c("PAM", "Hierarchical", "k-means++"),
        pch = 1:3, col = 1:3)
 
 ## ----chosen-cluster-----------------------------------------------------------
-cluster <- hClusters[[2 - 1]]
+nClusters <- 2
+whichResult <- match(nClusters, possibleClusters)
+cluster <- hClusters[[whichResult]]
 
 ## ----h-tree, fig.align="center"-----------------------------------------------
 class(hTree) <- "hclust"

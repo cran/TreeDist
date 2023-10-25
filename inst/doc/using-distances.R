@@ -111,8 +111,7 @@ set.seed(0)
 trueTree <- TreeTools::RandomTree(20, root = TRUE)
 
 ## -----------------------------------------------------------------------------
-treeSearchInstalled <- requireNamespace("TreeSearch", quietly = TRUE) &&
-  packageVersion("TreeSearch") > "1.3.2"
+treeSearchInstalled <- requireNamespace("TreeSearch", quietly = TRUE)
 if (treeSearchInstalled) {
   library("TreeSearch", quietly = TRUE) # for TBR, NNI
   oneAway <- structure(lapply(seq_len(200), function(x) {

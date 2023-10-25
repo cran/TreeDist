@@ -579,20 +579,19 @@ reference topology:</p>
 true tree by making a TBR move, then reduce resolution by taking the
 consensus of this tree and three trees from its immediate neighbourhood
 (one NNI move away).</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>treeSearchInstalled <span class="ot">&lt;-</span> <span class="fu">requireNamespace</span>(<span class="st">&quot;TreeSearch&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>) <span class="sc">&amp;&amp;</span></span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>  <span class="fu">packageVersion</span>(<span class="st">&quot;TreeSearch&quot;</span>) <span class="sc">&gt;</span> <span class="st">&quot;1.3.2&quot;</span></span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="cf">if</span> (treeSearchInstalled) {</span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  <span class="fu">library</span>(<span class="st">&quot;TreeSearch&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>) <span class="co"># for TBR, NNI</span></span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>  oneAway <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="dv">200</span>), <span class="cf">function</span>(x) {</span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>    tbrTree <span class="ot">&lt;-</span> <span class="fu">TBR</span>(trueTree)</span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a>    ape<span class="sc">::</span><span class="fu">consensus</span>(<span class="fu">list</span>(tbrTree,</span>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>treeSearchInstalled <span class="ot">&lt;-</span> <span class="fu">requireNamespace</span>(<span class="st">&quot;TreeSearch&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="cf">if</span> (treeSearchInstalled) {</span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>  <span class="fu">library</span>(<span class="st">&quot;TreeSearch&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>) <span class="co"># for TBR, NNI</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  oneAway <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="dv">200</span>), <span class="cf">function</span>(x) {</span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>    tbrTree <span class="ot">&lt;-</span> <span class="fu">TBR</span>(trueTree)</span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>    ape<span class="sc">::</span><span class="fu">consensus</span>(<span class="fu">list</span>(tbrTree,</span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a>                        <span class="fu">NNI</span>(tbrTree),</span>
 <span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>                        <span class="fu">NNI</span>(tbrTree),</span>
-<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a>                        <span class="fu">NNI</span>(tbrTree),</span>
-<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a>                        <span class="fu">NNI</span>(tbrTree)))</span>
-<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a>  }), <span class="at">class =</span> <span class="st">&quot;multiPhylo&quot;</span>)</span>
-<span id="cb27-12"><a href="#cb27-12" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb27-13"><a href="#cb27-13" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Install </span><span class="sc">\&quot;</span><span class="st">TreeSearch</span><span class="sc">\&quot;</span><span class="st"> to run this example&quot;</span>)</span>
-<span id="cb27-14"><a href="#cb27-14" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a>                        <span class="fu">NNI</span>(tbrTree)))</span>
+<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a>  }), <span class="at">class =</span> <span class="st">&quot;multiPhylo&quot;</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb27-12"><a href="#cb27-12" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Install </span><span class="sc">\&quot;</span><span class="st">TreeSearch</span><span class="sc">\&quot;</span><span class="st"> to run this example&quot;</span>)</span>
+<span id="cb27-13"><a href="#cb27-13" tabindex="-1"></a>}</span></code></pre></div>
 <p>And let’s generate 200 more trees that are even more degraded. This
 time we’ll move further (three TBR moves) from the true tree, and reduce
 resolution by taking a consensus with three trees from its wider
