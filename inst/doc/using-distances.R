@@ -1,4 +1,4 @@
-## ---- fig.width=6, out.width="90%", fig.align="center"------------------------
+## ----fig.width=6, out.width="90%", fig.align="center"-------------------------
 library("TreeDist")
 tree1 <- ape::read.tree(text = '(A, ((B, ((C, D), (E, F))), (G, (H, (I, J, K)))));')
 tree2 <- ape::read.tree(text = '(A, (B, (C, D, E, (J, K)), (F, (G, H, I))));')
@@ -34,7 +34,7 @@ expectedQD <- 2 / 3
 normalizedQD <- QuartetDivergence(QuartetStatus(tree1, tree2),
                                   similarity = FALSE) / expectedQD
 
-## ---- fig.width=7, fig.height=4, message=FALSE--------------------------------
+## ----fig.width=7, fig.height=4, message=FALSE---------------------------------
 if (requireNamespace("TreeDistData", quietly = TRUE)) {
   library("TreeDistData", exclude = "PairwiseDistances")
   data("randomTreeDistances", package = "TreeDistData")
@@ -67,7 +67,7 @@ if (requireNamespace("TreeDistData", quietly = TRUE)) {
   par(oldPar)
 }
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  expectedCID <- randomTreeDistances["cid", "mean", "9"]
 #  ClusteringInfoDistance(tree1, tree2, normalize = TRUE) / expectedCID
 
@@ -85,7 +85,7 @@ points(4, 7.5, pch = 3, cex = 3, col = "#56B4E9")
 VisualizeMatching(MutualClusteringInfo, testTrees$trueTree, testTrees$bigErr)
 points(4, 7.5, pch = 4, cex = 3, col = "#009E73")
 
-## ---- fig.width=4, fig.align="center", fig.asp=1, out.width="50%"-------------
+## ----fig.width=4, fig.align="center", fig.asp=1, out.width="50%"--------------
 if (requireNamespace("Ternary", quietly = TRUE)) {
   library("Ternary")
   oldPar <- par(mar = rep(0.1, 4))
@@ -160,7 +160,7 @@ if (treeSearchInstalled) {
   incorrect3 <- infoInTree3 - correct3
 }
 
-## ---- collapse=TRUE-----------------------------------------------------------
+## ----collapse=TRUE------------------------------------------------------------
 col1 <- hcl(200, alpha = 0.9)
 col3 <- hcl(40, alpha = 0.9)
 spec1 <- matrix(col2rgb(col1, alpha = TRUE), nrow = 4, ncol = 181)
@@ -170,7 +170,7 @@ ColToHex <- function(x) rgb(x[1], x[2], x[3], x[4], maxColorValue = 255)
 spec1 <- apply(spec1, 2, ColToHex)
 spec3 <- apply(spec3, 2, ColToHex)
 
-## ---- fig.width=7, fig.align="center", fig.asp=5/7, out.width="70%"-----------
+## ----fig.width=7, fig.align="center", fig.asp=5/7, out.width="70%"------------
 if (treeSearchInstalled && requireNamespace("Ternary", quietly = TRUE)) {
   layout(matrix(c(1, 2), ncol = 2), widths = c(5, 2))
   oldPar <- par(mar = rep(0, 4))

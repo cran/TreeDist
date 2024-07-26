@@ -82,7 +82,7 @@ plot(hTree, labels = FALSE, main = "")
 points(seq_along(trees), rep(1, length(trees)), pch = 16,
        col = spectrum[hTree$order])
 
-## ----consensus, fig.align="center"--------------------------------------------
+## ----cluster-consensus, fig.align="center"------------------------------------
 par(mfrow = c(1, 2), mar = rep(0.2, 4))
 col1 <- spectrum[mean(treeNumbers[cluster == 1])]
 col2 <- spectrum[mean(treeNumbers[cluster == 2])]
@@ -90,6 +90,33 @@ plot(consensus(trees[cluster == 1], p = 0.5),
      edge.color = col1, edge.width = 2, tip.color = col1)
 plot(consensus(trees[cluster == 2], p = 0.5),
      edge.color = col2, edge.width = 2, tip.color = col2)
+
+## ----island-id, fig.asp = 1, fig.width = 3, fig.align="center"----------------
+par(mar = rep(0, 4))
+# set a threshold corresponding to the width of the "moat" between islands
+threshold <- 1.8
+island <- Islands(distances, threshold)
+
+# See how many trees are on each island
+table(island)
+
+# Let's ignore the small islands for now
+largeIsle <- Islands(distances, threshold, smallest = 5)
+
+# Colour trees according to their island
+plot(mapping,
+     asp = 1, # Preserve aspect ratio - do not distort distances
+     ann = FALSE, axes = FALSE, # Don't label axes: dimensions are meaningless
+     col = ifelse(is.na(largeIsle), "grey", largeIsle + 1),
+     pch = 16
+     )
+
+## ----island-consensus, fig.align="center"-------------------------------------
+par(mfrow = c(1, 2), mar = rep(0.2, 4))
+plot(consensus(trees[!is.na(largeIsle) & largeIsle == 1], p = 0.5),
+     edge.color = 2, edge.width = 2, tip.color = 2)
+plot(consensus(trees[!is.na(largeIsle) & largeIsle == 2], p = 0.5),
+     edge.color = 3, edge.width = 2, tip.color = 3)
 
 ## ----how-many-dims, fig.align="center"----------------------------------------
 txc <- vapply(seq_len(ncol(mapping)), function(k) {

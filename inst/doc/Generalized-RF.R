@@ -6,30 +6,36 @@ tree2 <- read.tree(text='((A, B), ((C, D, (E, I)), (F, (G, H))));')
 AtoJ <-  read.tree(text='(((((A, B), C), D), E), (F, (G, (H, (I, J)))));')
 swapAJ <-  read.tree(text='(((((J, B), C), D), E), (F, (G, (H, (I, A)))));')
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----fig.width=6, fig.align='center'------------------------------------------
 VisualizeMatching(SharedPhylogeneticInfo, tree1, tree2, 
                   Plot = TreeDistPlot, matchZeros = FALSE)
 SharedPhylogeneticInfo(tree1, tree2)
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----total-phylo-info---------------------------------------------------------
+SplitwiseInfo(tree1)
+
+## ----fig.width=6, fig.align='center'------------------------------------------
 VisualizeMatching(SharedPhylogeneticInfo, AtoJ, swapAJ,
                   Plot = TreeDistPlot, matchZeros = FALSE, prune = c(5, 18))
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----fig.width=6, fig.align='center'------------------------------------------
 VisualizeMatching(MutualClusteringInfo, AtoJ, swapAJ,
                   Plot = TreeDistPlot, matchZeros = FALSE, prune = c(5, 18))
 MutualClusteringInfo(AtoJ, swapAJ)
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----fig.width=6, fig.align='center'------------------------------------------
 VisualizeMatching(MutualClusteringInfo, tree1, tree2, 
                   Plot = TreeDistPlot, matchZeros = FALSE)
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----total-mci----------------------------------------------------------------
+ClusteringEntropy(tree1)
+
+## ----fig.width=6, fig.align='center'------------------------------------------
 VisualizeMatching(NyeSimilarity, tree1, tree2, 
                   Plot = TreeDistPlot, matchZeros = FALSE)
 NyeSimilarity(tree1, tree2, normalize = FALSE)
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----fig.width=6, fig.align='center'------------------------------------------
 JaccardRobinsonFoulds(tree1, tree2, k = 1)
 VisualizeMatching(JaccardRobinsonFoulds, tree1, tree2,
                   Plot = TreeDistPlot, matchZeros = FALSE)
@@ -39,7 +45,7 @@ JRF2(tree1, tree2)
 VisualizeMatching(JRF2, tree1, tree2,
                   Plot = TreeDistPlot, matchZeros = FALSE)
 
-## ---- fig.width=6, fig.height = 4,fig.align = 'center', echo = FALSE----------
+## ----fig.width=6, fig.height = 4,fig.align = 'center', echo = FALSE-----------
 oldPar <- par(mar = c(4, 4, 0, 0))
 x <- seq(1, 20, by = 0.1)
 cbPalette8 <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
@@ -64,19 +70,19 @@ legend('right', c('Robinson\u2013Foulds', 'JRF, no conflict', 'JRF, conflict ok'
        col = cbPalette8[c(6, 4, 5, 8)], bty = 'n')
 par(oldPar)
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----fig.width=6, fig.align='center'------------------------------------------
 MatchingSplitDistance(tree1, tree2)
 VisualizeMatching(MatchingSplitDistance, tree1, tree2,
                   Plot = TreeDistPlot, matchZeros = FALSE)
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----fig.width=6, fig.align='center'------------------------------------------
 MatchingSplitDistance(read.tree(text='((a, b, c, d, e, f), (g, h, i, j));'),
                       read.tree(text='((a, b, c, d, e, i, j), (g, h, f));'))
 
 ## -----------------------------------------------------------------------------
 TreeTools::SplitInformation(5, 2)
 
-## ---- fig.width=6, fig.align='center'-----------------------------------------
+## ----fig.width=6, fig.align='center'------------------------------------------
 MatchingSplitInfoDistance(tree1, tree2)
 VisualizeMatching(MatchingSplitInfoDistance, tree1, tree2,
                   Plot = TreeDistPlot, matchZeros = FALSE)

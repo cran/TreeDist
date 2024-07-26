@@ -1,3 +1,20 @@
+# TreeDist 2.8.0 (2024-07-25)
+
+- `Islands()` allows the identification of islands of trees.
+
+- Internal implementation of path and SPR distances, removing dependency
+  on phangorn (and thus R 4.4).
+  
+- Add progress bar within `.MaxValue()`
+
+
+# TreeDist 2.7.1 (2024-06-13)
+
+- Documentation improvements.
+
+- Fix `KCDiameter.multiPhylo()` for multiple trees.
+
+
 # TreeDist 2.7.0 (2023-10-25)
 
 - Fix calculation error in `StrainCol()`.

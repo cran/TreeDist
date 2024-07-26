@@ -34,6 +34,6 @@ ape::nodelabels()
 ape::nodelabels(splits, as.integer(names(splits)), 
                 adj = c(1.1, -0.2), cex = 0.8, frame = 'none')
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 par(oldPar)
 

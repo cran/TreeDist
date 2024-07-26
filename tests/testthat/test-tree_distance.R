@@ -178,6 +178,7 @@ test_that("Output dimensions are correct", {
 })
 
 test_that("RF Distance is correctly calculated", {
+  skip_if_not_installed("phangorn")
   PhangRF2 <- function(t1, t2) phangorn::RF.dist(reorder(t1, "cladewise"),
                                                  reorder(t2, "cladewise"))
   RFTest <- function(t1, t2) {
@@ -447,6 +448,7 @@ test_that("Clustering information is correctly calculated", {
     tip.label = c("t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9", "t10",
                   "t11", "t12", "t13", "t14", "t15", "t16", "t17", "t18", "t19",
                   "t20"), br = NULL), class = "phylo")
+  # NOT in Preorder.  Preordering the tree will change the matching.
   threeAwayPoly <- structure(
     list(edge = structure(c(21L, 22L, 23L, 24L, 25L, 26L, 27L, 28L, 29L, 29L, 
                             28L, 27L, 26L, 30L, 30L, 30L, 26L, 31L, 31L, 25L, 
@@ -462,8 +464,9 @@ test_that("Clustering information is correctly calculated", {
   expect_equal(
     MutualClusteringInfo(threeAwayPoly, randomBif20),
     MutualClusteringInfo(randomBif20, threeAwayPoly))
-  match <- MutualClusteringInfo(randomBif20, threeAwayPoly, reportMatching = TRUE)
-  expect_equal(c(NA, NA,  1,  2, NA,  3,  7, 11, 10,  4,  6,  9,  8, NA,  5, 12, NA),
+  match <- MutualClusteringInfo(randomBif20, threeAwayPoly, 
+                                reportMatching = TRUE)
+  expect_equal(c(NA, NA, 1, 2, NA, 3, 7, 11, 10, 4, 6, 9, 8, NA, 5, 12, NA),
                attr(match, "matching"))
   
   # Multiple bins, calculated expectation
@@ -958,15 +961,15 @@ test_that("Independent of root position", {
 
   
   Test <- function(Method, score = 0L, ...) {
-    expect_equal(score, Method(trees[[1]], trees[[1]], ...))
-    expect_equal(score, Method(trees[[1]], trees[[2]], ...))
-    expect_equal(score, Method(trees[[3]], trees[[3]], ...))
+    expect_equal(Method(trees[[1]], trees[[1]], ...), score)
+    expect_equal(Method(trees[[1]], trees[[2]], ...), score)
+    expect_equal(Method(trees[[3]], trees[[3]], ...), score)
   }
   
   Test(MASTSize, 8L, rooted = FALSE)
   # Tested further for NNIDist in test-tree_distance_nni.R
   Test(NNIDist, c(lower = 0, best_lower = 0, tight_upper = 0, best_upper = 0,
                   loose_upper = 0, fack_upper = 0, li_upper = 0))
-  Test(SPRDist, c(spr = 0))
+  Test(SPRDist, 0)
   
 })

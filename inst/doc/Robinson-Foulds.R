@@ -27,7 +27,7 @@ Plot <- function(tree, tree2 = NULL, highlight = character(0),
   }
 }
 
-## ---- echo=FALSE, fig.width = 6, fig.align = 'center'-------------------------
+## ----echo=FALSE, fig.width = 6, fig.align = 'center'--------------------------
 startPar <- TwoTreePlot()
 palette <- colorspace::qualitative_hcl(5, c=42, l=88)
 TreeDistPlot(balancedTree <- 
@@ -97,9 +97,10 @@ knitr::kable(cbind(
 ## ----all-8-tip-trees, echo=FALSE, cache=TRUE, fig.width=4, fig.height=4, fig.align='center'----
 calculate <- FALSE
 if (calculate) {
-  all8 <- phangorn::allTrees(8, tip.label = 1:8, rooted = FALSE)
-  inBalanced <- RobinsonFoulds(all8, balancedTree, similarity = TRUE)
-  inCaterpillar <- RobinsonFoulds(all8, caterpillarTree, similarity = TRUE)
+  # Generate all eight-leaf trees
+  all8 <- as.phylo(seq_len(NUnrooted(8)), tipLabels = 1:8)
+  inBalanced <- RobinsonFoulds(all8, balancedTree, similarity = TRUE) / 2
+  inCaterpillar <- RobinsonFoulds(all8, caterpillarTree, similarity = TRUE) / 2
 } else {
   inBalanced <- rep(0:5, c(7088, 2708, 512, 76, 10, 1))
   inCaterpillar <- rep(0:5, c(8162, 1808, 350, 64, 10, 1))
@@ -107,27 +108,27 @@ if (calculate) {
 
 par(cex = 0.8)
 sch <- hist(inCaterpillar + 0.7, breaks = 0:18 / 3 - (1/6),
-            main = '8-leaf trees with N common splits', cex.main = 1,
+            main = "8-leaf trees with N common splits", cex.main = 1,
             xlim = c(0, 6), axes = FALSE,
-            xlab = 'Splits in common', ylab = 'Number of trees')
+            xlab = "Splits in common", ylab = "Number of trees")
 sbh <- hist(inBalanced + 0.4, breaks = 0:18 / 3 - (1/6), plot = FALSE)
-plot(sch, col = paste0(cbPalette8[2], '44'), add = TRUE)
-plot(sbh, col = paste0(cbPalette8[3], '44'), add = TRUE)
-text(1/6, 100, paste0('Balanced: ', sum(inBalanced == 0)), 
+plot(sch, col = paste0(cbPalette8[2], "44"), add = TRUE)
+plot(sbh, col = paste0(cbPalette8[3], "44"), add = TRUE)
+text(1/6, 100, paste0("Balanced: ", sum(inBalanced == 0)), 
      pos = 4, srt = 90, cex = 0.7)
-text(0.5, 100, paste0('Asymmetric: ', sum(inCaterpillar == 0)), 
+text(0.5, 100, paste0("Asymmetric: ", sum(inCaterpillar == 0)), 
      pos = 4, srt = 90, cex = 0.7)
 
 
-legend('topright', pch = 22,
-       pt.cex = 2, col = 'black',
-       pt.bg = paste0(cbPalette8[2:3], '44'), bty = 'n',
-       c('Asymmetric', 'Balanced'))
+legend("topright", pch = 22,
+       pt.cex = 2, col = "black",
+       pt.bg = paste0(cbPalette8[2:3], "44"), bty = "n",
+       c("Asymmetric", "Balanced"))
 
 axis(1, at = 0:5 + 0.5, labels = 0:5)
 axis(2)
 
-## ---- fig.height = 3, fig.width=6, fig.align = 'center'-----------------------
+## ----fig.height = 3, fig.width=6, fig.align = 'center'------------------------
 tree1 <- ape::read.tree(text='(1, (2, (3, (4, (5, (6, (7, 8)))))));')
 tree2 <- ape::read.tree(text='(1, (2, (3, (4, (5, (7, (6, 8)))))));')
 tree3 <- ape::read.tree(text='(1, (2, (3, (5, (4, (6, (7, 8)))))));')
@@ -135,33 +136,33 @@ tree3 <- ape::read.tree(text='(1, (2, (3, (5, (4, (6, (7, 8)))))));')
 VisualizeMatching(InfoRobinsonFoulds, tree1, tree2, 
                   Plot = TreeDistPlot, prune = 12)
 
-## ---- fig.height = 3, fig.width=6, fig.align = 'center'-----------------------
+## ----fig.height = 3, fig.width=6, fig.align = 'center'------------------------
 VisualizeMatching(InfoRobinsonFoulds, tree1, tree3, 
                   Plot = TreeDistPlot, prune = 8)
 
-## ---- fig.height = 3, fig.width=6, fig.align = 'center'-----------------------
+## ----fig.height = 3, fig.width=6, fig.align = 'center'------------------------
 tree1 <- ape::read.tree(text='(1, (2, (3, (4, (5, (6, (7, 8)))))));')
 tree2 <- ape::read.tree(text='(8, (1, (2, (3, (4, (5, (6, 7)))))));')
 
 VisualizeMatching(RobinsonFouldsMatching, tree1, tree2, Plot = TreeDistPlot)
 
-## ---- fig.height = 3, fig.width=6, fig.align = 'center'-----------------------
+## ----fig.height = 3, fig.width=6, fig.align = 'center'------------------------
 tree1 <- ape::read.tree(text='((A, B), ((C, (D, E)), (F, (G, (H, I)))));')
 tree2 <- ape::read.tree(text='((A, B), ((C, D, (E, I)), (F, (G, H))));')
 
 Plot(tree1, tree2, highlight = 'I', prune = list(8, integer(0)))
 
-## ---- fig.height = 3, fig.width=6, fig.align = 'center'-----------------------
+## ----fig.height = 3, fig.width=6, fig.align = 'center'------------------------
 TwoTreePlot()
 VisualizeMatching(RobinsonFouldsMatching, tree1, tree2)
 
-## ---- fig.height = 3, fig.width=6, fig.align = 'center'-----------------------
+## ----fig.height = 3, fig.width=6, fig.align = 'center'------------------------
 TwoTreePlot()
 VisualizeMatching(RobinsonFouldsMatching,
                   drop.tip(tree1, 'I'),
                   drop.tip(tree2, 'I'))
 
-## ---- fig.height = 3, fig.width=6, fig.align = 'center'-----------------------
+## ----fig.height = 3, fig.width=6, fig.align = 'center'------------------------
 TwoTreePlot()
 VisualizeMatching(SharedPhylogeneticInfo, tree1, tree2)
 
