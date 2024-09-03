@@ -1,3 +1,17 @@
+# TreeDist 2.9.0 (2024-09-03)
+
+- `VisualizeMatching()` allows more control over output format, and returns
+  the matching ([#124](https://github.com/ms609/TreeDist/issues/124)).
+  
+- `DistanceFromMedian(Average = median)` allows calculation of MAD.
+
+- `SpectralEigens()` returns correct eigenvalues (smallest was overlooked).
+
+- `SpectralEigens()` handles values of `nEig` larger than the input.
+
+- Anticipate new behaviour of `unlist(use.names = TRUE)` in R 4.5.
+
+
 # TreeDist 2.8.0 (2024-07-25)
 
 - `Islands()` allows the identification of islands of trees.

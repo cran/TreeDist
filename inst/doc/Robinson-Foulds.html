@@ -582,6 +582,16 @@ with the optimal matching:</p>
 <pre><code>## $matching
 ## [1]  1  2 NA  4  5  3
 ## 
+## $matchedSplits
+## [1] &quot;A B | C D E F G H I =&gt; A B | C D E F G H I&quot;
+## [2] &quot;C D E | A B F G H I =&gt; C D E I | A B F G H&quot;
+## [3] &quot;F G H I | A B C D E =&gt; F G H | A B C D E I&quot;
+## [4] &quot;G H I | A B C D E F =&gt; G H | A B C D E F I&quot;
+## [5] &quot;H I | A B C D E F G .. E I | A B C D F G H&quot;
+## 
+## $matchedScores
+## [1] 3.700440 3.252981       NA 3.252981 2.115477 0.000000
+## 
 ## $pairScores
 ##           [,1]      [,2]      [,3]      [,4]      [,5]
 ## [1,] 3.7004397 0.8930848 0.2410081 0.5305147 0.2410081
@@ -589,14 +599,7 @@ with the optimal matching:</p>
 ## [3,] 0.2410081 1.3785116 0.0000000 0.5305147 0.2410081
 ## [4,] 0.8930848 0.0000000 0.0000000 3.2529807 1.3785116
 ## [5,] 0.5305147 0.0000000 0.0000000 0.0000000 2.1154772
-## [6,] 0.2410081 0.0000000 0.0000000 0.0000000 0.0000000
-## 
-## $matchedSplits
-## [1] &quot;A B | C D E F G H I =&gt; A B | C D E F G H I&quot;
-## [2] &quot;C D E | A B F G H I =&gt; C D E I | A B F G H&quot;
-## [3] &quot;F G H I | A B C D E =&gt; F G H | A B C D E I&quot;
-## [4] &quot;G H I | A B C D E F =&gt; G H | A B C D E F I&quot;
-## [5] &quot;H I | A B C D E F G .. E I | A B C D F G H&quot;</code></pre>
+## [6,] 0.2410081 0.0000000 0.0000000 0.0000000 0.0000000</code></pre>
 <p><code>..</code> denotes that the fifth matching contributes zero to
 similarity score; an alternative optimal matching would leave these
 splits unpaired.</p>

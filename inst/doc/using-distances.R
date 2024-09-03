@@ -79,11 +79,11 @@ testTrees <- list(
   bigErr = ape::read.tree(text = '(a, (c, (((b, d), (f, h)), (e, g))));')
 )
 VisualizeMatching(MutualClusteringInfo, testTrees$trueTree, testTrees$lackRes)
-points(4, 7.5, pch = 2, cex = 3, col = "#E69F00")
+points(4, 7.5, pch = 2, cex = 3, col = "#E69F00", xpd = NA)
 VisualizeMatching(MutualClusteringInfo, testTrees$trueTree, testTrees$smallErr)
-points(4, 7.5, pch = 3, cex = 3, col = "#56B4E9")
+points(4, 7.5, pch = 3, cex = 3, col = "#56B4E9", xpd = NA)
 VisualizeMatching(MutualClusteringInfo, testTrees$trueTree, testTrees$bigErr)
-points(4, 7.5, pch = 4, cex = 3, col = "#009E73")
+points(4, 7.5, pch = 4, cex = 3, col = "#009E73", xpd = NA)
 
 ## ----fig.width=4, fig.align="center", fig.asp=1, out.width="50%"--------------
 if (requireNamespace("Ternary", quietly = TRUE)) {
