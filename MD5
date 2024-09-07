@@ -1,6 +1,6 @@
-d43c9bceffede1f3f7e1ae067c7dfe0b *DESCRIPTION
+7fcdea68c604442772f99de23a83ef45 *DESCRIPTION
 642f15ffa2ad472a14a291beca0c183a *NAMESPACE
-16b5bafa4dad90c932a331547b35afdc *NEWS.md
+43ee2e2246247ec5298db6a2824e4871 *NEWS.md
 5f6f21807800cf34e3dc85ef18658ec0 *R/Information.R
 f5897c1141ba685c58ad90d3cd94c0f9 *R/Islands.R
 65d2cdd50bbc113cc051c169627004b6 *R/MSTSegments.R
@@ -32,11 +32,11 @@ bea80664ddc18f8ee25cd3784d599b05 *R/tree_distance_utilities.R
 f89eb2ba44bd60c747f5bf71e030947f *R/tree_information.R
 9cf65a62401b826ea5b235d8d122bfab *R/trustworthiness.R
 e99826feb3f524b12db2c811f6bb3c48 *R/zzz.R
-7d007a6b4be376741b845027063a6080 *build/partial.rdb
+77826d30cebd881057442b09db0f4754 *build/partial.rdb
 ea64f3d88333147f15a81068c3d6f806 *build/vignette.rds
 03927a1e3fdfa148b2c3d951a3092fbf *inst/CITATION
 abcfbfb73167b06ce08d0c9adb2a7e07 *inst/REFERENCES.bib
-680e2c16887512c116effd76464e09db *inst/WORDLIST
+baf1f6f293aba1a9e19f6c7c86e24576 *inst/WORDLIST
 2a33c016808841801938c7c7b2dcb1cb *inst/apa-old-doi-prefix.csl
 2edc6a73f3ae505ef6790f77cce42180 *inst/doc/Generalized-RF.R
 3980d89003327489a9315bb8b18d81a4 *inst/doc/Generalized-RF.Rmd
@@ -46,7 +46,7 @@ df685312fcf464d94fb6529820e17e1e *inst/doc/Robinson-Foulds.R
 bd5bb66f4f001813542282abd38a6383 *inst/doc/Robinson-Foulds.html
 1d2aa81f93ab7eab9cbe4ff71fbd608a *inst/doc/Using-TreeDist.R
 900d2efab4ee11cdc6dc8bc92d74c5e7 *inst/doc/Using-TreeDist.Rmd
-44ea320409db706d4cab373d547b509a *inst/doc/Using-TreeDist.html
+6b0e2b1b7f2292548d60b034fa0fc697 *inst/doc/Using-TreeDist.html
 383b5f0223ce43794419750f2c139b5b *inst/doc/compare-treesets.R
 c5e15257c68800d6d1c6c10d29bac9cd *inst/doc/compare-treesets.Rmd
 9de7556a423687b2c04fb3d1b2df165c *inst/doc/compare-treesets.html
@@ -171,7 +171,7 @@ f2da9f08993b721bc4bcffcb33070126 *tests/testthat/test-median.R
 86b355a4bcef8076d56dea724ff6cf66 *tests/testthat/test-parallel.R
 4aeca8f2613db48546dbda5033b8ed97 *tests/testthat/test-plot.R
 838b49dca8fed283a0c16d2064449a5d *tests/testthat/test-real-data.R
-aebbce7b3b14235ded8bd6f5f866d7b0 *tests/testthat/test-spectral_clustering.R
+19ea821a6b1ac0a0e6eb3651b68e296e *tests/testthat/test-spectral_clustering.R
 1a223bc3c25cc5c095fb63c6efea70d3 *tests/testthat/test-split_info.R
 f1f1b153c24108d46121230cd0d08358 *tests/testthat/test-tree_distance.R
 602c4df90748ec6235c58a69557b8ae0 *tests/testthat/test-tree_distance_kc.R
