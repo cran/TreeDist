@@ -68,8 +68,8 @@ if (requireNamespace("TreeDistData", quietly = TRUE)) {
 }
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  expectedCID <- randomTreeDistances["cid", "mean", "9"]
-#  ClusteringInfoDistance(tree1, tree2, normalize = TRUE) / expectedCID
+# expectedCID <- randomTreeDistances["cid", "mean", "9"]
+# ClusteringInfoDistance(tree1, tree2, normalize = TRUE) / expectedCID
 
 ## ----fig.align="center", fig.height=1.8, fig.width=6, out.width="80%"---------
 testTrees <- list(

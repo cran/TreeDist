@@ -1,6 +1,17 @@
+# TreeDist 2.10.0 (2025-08-22)
+
+- `Ntropy()` computes entropy from integer counts.
+
+- C++ optimizations and reformatting:
+    - Faster tree distance calculation.
+    - 2x speed-up of LAPJV for large matrices.
+    
+- Require R4.0; discontinue tests against R 3.6 and 4.0.
+
+
 # TreeDist 2.9.2 (2025-01-11)
 
-- Avoid crashing when calculating NNI distance for large trees.
+- Fix crash when calculating NNI distance for large trees.
 
 
 # TreeDist 2.9.1 (2024-09-05)
