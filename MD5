@@ -1,11 +1,11 @@
-9d2aab1aff23ec8ab700d447c1bba5f9 *DESCRIPTION
+3994b00f1641443b79f91f92329877d0 *DESCRIPTION
 6f858ac57053224d306c9fc5b4b45ac8 *NAMESPACE
-7e9ddcc282b738a909f8aa6bc69a7d07 *NEWS.md
+506501692725ffdb8cd278588e9993ff *NEWS.md
 802734576e539680ea4a7043e1ecf733 *R/Information.R
 64c1fdcd0da5feeff29becc6839d4142 *R/Islands.R
 affbdf30b56af7c90d22fc370773aa25 *R/MSTSegments.R
 de5237990780cf47e13b91f4030a1afe *R/Plot3.R
-a6107f0c5669eeb1486bcfa03cea39f5 *R/RcppExports.R
+89caa454f3b4253d7675a30d70f05f04 *R/RcppExports.R
 f2fff77cb9046ef429610b9e848d66f3 *R/Reduce.R
 9787c836d4859b3edaf50df82c2691d3 *R/TreeDist-package.R
 8a55e7bcfaa9475bf20120c39d5bb5c8 *R/VisualizeMatching.R
@@ -32,7 +32,7 @@ fcd950dad1ef05614a1a6d5f7e8247e4 *R/tree_distance_utilities.R
 143ce486b2a784ae6635d5cbe6ceb4a3 *R/tree_information.R
 8d04d0c2e96f47f78c09fc5ecf215bd0 *R/trustworthiness.R
 49ecaf63987ff6d12c436b910a8bed01 *R/zzz.R
-ba74e00f167fbdc3b7f64446f43d8b77 *build/partial.rdb
+6fb9541cbf896508e7eb5e031584d3b2 *build/partial.rdb
 d9179c112fd4479aea96685aab5664ae *build/vignette.rds
 0c68641fbb8d84f5447b3f477c6f3574 *inst/CITATION
 7b7f54bc2ef2ff2e08242776f46369a6 *inst/REFERENCES.bib
@@ -46,7 +46,7 @@ d8fe35ca5c15963df1c191bfe5f29acb *inst/doc/Robinson-Foulds.Rmd
 b8edda2f2f6f1c279812f00170e8ef44 *inst/doc/Robinson-Foulds.html
 1d2aa81f93ab7eab9cbe4ff71fbd608a *inst/doc/Using-TreeDist.R
 900d2efab4ee11cdc6dc8bc92d74c5e7 *inst/doc/Using-TreeDist.Rmd
-e32d87328a391748fe63e5fd2d6ca38d *inst/doc/Using-TreeDist.html
+3cbbf028a6d327a951290991592640cb *inst/doc/Using-TreeDist.html
 383b5f0223ce43794419750f2c139b5b *inst/doc/compare-treesets.R
 c5e15257c68800d6d1c6c10d29bac9cd *inst/doc/compare-treesets.Rmd
 661ad93e559ff2e8521eefdc6075d469 *inst/doc/compare-treesets.html
@@ -58,7 +58,7 @@ f58163b2815a00c05545ca363b09f2b4 *inst/doc/information.R
 1aa4ce84be06cc21a6dc6847f68d4f61 *inst/doc/information.html
 f1985bd8b78cf22bf6455a3dc1149558 *inst/doc/landscapes.R
 90867e59ef49d8e43b6352bc62b5a076 *inst/doc/landscapes.Rmd
-dc70c11836f8e08658561ce15cd820ac *inst/doc/landscapes.html
+b3c331240c71b9b7130a7dbac0a5d4b9 *inst/doc/landscapes.html
 ccec4ddd995707f10c8b1c21109a3541 *inst/doc/treespace.R
 b2e945406460578dc13eba7a57e1f38e *inst/doc/treespace.Rmd
 7039104e3bdc4e8f711fbaddf8cd2c0d *inst/doc/treespace.html
@@ -122,7 +122,7 @@ db8ee8b10fb972ea5bdbe81b3f623235 *src/nni_distance.cpp
 bf307481aab707177a28e7e2d26d1d6d *src/reduce_tree.h
 66ec79606d119a2a383e13aa2462e0f6 *src/spr.cpp
 6d126df74f7eb88dcb0e0861cce3acb1 *src/tree_distance_functions.cpp
-2f98df306e2b0e51f77703a4a27f38ca *src/tree_distances.cpp
+8ee5fe1e537ad9c9237c2dfa88a44bee *src/tree_distances.cpp
 03648a6d155ef1f17f0f5d2d998921e9 *src/tree_distances.h
 e78bb6fb6c8740d2428c714bd94e81dd *tests/benchmark/benchmark.R
 29345163f9d102a663ebca6b1fce1a26 *tests/figs/plot-r/jrf-vm-matchzeros-false.svg

@@ -16,6 +16,17 @@ using TreeTools::count_bits;
 
 namespace TreeDist {
 
+template <typename T>
+inline void resize_uninitialized(std::vector<T>& v, std::size_t n) {
+  static_assert(std::is_trivial<T>::value, "Requires trivial type");
+  if (n > v.size()) {
+    v.reserve(n);
+    v.insert(v.end(), n - v.size(), T{});
+  } else {
+    v.resize(n);
+  }
+}
+
   void check_ntip(const double n) {
     if (n > static_cast<double>(std::numeric_limits<int16>::max())) {
       Rcpp::stop("This many tips are not (yet) supported.");
@@ -44,6 +55,7 @@ namespace TreeDist {
 
 }
 
+using TreeDist::resize_uninitialized;
 
 // [[Rcpp::export]]
 List cpp_robinson_foulds_distance(const RawMatrix &x, const RawMatrix &y,
@@ -216,8 +228,8 @@ List cpp_matching_split_distance(const RawMatrix &x, const RawMatrix &y,
   std::vector<lap_col> rowsol;
   std::vector<lap_row> colsol;
   
-  rowsol.reserve(most_splits);
-  colsol.reserve(most_splits);
+  resize_uninitialized(rowsol, most_splits);
+  resize_uninitialized(colsol, most_splits);
   
   const double final_score = lap(most_splits, score, rowsol, colsol) -
     (max_score * split_diff);
@@ -328,8 +340,8 @@ List cpp_jaccard_similarity(const RawMatrix &x, const RawMatrix &y,
   std::vector<lap_col> rowsol;
   std::vector<lap_row> colsol;
   
-  rowsol.reserve(most_splits);
-  colsol.reserve(most_splits);
+  resize_uninitialized(rowsol, most_splits);
+  resize_uninitialized(colsol, most_splits);
   
   const double final_score = static_cast<double>((max_score * most_splits) - 
       lap(most_splits, score, rowsol, colsol))
@@ -398,8 +410,8 @@ List cpp_msi_distance(const RawMatrix &x, const RawMatrix &y,
   std::vector<lap_col> rowsol;
   std::vector<lap_row> colsol;
   
-  rowsol.reserve(most_splits);
-  colsol.reserve(most_splits);
+  resize_uninitialized(rowsol, most_splits);
+  resize_uninitialized(colsol, most_splits);
   
   const double final_score = static_cast<double>(
     (max_score * most_splits) - lap(most_splits, score, rowsol, colsol)) *
@@ -507,8 +519,8 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
   std::vector<lap_col> rowsol;
   std::vector<lap_row> colsol;
   
-  rowsol.reserve(lap_dim);
-  colsol.reserve(lap_dim);
+  resize_uninitialized(rowsol, lap_dim);
+  resize_uninitialized(colsol, lap_dim);
   
   cost_matrix small_score(lap_dim);
   
@@ -542,7 +554,8 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
     }
     
     fuzzy_match = 0;
-    std::vector<int> final_matching(a.n_splits);
+    std::vector<int> final_matching;
+    TreeDist::resize_uninitialized(final_matching, a.n_splits);
     for (int16 i = 0; i < a.n_splits; ++i) {
       if (a_match[i]) {
         final_matching[i] = a_match[i];
@@ -625,8 +638,8 @@ List cpp_shared_phylo (const RawMatrix &x, const RawMatrix &y,
   std::vector<lap_col> rowsol;
   std::vector<lap_row> colsol;
   
-  rowsol.reserve(most_splits);
-  colsol.reserve(most_splits);
+  resize_uninitialized(rowsol, most_splits);
+  resize_uninitialized(colsol, most_splits);
   
   
   const double final_score = static_cast<double>(
