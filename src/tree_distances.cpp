@@ -453,8 +453,11 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
     return List::create(Named("score") = 0,
                         _["matching"] = IntegerVector(0));
   }
+  
   constexpr cost max_score = BIG;
+  constexpr double over_max_score = 1.0 / static_cast<double>(max_score);
   const double max_over_tips = static_cast<double>(max_score) * n_tips_reciprocal;
+  
   cost_matrix score(most_splits);
   
   double exact_match_score = 0;
@@ -466,15 +469,18 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
   
   for (int16 ai = 0; ai < a.n_splits; ++ai) {
     if (a_match[ai]) continue;
+    
     const int16 na = a.in_split[ai];
     const int16 nA = n_tips - na;
+    const auto *a_row = a.state[ai];
     
     for (int16 bi = 0; bi < b.n_splits; ++bi) {
       
       // x divides tips into a|A; y divides tips into b|B
       int16 a_and_b = 0;
+      const auto *b_row = b.state[bi];
       for (int16 bin = 0; bin < a.n_bins; ++bin) {
-        a_and_b += count_bits(a.state[ai][bin] & b.state[bi][bin]);
+        a_and_b += count_bits(a_row[bin] & b_row[bin]);
       }
       
       const int16 nb = b.in_split[bi];
@@ -490,12 +496,12 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
         a_match[ai] = bi + 1;
         b_match[bi] = ai + 1;
         break;
-      } else if (a_and_b == A_and_b &&
-          a_and_b == a_and_B &&
-          a_and_b == A_and_B) {
-        score(ai, bi) = max_score; // Don't risk rounding error
+      } else if (a_and_b == A_and_b
+                   && a_and_b == a_and_B
+                   && a_and_b == A_and_B) {
+        score(ai, bi) = max_score; // Avoid rounding errors
       } else {
-        double ic_sum = 0;
+        double ic_sum = 0.0;
         TreeDist::add_ic_element(ic_sum, a_and_b, na, nb, n_tips);
         TreeDist::add_ic_element(ic_sum, a_and_B, na, nB, n_tips);
         TreeDist::add_ic_element(ic_sum, A_and_b, nA, nb, n_tips);
@@ -505,23 +511,24 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
         score(ai, bi) = max_score - static_cast<cost>(ic_sum * max_over_tips);
       }
     }
-    score.padRowAfterCol(ai, b.n_splits, max_score);
+    
+    if (b.n_splits < most_splits) {
+      score.padRowAfterCol(ai, b.n_splits, max_score);
+    }
   }
+  
   if (exact_matches == b.n_splits || exact_matches == a.n_splits) {
     return List::create(
       Named("score") = exact_match_score * n_tips_reciprocal,
       _["matching"] = a_match);
   }
   
-  
   const int16 lap_dim = most_splits - exact_matches;
-  
+  ASSERT(lap_dim > 0);
   std::vector<lap_col> rowsol;
   std::vector<lap_row> colsol;
-  
   resize_uninitialized(rowsol, lap_dim);
   resize_uninitialized(colsol, lap_dim);
-  
   cost_matrix small_score(lap_dim);
   
   if (exact_matches) {
@@ -539,10 +546,9 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
     }
     small_score.padAfterRow(lap_dim - b_extra_splits, max_score);
     
-    const double lap_score = static_cast<double>(
-      (max_score * lap_dim) - lap(lap_dim, small_score, rowsol, colsol)
-      ) / max_score;
-    const double final_score = lap_score + (exact_match_score * n_tips_reciprocal);
+    const double lap_score = static_cast<double>((max_score * lap_dim) - 
+      lap(lap_dim, small_score, rowsol, colsol)) * over_max_score;
+    const double final_score = lap_score + (exact_match_score / n_tips);
     
     std::unique_ptr<int16[]> lap_decode = std::make_unique<int16[]>(lap_dim);
     int16 fuzzy_match = 0;
@@ -561,39 +567,37 @@ List cpp_mutual_clustering(const RawMatrix &x, const RawMatrix &y,
         final_matching[i] = a_match[i];
       } else {
         assert(fuzzy_match < lap_dim);
-        const int16 this_sol = rowsol[fuzzy_match++];
-        if (rowsol[this_sol] >= lap_dim - a_extra_splits) {
-          final_matching[i] = NA_INTEGER;
-        } else {
-          final_matching[i] = lap_decode[rowsol[this_sol]];
-        }
+        const int16 row_idx = fuzzy_match++;
+        const int16 col_idx = rowsol[row_idx];
+        final_matching[i] = (col_idx >= lap_dim - a_extra_splits) ? NA_INTEGER :
+          lap_decode[col_idx];
       }
     }
     
     return List::create(Named("score") = final_score,
                         _["matching"] = final_matching);
   } else {
+    
     for (int16 ai = a.n_splits; ai < most_splits; ++ai) {
       for (int16 bi = 0; bi < most_splits; ++bi) {
         score(ai, bi) = max_score;
       }
     }
     
-    const double lap_score = static_cast<double>(
-        (max_score * lap_dim) - lap(lap_dim, score, rowsol, colsol)
-      ) / max_score;
+    const double final_score = static_cast<double>(
+      (max_score * lap_dim) - lap(lap_dim, score, rowsol, colsol)
+    ) / max_score;
     
     std::vector<int> final_matching;
     final_matching.reserve(a.n_splits);
-    
     for (int16 i = 0; i < a.n_splits; ++i) {
       const int match = (rowsol[i] < b.n_splits)
       ? static_cast<int>(rowsol[i]) + 1
       : NA_INTEGER;
       final_matching.push_back(match);
     }
-    
-    return List::create(Named("score") = lap_score,
+      
+    return List::create(Named("score") = final_score,
                         _["matching"] = final_matching);
   }
 }

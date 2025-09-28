@@ -1,7 +1,7 @@
 Package: TreeDist
 Type: Package
 Title: Calculate and Map Distances Between Phylogenetic Trees
-Version: 2.10.1
+Version: 2.11.0
 Authors@R: c(person("Martin R.", "Smith",
                     email = "martin.smith@durham.ac.uk", 
                     role = c("aut", "cre", "cph", "prg"), 
@@ -23,6 +23,8 @@ Description: Implements measures of tree similarity, including
   including the Nye et al. (2006) metric <doi:10.1093/bioinformatics/bti720>;
   the Matching Split Distance (Bogdanowicz & Giaro 2012)
   <doi:10.1109/TCBB.2011.48>;
+  the Hierarchical Mutual Information (Perotti et al. 2015)
+  <doi:10.1103/PhysRevE.92.062825>;
   Maximum Agreement Subtree distances;
   the Kendall-Colijn (2016) distance <doi:10.1093/molbev/msw124>, and the
   Nearest Neighbour Interchange (NNI) distance, approximated per Li et al. 
@@ -64,9 +66,9 @@ ByteCompile: true
 Encoding: UTF-8
 Language: en-GB
 X-schema.org-keywords: phylogenetics, tree-distance
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 NeedsCompilation: yes
-Packaged: 2025-08-25 06:32:45 UTC; pjjg18
+Packaged: 2025-09-26 18:32:17 UTC; pjjg18
 Author: Martin R. Smith [aut, cre, cph, prg] (ORCID:
     <https://orcid.org/0000-0001-5660-1727>),
   Roy Jonker [prg, cph],
@@ -74,4 +76,4 @@ Author: Martin R. Smith [aut, cre, cph, prg] (ORCID:
   Yi Cao [ctb, cph]
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2025-08-25 08:10:14 UTC
+Date/Publication: 2025-09-28 10:40:09 UTC

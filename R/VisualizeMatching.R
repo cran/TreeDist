@@ -50,6 +50,7 @@
 #' @importFrom colorspace qualitative_hcl sequential_hcl
 #' @importFrom graphics par
 #' @importFrom TreeTools as.Splits
+#' @aliases VisualiseMatching PlotMatching DisplayMatching
 #' @export
 VisualizeMatching <- function (Func, tree1, tree2, setPar = TRUE,
                                precision = 3L, Plot = plot.phylo,
@@ -141,7 +142,7 @@ VisualizeMatching <- function (Func, tree1, tree2, setPar = TRUE,
         got <- rootChildren %in% splitNodes
         if (any(got)) {
           if (sum(got) != 1) {
-            warning("Unexpected polytomy")
+            warning("Unexpected polytomy")                                      # nocov
           }
           c(score = as.integer(which(splitNodes %in% rootChildren[got])),
             edge = rootEdges[!got])
@@ -215,3 +216,10 @@ VisualizeMatching <- function (Func, tree1, tree2, setPar = TRUE,
   # Return:
   invisible(matching)
 }
+
+#' @export
+PlotMatching <- VisualizeMatching
+#' @export
+DisplayMatching <- VisualizeMatching
+#' @export
+VisualiseMatching <- VisualizeMatching
