@@ -49,8 +49,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -61,7 +62,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -392,11 +393,11 @@ second.</p>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">TreeDistance</span>(oneTree, twoTrees)</span></code></pre></div>
 <pre><code>##       one       two 
-## 0.7673821 0.5928931</code></pre>
+## 0.8118959 0.7251406</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">TreeDistance</span>(twoTrees, threeTrees)</span></code></pre></div>
 <pre><code>##             a         b         c
-## one 0.8474439 0.7889442 0.8872662
-## two 0.7008864 0.8313870 0.4547432</code></pre>
+## one 0.7317697 0.8727948 0.7102072
+## two 0.8251677 0.6590170 0.7925704</code></pre>
 </div>
 </div>
 <div id="visualizing-a-matching" class="section level2">

@@ -1,3 +1,14 @@
+# TreeDist 2.12.0 (2026-02-12)
+
+- Support larger trees in some functions by updating some functions to use
+  32-bit integers, per TreeTools v2.1.0.
+  
+- `AHMI()` now returns negative values (previously zeroed in error).
+
+- Experimental support for a new method of SPR distance calculation:
+  subject to change or removal.
+  
+
 # TreeDist 2.11.1 (2025-10-13)
 
 - Improve robustness of `SpectralEigens()` tests.
@@ -35,7 +46,7 @@ This was **fixed in v2.11.0**.
     - Faster tree distance calculation.
     - 2x speed-up of LAPJV for large matrices.
     
-- Require R4.0; discontinue tests against R 3.6 and 4.0.
+- Require R4.0; discontinue tests against R4.0.
 
 
 # TreeDist 2.9.2 (2025-01-11)

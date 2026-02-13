@@ -49,8 +49,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -61,7 +62,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -370,15 +371,15 @@ Smith</a></h4>
 <p>Landscapes of trees are <a href="treespace.html">mappings of tree
 space</a> that are contoured according to some optimality criterion –
 often, but not necessarily, a tree’s score under a phylogenetic
-reconstruction technique <span class="citation">(Bastert, Rockmore,
-Stadler, &amp; Tinhofer, 2002)</span>. Detecting “islands” or “terraces”
-of trees can illuminate the nature of the space of optimal trees and
-thus inform tree search strategy <span class="citation">(Maddison, 1991;
-Sanderson, McMahon, &amp; Steel, 2011)</span>.</p>
+reconstruction technique <span class="citation">(Bastert et al.,
+2002)</span>. Detecting “islands” or “terraces” of trees can illuminate
+the nature of the space of optimal trees and thus inform tree search
+strategy <span class="citation">(Maddison, 1991; Sanderson et al.,
+2011)</span>.</p>
 <p>For simplicity (and to avoid scoring trees against a dataset), this
 example uses a tree’s balance (measured using the total cophenetic
-index) as its score <span class="citation">(Mir, Rosselló, &amp; Rotger,
-2013)</span>. We assume that mappings have already been shown to be <a href="treespace.html">adequate</a> <span class="citation">(Smith,
+index) as its score <span class="citation">(Mir et al., 2013)</span>. We
+assume that mappings have already been shown to be <a href="treespace.html">adequate</a> <span class="citation">(Smith,
 2022)</span>.</p>
 <p>A landscape is most simply visualized by colouring each tree
 according to its score:</p>
@@ -428,8 +429,8 @@ according to its score:</p>
 interpolating between adjacent trees. This example uses a simple inverse
 distance weighting function for interpolation; more sophisticated
 techniques such as <a href="https://desktop.arcgis.com/en/arcmap/10.3/tools/3d-analyst-toolbox/how-kriging-works.htm">kriging</a>
-or (in continuous tree spaces) the use of geodesics <span class="citation">(Khodaei, Owen, &amp; Beerli, 2022)</span> can produce
-even better results.</p>
+or (in continuous tree spaces) the use of geodesics <span class="citation">(Khodaei et al., 2022)</span> can produce even better
+results.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Use an inverse distance weighting to interpolate between measured points</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>Predict <span class="ot">&lt;-</span> <span class="cf">function</span> (x, y) {</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  Distance <span class="ot">&lt;-</span> <span class="cf">function</span> (a, b) {</span>
@@ -478,30 +479,30 @@ plots.</p>
 <div id="ref-Bastert2002" class="csl-entry">
 Bastert, O., Rockmore, D., Stadler, P. F., &amp; Tinhofer, G. (2002).
 Landscapes on spaces of trees. <em>Applied Mathematics and
-Computation</em>, <em>131</em>(2-3), 439–459. doi: <a href="https://doi.org/10.1016/S0096-3003(01)00164-3">10.1016/S0096-3003(01)00164-3</a>
+Computation</em>, <em>131</em>(2-3), 439–459. <a href="https://doi.org/10.1016/S0096-3003(01)00164-3">https://doi.org/10.1016/S0096-3003(01)00164-3</a>
 </div>
 <div id="ref-Khodaei2022" class="csl-entry">
 Khodaei, M., Owen, M., &amp; Beerli, P. (2022). Geodesics to
-characterize the phylogenetic landscape. <em>bioR<span><span class="math inline">\(\chi\)</span></span>iv</em>. doi: <a href="https://doi.org/10.1101/2022.05.11.491507">10.1101/2022.05.11.491507</a>
+characterize the phylogenetic landscape. <em>bioR<span><span class="math inline">\(\chi\)</span></span>iv</em>. <a href="https://doi.org/10.1101/2022.05.11.491507">https://doi.org/10.1101/2022.05.11.491507</a>
 </div>
 <div id="ref-Maddison1991" class="csl-entry">
 Maddison, D. R. (1991). The discovery and importance of multiple islands
 of most-parsimonious trees. <em>Systematic Biology</em>, <em>40</em>(3),
-315–328. doi: <a href="https://doi.org/10.1093/sysbio/40.3.315">10.1093/sysbio/40.3.315</a>
+315–328. <a href="https://doi.org/10.1093/sysbio/40.3.315">https://doi.org/10.1093/sysbio/40.3.315</a>
 </div>
 <div id="ref-Mir2013" class="csl-entry">
 Mir, A., Rosselló, F., &amp; Rotger, L. A. (2013). A new balance index
 for phylogenetic trees. <em>Mathematical Biosciences</em>,
-<em>241</em>(1), 125–136. doi: <a href="https://doi.org/10.1016/j.mbs.2012.10.005">10.1016/j.mbs.2012.10.005</a>
+<em>241</em>(1), 125–136. <a href="https://doi.org/10.1016/j.mbs.2012.10.005">https://doi.org/10.1016/j.mbs.2012.10.005</a>
 </div>
 <div id="ref-Sanderson2011" class="csl-entry">
 Sanderson, M. J., McMahon, M. M., &amp; Steel, M. (2011). Terraces in
 <span>Phylogenetic Tree Space</span>. <em>Science</em>,
-<em>333</em>(6041), 448–450. doi: <a href="https://doi.org/10.1126/science.1206357">10.1126/science.1206357</a>
+<em>333</em>(6041), 448–450. <a href="https://doi.org/10.1126/science.1206357">https://doi.org/10.1126/science.1206357</a>
 </div>
 <div id="ref-SmithSpace" class="csl-entry">
 Smith, M. R. (2022). Robust analysis of phylogenetic tree space.
-<em>Systematic Biology</em>, <em>71</em>(5), 1255–1270. doi: <a href="https://doi.org/10.1093/sysbio/syab100">10.1093/sysbio/syab100</a>
+<em>Systematic Biology</em>, <em>71</em>(5), 1255–1270. <a href="https://doi.org/10.1093/sysbio/syab100">https://doi.org/10.1093/sysbio/syab100</a>
 </div>
 </div>
 </div>
