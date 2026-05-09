@@ -1,3 +1,26 @@
+# Validate that nTip does not exceed the supported tip-count ceiling.
+# cpp_sl_max_tips() > 2048L iff TreeTools >= 2.3.0 raised the stack threshold
+# and provides heap-backed split storage; accept up to 32767 tips in that case.
+# Otherwise cap at the compiled SL_MAX_TIPS.
+# Called from every distance entry point before any C++ work.
+.CheckMaxTips <- function(nTip) {
+  if (is.na(nTip)) return(invisible(NULL))
+  sl_max <- cpp_sl_max_tips()
+  if (sl_max > 2048L) {
+    if (nTip > 32767L) {
+      stop("Trees with ", nTip,
+           " tips are not yet supported (maximum 32767).")
+    }
+  } else if (nTip > sl_max) {
+    # else-if fires only when sl_max <= 2048 (TreeTools < 2.3.0)
+    stop(
+      "Trees with ", nTip, " tips exceed the compiled limit of ",
+      sl_max, " tips.",
+      "\nUpdate TreeTools and reinstall TreeDist to support more tips."
+    )
+  }
+}
+
 #' Wrapper for tree distance calculations
 #' 
 #' Calls tree distance functions from trees or lists of trees
@@ -11,6 +34,7 @@
 #' @importFrom TreeTools as.Splits TipLabels
 #' @importFrom utils combn
 #' @export
+# Keep in sync with C++ guard: min(SL_MAX_TIPS, int16_t::max()).
 CalculateTreeDistance <- function(Func, tree1, tree2 = NULL,
                                   reportMatching = FALSE, ...) {
   supportedClasses <- c("phylo", "Splits")
@@ -129,6 +153,62 @@ CalculateTreeDistance <- function(Func, tree1, tree2 = NULL,
                                    nTip = length(tipLabels), ...) {
   cluster <- getOption("TreeDist-cluster")
 
+  # Fast paths: use OpenMP batch functions when all trees share the same tip
+  # set and no R-level cluster has been configured.  Each branch mirrors the
+  # generic path exactly but avoids per-pair R overhead.
+  .CheckMaxTips(nTip)
+  if (!is.na(nTip) && is.null(cluster)) {
+    .n_threads <- as.integer(getOption("mc.cores", 1L))
+    .batch_result <- if (identical(Func, MutualClusteringInfoSplits)) {
+      splits <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_mutual_clustering_all_pairs(splits, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, InfoRobinsonFouldsSplits)) {
+      splits <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_rf_info_all_pairs(splits, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, MatchingSplitDistanceSplits)) {
+      splits <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_msd_all_pairs(splits, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, MatchingSplitInfoSplits)) {
+      splits <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_msi_all_pairs(splits, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, SharedPhylogeneticInfoSplits)) {
+      splits <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_shared_phylo_all_pairs(splits, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, NyeSplitSimilarity)) {
+      splits <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_jaccard_all_pairs(splits, as.integer(nTip),
+                            k = 1.0, allow_conflict = TRUE, .n_threads)
+
+    } else if (identical(Func, JaccardSplitSimilarity)) {
+      dots <- list(...)
+      splits <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_jaccard_all_pairs(
+        splits, as.integer(nTip),
+        k            = as.double(if ("k" %in% names(dots)) dots[["k"]] else 1L),
+        allow_conflict = as.logical(
+          if ("allowConflict" %in% names(dots)) dots[["allowConflict"]] else TRUE),
+        .n_threads
+      )
+
+    } else {
+      NULL
+    }
+
+    if (!is.null(.batch_result)) {
+      return(structure(.batch_result,
+                       class  = "dist",
+                       Size   = length(splits1),
+                       Labels = names(splits1),
+                       Diag   = FALSE,
+                       Upper  = FALSE))
+    }
+  }
+
   if (is.na(nTip)) {
     splits <- lapply(splits1, as.Splits)
     
@@ -177,7 +257,7 @@ CalculateTreeDistance <- function(Func, tree1, tree2 = NULL,
 #' @importFrom stats setNames
 .SplitDistanceManyMany <- function(Func, splits1, splits2, 
                                    tipLabels, nTip = length(tipLabels), ...) {
-  
+  .CheckMaxTips(nTip)
   if (is.na(nTip)) {
     tipLabels <- union(unlist(tipLabels, use.names = FALSE),
                        unlist(TipLabels(splits2), use.names = FALSE))
@@ -194,6 +274,60 @@ CalculateTreeDistance <- function(Func, tree1, tree2 = NULL,
       setNames(double(length(splits2)), names(splits2))
     )
   } else {
+    # Fast path: use OpenMP batch functions when available
+    .n_threads <- as.integer(getOption("mc.cores", 1L))
+    .batch_result <- if (identical(Func, MutualClusteringInfoSplits)) {
+      s1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      s2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_mutual_clustering_cross_pairs(s1, s2, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, InfoRobinsonFouldsSplits)) {
+      s1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      s2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_rf_info_cross_pairs(s1, s2, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, MatchingSplitDistanceSplits)) {
+      s1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      s2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_msd_cross_pairs(s1, s2, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, MatchingSplitInfoSplits)) {
+      s1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      s2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_msi_cross_pairs(s1, s2, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, SharedPhylogeneticInfoSplits)) {
+      s1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      s2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_shared_phylo_cross_pairs(s1, s2, as.integer(nTip), .n_threads)
+
+    } else if (identical(Func, NyeSplitSimilarity)) {
+      s1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      s2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_jaccard_cross_pairs(s1, s2, as.integer(nTip),
+                              k = 1.0, allow_conflict = TRUE, .n_threads)
+
+    } else if (identical(Func, JaccardSplitSimilarity)) {
+      dots <- list(...)
+      s1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
+      s2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
+      cpp_jaccard_cross_pairs(
+        s1, s2, as.integer(nTip),
+        k = as.double(if ("k" %in% names(dots)) dots[["k"]] else 1L),
+        allow_conflict = as.logical(
+          if ("allowConflict" %in% names(dots)) dots[["allowConflict"]] else TRUE),
+        .n_threads
+      )
+
+    } else {
+      NULL
+    }
+
+    if (!is.null(.batch_result)) {
+      dimnames(.batch_result) <- list(names(splits1), names(splits2))
+      return(.batch_result)
+    }
+
     splits1 <- as.Splits(splits1, tipLabels = tipLabels, asSplits = FALSE)
     splits2 <- as.Splits(splits2, tipLabels = tipLabels, asSplits = FALSE)
     matrix(
@@ -212,7 +346,7 @@ CalculateTreeDistance <- function(Func, tree1, tree2 = NULL,
 #' @param checks Logical specifying whether to perform basic sanity checks to
 #' avoid crashes in C++.
 #' @keywords internal
-#' @seealso [`CalculateTreeDistance`]
+#' @seealso [`CalculateTreeDistance()`]
 #' @export
 .TreeDistance <- function(Func, tree1, tree2, checks = TRUE, ...) {
   single1 <- inherits(tree1, "phylo")
@@ -285,6 +419,16 @@ CalculateTreeDistance <- function(Func, tree1, tree2 = NULL,
       ret
     }
   }
+}
+
+# Validate split-matrix arguments before passing to C++.
+# On ARM, Rcpp::stop() can call std::terminate() instead of returning
+# a proper R error, so all expected-input validation must happen in R.
+.ValidateSplitArgs <- function(x, y, nTip) {
+  if (ncol(x) != ncol(y)) {
+    stop("Input splits must address same number of tips.")
+  }
+  .CheckMaxTips(nTip)
 }
 
 .CheckLabelsSame <- function(labelList) {

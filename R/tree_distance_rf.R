@@ -66,15 +66,50 @@
 #' @rdname Robinson-Foulds
 InfoRobinsonFoulds <- function(tree1, tree2 = NULL, similarity = FALSE,
                                 normalize = FALSE, reportMatching = FALSE) {
-  unnormalized <- CalculateTreeDistance(InfoRobinsonFouldsSplits, tree1, tree2, 
-                                        reportMatching) * 2
   
+  # Fast path for distance (not similarity): avoids duplicate as.Splits()
   if (!similarity) {
-    unnormalized <- .MaxValue(tree1, tree2, SplitwiseInfo) - unnormalized
+    # All-pairs fast path
+    fast <- .FastDistPath(tree1, tree2, reportMatching,
+                          cpp_rf_info_all_pairs,
+                          cpp_splitwise_info_batch)
+    if (!is.null(fast)) {
+      treesIndependentInfo <- .PairwiseSums(fast[["entropies"]])
+      unnormalized <- .FloorNumericalNoise(
+        treesIndependentInfo - fast[["info"]] - fast[["info"]],
+        treesIndependentInfo)
+      ret <- NormalizeInfo(unnormalized, tree1, tree2, how = normalize,
+                           InfoInTree = SplitwiseInfo, Combine = "+")
+      attributes(ret) <- attributes(fast[["info"]])
+      return(ret)
+    }
+
+    # Cross-pairs fast path
+    fast_many <- .FastManyManyPath(tree1, tree2, reportMatching,
+                                   cpp_rf_info_cross_pairs,
+                                   cpp_splitwise_info_batch)
+    if (!is.null(fast_many)) {
+      irf <- fast_many[["dists"]]
+      info1 <- fast_many[["info1"]]
+      info2 <- fast_many[["info2"]]
+      treesIndependentInfo <- outer(info1, info2, "+")
+
+      unnormalized <- .FloorNumericalNoise(treesIndependentInfo - irf - irf,
+                                            treesIndependentInfo)
+      ret <- NormalizeInfo(unnormalized, tree1, tree2, how = normalize,
+                           InfoInTree = SplitwiseInfo, Combine = "+")
+      return(ret)
+    }
   }
-  
-  # In case of floating point inaccuracy
-  unnormalized[unnormalized < .Machine[["double.eps"]] ^ 0.5] <- 0
+
+  unnormalized <- CalculateTreeDistance(InfoRobinsonFouldsSplits, tree1, tree2,
+                                        reportMatching) * 2
+
+  if (!similarity) {
+    treesIndependentInfo <- .MaxValue(tree1, tree2, SplitwiseInfo)
+    unnormalized <- .FloorNumericalNoise(treesIndependentInfo - unnormalized,
+                                          treesIndependentInfo)
+  }
   
   # Return:
   NormalizeInfo(unnormalized, tree1, tree2, how = normalize,
@@ -113,10 +148,43 @@ RobinsonFoulds <- function(tree1, tree2 = NULL, similarity = FALSE,
                                 class = "dist")
     }
   } else {
-    unnormalized <- CalculateTreeDistance(RobinsonFouldsSplits, tree1, tree2,
-                                          reportMatching)
-    if (similarity) {
-      unnormalized <- .MaxValue(tree1, tree2, NSplits) - unnormalized
+    # Fast cross-pairs path: batch C++ via ClusterTable (Day 1985).
+    # Only applicable when both inputs are lists of trees with matching
+    # tip labels and reportMatching is not requested.
+    fast <- NULL
+    if (!reportMatching &&
+        !inherits(tree1, c("phylo", "Splits")) &&
+        !inherits(tree2, c("phylo", "Splits")) &&
+        is.null(getOption("TreeDist-cluster"))) {
+      lab1 <- TipLabels(tree1)
+      lab2 <- TipLabels(tree2)
+      if (is.list(lab1)) lab1 <- lab1[[1]]
+      if (is.list(lab2)) lab2 <- lab2[[1]]
+      if (setequal(lab1, lab2)) {
+        ct1 <- as.ClusterTable(tree1, tipLabels = lab1)
+        ct2 <- as.ClusterTable(tree2, tipLabels = lab1)
+        shared <- robinson_foulds_cross_pairs(
+          if (is.list(ct1)) ct1 else list(ct1),
+          if (is.list(ct2)) ct2 else list(ct2)
+        )
+        splits1 <- NSplits(tree1)
+        splits2 <- NSplits(tree2)
+        if (similarity) {
+          fast <- shared + shared
+        } else {
+          fast <- outer(splits1, splits2, "+") - shared - shared
+        }
+        dimnames(fast) <- list(names(tree1), names(tree2))
+      }
+    }
+    if (is.null(fast)) {
+      unnormalized <- CalculateTreeDistance(RobinsonFouldsSplits, tree1, tree2,
+                                            reportMatching)
+      if (similarity) {
+        unnormalized <- .MaxValue(tree1, tree2, NSplits) - unnormalized
+      }
+    } else {
+      unnormalized <- fast
     }
   }
   

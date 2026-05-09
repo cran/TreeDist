@@ -29,10 +29,12 @@ TreeTools::NSplits(tree1)
 NyeSimilarity(tree1, tree2, normalize = TreeTools::NSplits(tree1))
 
 ## -----------------------------------------------------------------------------
-library("Quartet", exclude = "RobinsonFoulds")
-expectedQD <- 2 / 3
-normalizedQD <- QuartetDivergence(QuartetStatus(tree1, tree2),
-                                  similarity = FALSE) / expectedQD
+if (requireNamespace("Quartet", quietly = TRUE)) {
+  library("Quartet", exclude = "RobinsonFoulds")
+  expectedQD <- 2 / 3
+  normalizedQD <- QuartetDivergence(QuartetStatus(tree1, tree2),
+                                    similarity = FALSE) / expectedQD
+}
 
 ## ----fig.width=7, fig.height=4, message=FALSE---------------------------------
 if (requireNamespace("TreeDistData", quietly = TRUE)) {

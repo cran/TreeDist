@@ -16,16 +16,32 @@ suppressPackageStartupMessages({
   library("shiny", exclude = "runExample")
   library("shinyjs", exclude = "runExample")
 })
-library("TreeTools", quietly = TRUE)
-library("TreeDist")
 
-if (!requireNamespace("cluster", quietly = TRUE)) install.packages("cluster")
-if (!requireNamespace("protoclust", quietly = TRUE)) {
-  install.packages("protoclust")
+local({
+  pkgs <- c("Rdpack", "TreeTools", "TreeDist")
+  for (i in seq_along(pkgs)) {
+    if (!requireNamespace(pkgs[i], quietly = TRUE)) {
+      webr::install(pkgs[i], repos = c(
+        "https://ms609.r-universe.dev",
+        "https://repo.r-wasm.org"
+      ))
+    }
+  }
+})
+
+# Load packages - character.only=TRUE defeats the shinylive static scanner
+for (PlotTools in c("shiny", "TreeTools", "TreeDist")) {
+  library(PlotTools, character.only = TRUE)
 }
-if (!requireNamespace("MASS", quietly = TRUE)) install.packages("MASS")
-if (!requireNamespace("Quartet", quietly = TRUE)) install.packages("Quartet")
-if (!requireNamespace("readxl", quietly = TRUE)) install.packages("readxl")
+
+.Install <- if (isTRUE(getOption("webr.initialized"))) webr::install else install.packages
+
+for (.pkg in c("cluster", "protoclust", "MASS", "Quartet", "readxl")) {
+  if (!requireNamespace(.pkg, quietly = TRUE)) .Install(.pkg)
+}
+
+# Indirect reference to hide from shinylive's static package scanner
+.uwot_pkg <- paste0("uw", "ot")
 
 # Allow large files to be submitted
 options(shiny.maxRequestSize = 100 * 1024^2)
@@ -584,7 +600,7 @@ server <- function(input, output, session) {
   nNeighb <- debounce(reactive(input$nNeighb), 300)
   
   observe({
-    if (!requireNamespace("uwot", quietly = TRUE)) {
+    if (!requireNamespace(.uwot_pkg, quietly = TRUE)) {
       updateSelectInput(session, "mapping",
                         choices = c("Principal Components (PCA)" = "pca", 
                                     "Kruskal's non-metric MDS" = "k", 
@@ -601,28 +617,28 @@ server <- function(input, output, session) {
           message = "Mapping distances",
           value = 0.99,
           {
-            uwot <- requireNamespace("uwot", quietly = TRUE)
+            uwot <- requireNamespace(.uwot_pkg, quietly = TRUE)
             switch(
               input$mapping,
               "pca" = cmdscale(distances(), k = maxProjDim()),
               "k" = MASS::isoMDS(distances(), k = maxProjDim())$points,
               "nls" = MASS::sammon(distances(), k = maxProjDim())$points,
               "tumap" = if (uwot) {
-                getFromNamespace("tumap", "uwot")(distances(), verbose = FALSE,
+                getFromNamespace("tumap", .uwot_pkg)(distances(), verbose = FALSE,
                             n_neighbors = nNeighb(),
                             n_components = maxProjDim())
               } else {
-                showNotification("uwot package unavailable. Defaulting to PCA.", type = "error")
+                showNotification(paste(.uwot_pkg, "package unavailable. Defaulting to PCA."), type = "error")
                 cmdscale(distances(), k = maxProjDim())
               },
               "umap" = if (uwot) {
-                getFromNamespace("umap", "uwot")(distances(), verbose = FALSE,
+                getFromNamespace("umap", .uwot_pkg)(distances(), verbose = FALSE,
                            a = 1.8956, b = 0.8006,
                            approx_pow = TRUE,
                            n_neighbors = nNeighb(),
                            n_components = maxProjDim())
               } else {
-                showNotification("uwot package unavailable. Defaulting to PCA.", type = "error")
+                showNotification(paste(.uwot_pkg, "package unavailable. Defaulting to PCA."), type = "error")
                 cmdscale(distances(), k = maxProjDim())
               }
             )

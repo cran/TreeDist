@@ -13,6 +13,10 @@ robinson_foulds_all_pairs <- function(tables) {
     .Call(`_TreeDist_robinson_foulds_all_pairs`, tables)
 }
 
+robinson_foulds_cross_pairs <- function(tables_a, tables_b) {
+    .Call(`_TreeDist_robinson_foulds_cross_pairs`, tables_a, tables_b)
+}
+
 consensus_info <- function(trees, phylo, p) {
     .Call(`_TreeDist_consensus_info`, trees, phylo, p)
 }
@@ -66,6 +70,18 @@ expected_mi <- function(ni, nj) {
     .Call(`_TreeDist_expected_mi`, ni, nj)
 }
 
+cpp_kc_vector <- function(edge, tip_order) {
+    .Call(`_TreeDist_cpp_kc_vector`, edge, tip_order)
+}
+
+vec_diff_euclidean <- function(vec1, vec2) {
+    .Call(`_TreeDist_vec_diff_euclidean`, vec1, vec2)
+}
+
+pair_diff_euclidean <- function(vecs) {
+    .Call(`_TreeDist_pair_diff_euclidean`, vecs)
+}
+
 lapjv <- function(x, maxX) {
     .Call(`_TreeDist_lapjv`, x, maxX)
 }
@@ -78,16 +94,90 @@ cpp_nni_distance <- function(edge1, edge2, nTip) {
     .Call(`_TreeDist_cpp_nni_distance`, edge1, edge2, nTip)
 }
 
+#' Pairwise mutual clustering information — batch computation
+#'
+#' Internal function. Computes all pairwise MCI scores for a set of trees,
+#' using OpenMP threads when available (falling back to single-threaded
+#' execution otherwise). No interrupt checking is performed inside the
+#' parallel region; the outer R call remains interruptible between batches.
+#'
+#' @param splits_list A list of split matrices (class `Splits` or `RawMatrix`),
+#'   one per tree, all covering the same tip set.  Typically the object
+#'   returned by `as.Splits(trees, tipLabels = labs, asSplits = FALSE)`.
+#' @param n_tip Integer; number of tips shared by all trees.
+#' @return Numeric vector of length `n*(n-1)/2` containing pairwise MCI
+#'   scores in `combn(n, 2)` column-major order (i.e. the data payload of
+#'   an R `dist` object).
+#' @keywords internal
+cpp_mutual_clustering_all_pairs <- function(splits_list, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_mutual_clustering_all_pairs`, splits_list, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_rf_info_all_pairs <- function(splits_list, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_rf_info_all_pairs`, splits_list, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_msd_all_pairs <- function(splits_list, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_msd_all_pairs`, splits_list, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_msi_all_pairs <- function(splits_list, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_msi_all_pairs`, splits_list, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_shared_phylo_all_pairs <- function(splits_list, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_shared_phylo_all_pairs`, splits_list, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_jaccard_all_pairs <- function(splits_list, n_tip, k = 1.0, allow_conflict = TRUE, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_jaccard_all_pairs`, splits_list, n_tip, k, allow_conflict, n_threads)
+}
+
+#' @keywords internal
+cpp_mutual_clustering_cross_pairs <- function(splits_a, splits_b, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_mutual_clustering_cross_pairs`, splits_a, splits_b, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_rf_info_cross_pairs <- function(splits_a, splits_b, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_rf_info_cross_pairs`, splits_a, splits_b, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_msd_cross_pairs <- function(splits_a, splits_b, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_msd_cross_pairs`, splits_a, splits_b, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_msi_cross_pairs <- function(splits_a, splits_b, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_msi_cross_pairs`, splits_a, splits_b, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_shared_phylo_cross_pairs <- function(splits_a, splits_b, n_tip, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_shared_phylo_cross_pairs`, splits_a, splits_b, n_tip, n_threads)
+}
+
+#' @keywords internal
+cpp_jaccard_cross_pairs <- function(splits_a, splits_b, n_tip, k = 1.0, allow_conflict = TRUE, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_jaccard_cross_pairs`, splits_a, splits_b, n_tip, k, allow_conflict, n_threads)
+}
+
+cpp_clustering_entropy_batch <- function(splits_list, n_tip) {
+    .Call(`_TreeDist_cpp_clustering_entropy_batch`, splits_list, n_tip)
+}
+
+cpp_splitwise_info_batch <- function(splits_list, n_tip) {
+    .Call(`_TreeDist_cpp_splitwise_info_batch`, splits_list, n_tip)
+}
+
 path_vector <- function(edge) {
     .Call(`_TreeDist_path_vector`, edge)
-}
-
-vec_diff_euclidean <- function(vec1, vec2) {
-    .Call(`_TreeDist_vec_diff_euclidean`, vec1, vec2)
-}
-
-pair_diff_euclidean <- function(vecs) {
-    .Call(`_TreeDist_pair_diff_euclidean`, vecs)
 }
 
 reduce_trees <- function(x, y, original_label) {
@@ -114,6 +204,81 @@ spr_table_7 <- function(sp1, sp2) {
     .Call(`_TreeDist_spr_table_7`, sp1, sp2)
 }
 
+#' Transfer consensus (C++ implementation)
+#'
+#' @param splits_list List of raw matrices (one per tree), each from as.Splits().
+#' @param n_tip Number of tips.
+#' @param scale Logical: use scaled transfer distance?
+#' @param greedy_best_flag Logical: TRUE for "best", FALSE for "first".
+#' @param init_majority Logical: TRUE to start from majority-rule splits.
+#'
+#' @return A `LogicalVector` of length n_splits indicating which pooled splits
+#'   are included in the consensus, plus attributes "raw_splits" (a raw matrix
+#'   of all unique splits) and "light_side" (integer vector).
+#' @keywords internal
+cpp_transfer_consensus <- function(splits_list, n_tip, scale, greedy_best_flag, init_majority, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_transfer_consensus`, splits_list, n_tip, scale, greedy_best_flag, init_majority, n_threads)
+}
+
+#' @keywords internal
+cpp_tc_profile <- function(splits_list, n_tip, scale, greedy_best_flag, init_majority, n_iter, n_threads = 1L) {
+    .Call(`_TreeDist_cpp_tc_profile`, splits_list, n_tip, scale, greedy_best_flag, init_majority, n_iter, n_threads)
+}
+
+#' Per-pair transfer dissimilarity
+#'
+#' @param x,y Raw matrices representing splits (from as.Splits()).
+#' @param nTip Integer: number of tips.
+#'
+#' @return A list with components:
+#'   - score_scaled: scaled transfer dissimilarity (double)
+#'   - score_unscaled: unscaled transfer dissimilarity (double)
+#'   - `matching_xy`: integer vector, best match in y for each split in x (1-based, NA if sentinel)
+#'   - `matching_yx`: integer vector, best match in x for each split in y (1-based, NA if sentinel)
+#' @keywords internal
+cpp_transfer_dist <- function(x, y, nTip) {
+    .Call(`_TreeDist_cpp_transfer_dist`, x, y, nTip)
+}
+
+#' @keywords internal
+cpp_transfer_dist_scored <- function(x, y, nTip, scale) {
+    .Call(`_TreeDist_cpp_transfer_dist_scored`, x, y, nTip, scale)
+}
+
+#' All-pairs transfer dissimilarity (OpenMP)
+#'
+#' @param splits_list List of raw matrices (one per tree).
+#' @param n_tip Number of tips.
+#' @param scale Logical: use scaled transfer dissimilarity?
+#' @param n_threads Number of OpenMP threads.
+#'
+#' @return Numeric vector of length choose(N,2) in dist order.
+#' @keywords internal
+cpp_transfer_dist_all_pairs <- function(splits_list, n_tip, scale, n_threads) {
+    .Call(`_TreeDist_cpp_transfer_dist_all_pairs`, splits_list, n_tip, scale, n_threads)
+}
+
+#' Cross-pairs transfer dissimilarity (OpenMP)
+#'
+#' @param splits_a,splits_b Lists of raw matrices.
+#' @param n_tip Number of tips.
+#' @param scale Logical: use scaled transfer dissimilarity?
+#' @param n_threads Number of OpenMP threads.
+#'
+#' @return Numeric matrix of dimension `nA` x `nB`.
+#' @keywords internal
+cpp_transfer_dist_cross_pairs <- function(splits_a, splits_b, n_tip, scale, n_threads) {
+    .Call(`_TreeDist_cpp_transfer_dist_cross_pairs`, splits_a, splits_b, n_tip, scale, n_threads)
+}
+
+cpp_mci_impl_score <- function(x, y, n_tips) {
+    .Call(`_TreeDist_cpp_mci_impl_score`, x, y, n_tips)
+}
+
+cpp_sl_max_tips <- function() {
+    .Call(`_TreeDist_cpp_sl_max_tips`)
+}
+
 cpp_robinson_foulds_distance <- function(x, y, nTip) {
     .Call(`_TreeDist_cpp_robinson_foulds_distance`, x, y, nTip)
 }
@@ -138,7 +303,7 @@ cpp_mutual_clustering <- function(x, y, nTip) {
     .Call(`_TreeDist_cpp_mutual_clustering`, x, y, nTip)
 }
 
-cpp_shared_phylo <- function(x, y, nTip) {
-    .Call(`_TreeDist_cpp_shared_phylo`, x, y, nTip)
+cpp_shared_phylo <- function(x, y, nTip, force_slow = FALSE) {
+    .Call(`_TreeDist_cpp_shared_phylo`, x, y, nTip, force_slow)
 }
 

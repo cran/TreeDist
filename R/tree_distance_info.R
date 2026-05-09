@@ -121,6 +121,22 @@
 #' which the maintainer plans to attempt in the future; please [comment on GitHub](
 #' https://github.com/ms609/TreeTools/issues/141) if you would find this useful.
 #' 
+#' # Parallelism
+#' 
+#' When `tree2 = NULL` and all trees share the same tip labels, pairwise
+#' distance calculation uses a multi-threaded \acronym{OpenMP} batch path
+#' automatically.  Control the number of threads with the `"mc.cores"` option:
+#' 
+#' ```r
+#' options(mc.cores = parallel::detectCores())  # use all cores
+#' options(mc.cores = 4L)                        # or a fixed number
+#' ```
+#' 
+#' Do **not** call [`StartParallel()`] for these functions: a registered
+#' R cluster disables the \acronym{OpenMP} path and replaces it with slower
+#' inter-process communication.  See [`StartParallel()`] for full guidance
+#' on when an R cluster is appropriate.
+#' 
 #' @template tree12ListParams
 #' 
 #' @param normalize If a numeric value is provided, this will be used as a 
@@ -226,16 +242,47 @@ SharedPhylogeneticInfo <- function(tree1, tree2 = NULL, normalize = FALSE,
 DifferentPhylogeneticInfo <- function(tree1, tree2 = NULL, normalize = FALSE,
                                       reportMatching = FALSE) {
   
+  # Fast path (all-pairs): same tips, no matching — avoids duplicate as.Splits()
+  fast <- .FastDistPath(tree1, tree2, reportMatching,
+                        cpp_shared_phylo_all_pairs,
+                        cpp_splitwise_info_batch)
+  if (!is.null(fast)) {
+    spi <- fast[["info"]]
+    treesIndependentInfo <- .PairwiseSums(fast[["entropies"]])
+
+    ret <- .FloorNumericalNoise(treesIndependentInfo - spi - spi, treesIndependentInfo)
+    ret <- NormalizeInfo(ret, tree1, tree2, how = normalize,
+                         infoInBoth = treesIndependentInfo,
+                         InfoInTree = SplitwiseInfo, Combine = "+")
+    attributes(ret) <- attributes(spi)
+    return(ret)
+  }
+
+  # Fast path (cross-pairs): same tips, no matching — avoids duplicate as.Splits()
+  fast_many <- .FastManyManyPath(tree1, tree2, reportMatching,
+                                 cpp_shared_phylo_cross_pairs,
+                                 cpp_splitwise_info_batch)
+  if (!is.null(fast_many)) {
+    spi <- fast_many[["dists"]]
+    info1 <- fast_many[["info1"]]
+    info2 <- fast_many[["info2"]]
+    treesIndependentInfo <- outer(info1, info2, "+")
+
+    ret <- .FloorNumericalNoise(treesIndependentInfo - spi - spi, treesIndependentInfo)
+    ret <- NormalizeInfo(ret, tree1, tree2, how = normalize,
+                         infoInBoth = treesIndependentInfo,
+                         InfoInTree = SplitwiseInfo, Combine = "+")
+    return(ret)
+  }
+
   spi <- SharedPhylogeneticInfo(tree1, tree2, normalize = FALSE, diag = FALSE,
                                 reportMatching = reportMatching)
   treesIndependentInfo <- .MaxValue(tree1, tree2, SplitwiseInfo)
-  
-  ret <- treesIndependentInfo - spi - spi
-  ret <- NormalizeInfo(ret, tree1, tree2, how = normalize, 
+
+  ret <- .FloorNumericalNoise(treesIndependentInfo - spi - spi, treesIndependentInfo)
+  ret <- NormalizeInfo(ret, tree1, tree2, how = normalize,
                        infoInBoth = treesIndependentInfo,
                        InfoInTree = SplitwiseInfo, Combine = "+")
-  
-  ret[ret < .Machine[["double.eps"]] ^ 0.5] <- 0 # Catch floating point inaccuracy
   attributes(ret) <- attributes(spi)
   
   # Return:
@@ -252,16 +299,47 @@ PhylogeneticInfoDistance <- DifferentPhylogeneticInfo
 ClusteringInfoDistance <- function(tree1, tree2 = NULL, normalize = FALSE,
                                    reportMatching = FALSE) {
   
+  # Fast path (all-pairs): same tips, no matching — avoids duplicate as.Splits()
+  fast <- .FastDistPath(tree1, tree2, reportMatching,
+                        cpp_mutual_clustering_all_pairs,
+                        cpp_clustering_entropy_batch)
+  if (!is.null(fast)) {
+    mci <- fast[["info"]]
+    treesIndependentInfo <- .PairwiseSums(fast[["entropies"]])
+
+    ret <- .FloorNumericalNoise(treesIndependentInfo - mci - mci, treesIndependentInfo)
+    ret <- NormalizeInfo(ret, tree1, tree2, how = normalize,
+                         infoInBoth = treesIndependentInfo,
+                         InfoInTree = ClusteringEntropy, Combine = "+")
+    attributes(ret) <- attributes(mci)
+    return(ret)
+  }
+
+  # Fast path (cross-pairs): same tips, no matching — avoids duplicate as.Splits()
+  fast_many <- .FastManyManyPath(tree1, tree2, reportMatching,
+                                 cpp_mutual_clustering_cross_pairs,
+                                 cpp_clustering_entropy_batch)
+  if (!is.null(fast_many)) {
+    mci <- fast_many[["dists"]]
+    info1 <- fast_many[["info1"]]
+    info2 <- fast_many[["info2"]]
+    treesIndependentInfo <- outer(info1, info2, "+")
+
+    ret <- .FloorNumericalNoise(treesIndependentInfo - mci - mci, treesIndependentInfo)
+    ret <- NormalizeInfo(ret, tree1, tree2, how = normalize,
+                         infoInBoth = treesIndependentInfo,
+                         InfoInTree = ClusteringEntropy, Combine = "+")
+    return(ret)
+  }
+
   mci <- MutualClusteringInfo(tree1, tree2, normalize = FALSE, diag = FALSE,
                               reportMatching = reportMatching)
   treesIndependentInfo <- .MaxValue(tree1, tree2, ClusteringEntropy)
-  
-  ret <- treesIndependentInfo - mci - mci
+
+  ret <- .FloorNumericalNoise(treesIndependentInfo - mci - mci, treesIndependentInfo)
   ret <- NormalizeInfo(ret, tree1, tree2, how = normalize,
                        infoInBoth = treesIndependentInfo,
                        InfoInTree = ClusteringEntropy, Combine = "+")
-  
-  ret[ret < .Machine[["double.eps"]] ^ 0.5] <- 0 # Handle floating point inaccuracy
   attributes(ret) <- attributes(mci)
   
   # Return:

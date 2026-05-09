@@ -1,3 +1,125 @@
+# TreeDist 2.14.0 (2026-05-07)
+
+## New features
+
+- `TransferConsensus()` constructs a consensus tree that minimizes the sum
+  of transfer distances to a set of input trees, using a greedy
+  add-and-prune heuristic.  Unlike majority-rule consensus, which can be
+  highly unresolved when phylogenetic signal is diffuse, the transfer
+  consensus uses the finer-grained transfer distance to produce more
+  resolved trees.
+
+- `TransferDist()` computes the transfer dissimilarity between phylogenetic
+  trees, with scaled and unscaled variants.  Supports all-pairs, cross-pairs,
+  and single-pair computations.
+
+- LAP (Jonker–Volgenant linear assignment) and MCI (Mutual Clustering
+  Information) C++ implementations are now exposed via `inst/include/TreeDist/`
+  headers, allowing downstream packages to use `LinkingTo: TreeDist`.
+
+## Internals
+
+- Stack-allocated split buffers replaced with dynamically-sized vectors,
+  removing a hard dependency on the compile-time `SL_MAX_SPLITS` constant.
+  TreeDist now supports trees of any size permitted by TreeTools.
+
+- **Large-tree support (requires TreeTools ≥ 2.3.0):** all distance
+  functions now accept trees with up to 32 767 tips (previously limited
+  to `SL_MAX_TIPS`, 2048 with TreeTools ≤ 2.2.0).  The R-level tip-count
+  guard (`.CheckMaxTips()`) detects the TreeTools version at load time and
+  unlocks the higher ceiling automatically; no code changes are needed.
+  All integer counters in the C++ hot paths have been widened from `int16`
+  to `split_int` (`int32`) to handle split counts above 32 767 without
+  overflow.  Direct `lg2[]` table accesses have been replaced with
+  `lg2_lookup()` fallback helpers so that trees with more tips than
+  `SL_MAX_TIPS` are computed correctly via `std::log2` / `std::lgamma`.
+
+## Performance
+
+- `RobinsonFoulds()` now uses a fast C++ batch path for cross-distance
+  computations (tree list vs tree list), matching the existing all-pairs
+  batch performance.  Previously, cross-distance calls fell through to
+  per-pair R dispatch (~27× slower per pair); the new path achieves ~21×
+  speedup on typical inputs (e.g. 50 × 250 trees, 50 tips).
+
+# TreeDist 2.13.0 (2026-03-17)
+
+## New features
+
+- `MCITree()` selects the tree from a posterior sample with the highest
+  total split information content — a Maximum Clade Information analogue
+  of the Maximum Clade Credibility tree.
+
+## Performance
+
+Pairwise distance computation has been substantially optimized.
+Typical speedups over v2.12.0 for tree sets where most splits are shared
+(MCMC posteriors, bootstrap replicates):
+
+| Metric                      | 100 × 50 tips | 40 × 200 tips |
+|-----------------------------|--------------:|--------------:|
+| `ClusteringInfoDistance`    |          ~5×  |        ~12×   |
+| `MatchingSplitDistance`     |          ~7×  |        ~11×   |
+| `InfoRobinsonFoulds`        |          ~4×  |         ~5×   |
+| `DifferentPhylogeneticInfo` |         ~1.3× |         ~1.1× |
+| `MatchingSplitInfoDistance` |         ~1.4× |         ~1×   |
+
+### OpenMP parallelism
+
+- All pairwise distance functions now use an OpenMP multi-threaded batch
+  path when the package is compiled with OpenMP support, for both all-pairs
+  and cross-pairs (tree1 vs tree2) computations.
+
+- The number of OpenMP threads is controlled by `options(mc.cores = N)`;
+  the default is `1` (single-threaded).  Set `mc.cores` to
+  `parallel::detectCores()` or a fixed integer to enable multi-threading.
+  `StartParallel()` / `StopParallel()` are no longer needed when OpenMP
+  is available.
+
+### Algorithmic improvements
+
+- Exact split matches between trees are now detected via an O(_n_ log _n_)
+  sort-and-merge pre-scan, reducing the linear assignment problem to
+  only the unmatched splits.  For tree sets with high split overlap,
+  this yields the largest portion of the speedups above.
+
+- Internal lookup table for log₂ values shrunk from 32 MB to 16 KB,
+  improving L1 cache locality for information-based distance metrics.
+
+- Information content accumulation in `MutualClusteringInfo()` rewritten
+  as a branchless expression, reducing per-split-pair table lookups from
+  16 to 4 and eliminating 8 branches.
+
+- `spi_overlap()` (used by `SharedPhylogeneticInfo()`,
+  `MatchingSplitInfoDistance()`, and `JaccardRobinsonFoulds()`) rewritten
+  to use a single-pass hardware POPCNT approach, replacing the previous
+  four-pass boolean scan.
+
+- Hardware POPCNT instruction now used on x86-64 via inline assembly
+  (requires TreeTools ≥ 2.2).
+
+- Internal cost-matrix storage is now pooled across tree pairs within each
+  thread, eliminating per-pair heap allocation overhead.
+
+### R-level fast paths
+
+- `ClusteringInfoDistance()`, `DifferentPhylogeneticInfo()`,
+  `MatchingSplitInfoDistance()`, and `InfoRobinsonFoulds()` now avoid
+  duplicate `as.Splits()` conversions and use C++ batch functions for
+  per-tree entropy/information computation.  This reduces R-level
+  overhead by ~8–17% for typical analyses.
+
+- Cross-pairs computations (`tree1` vs `tree2` where both are lists) now
+  use the same optimized batch path as all-pairs computations.
+
+### Kendall & Colijn distance
+
+- `KCVector()` reimplemented in C++, giving ~220× speedup per tree.
+
+- All-pairs and cross-pairs `KendallColijn()` Euclidean distances now
+  computed in C++ (`pair_diff_euclidean()`, `vec_diff_euclidean()`).
+
+
 # TreeDist 2.12.0 (2026-02-12)
 
 - Support larger trees in some functions by updating some functions to use

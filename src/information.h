@@ -2,7 +2,7 @@
 #define _TREEDIST_INFO_H
 
 #include <Rcpp/Lightest>
-#include <cassert> /* for log2() */
+#include <TreeTools/assert.h>
 #include <cmath> /* for log2() */
 #include "ints.h" /* for int16 */
 
@@ -48,14 +48,12 @@ __attribute__((constructor))
 
 inline double split_phylo_info(const int32 n_in, const int32 *n_tip,
                                const double p) {
-  if (*n_tip > CT_MAX_LEAVES) {
-    Rcpp::stop("This many leaves are not yet supported.");
-  }
+  ASSERT(*n_tip <= CT_MAX_LEAVES && "This many leaves are not yet supported.");
   const int32 n_out = *n_tip - n_in;
-  assert(p > 0);
-  assert(p <= 1);
-  assert(n_in > 1);
-  assert(n_out > 1);
+  ASSERT(p > 0);
+  ASSERT(p <= 1);
+  ASSERT(n_in > 1);
+  ASSERT(n_out > 1);
   if (p == 1) {
     return (l2unrooted[*n_tip] - l2rooted[n_in] - l2rooted[n_out]);
   } else {
@@ -74,14 +72,12 @@ inline double split_phylo_info(const int32 n_in, const int32 *n_tip,
 
 inline double split_clust_info(const int32 n_in, const int32 *n_tip,
                                const double p) {
-  if (*n_tip > CT_MAX_LEAVES) {
-    Rcpp::stop("This many leaves are not yet supported.");
-  }
+  ASSERT(*n_tip <= CT_MAX_LEAVES && "This many leaves are not yet supported.");
   const int32 n_out = *n_tip - n_in;
-  assert(p > 0);
-  assert(p <= 1);
-  assert(n_in > 1);
-  assert(n_out > 1);
+  ASSERT(p > 0);
+  ASSERT(p <= 1);
+  ASSERT(n_in > 1);
+  ASSERT(n_out > 1);
   return -p * (
       (((n_in * l2[n_in]) + (n_out * l2[n_out])) / *n_tip) - l2[*n_tip]
   );
@@ -120,7 +116,7 @@ double entropy_int(const Rcpp::IntegerVector &n) {
 // TODO This is copied from TreeSearch/src/expected_mi.cpp - double definition
 // is bad practice; define once (here? TreeTools?) and cross-reference.
 // TODO this also somewhat duplicates the above...
-#define MAX_FACTORIAL_LOOKUP 8192
+#define MAX_FACTORIAL_LOOKUP 32768
 static double log2_factorial_table[MAX_FACTORIAL_LOOKUP + 1];
 static const double LOG2_E = 1.4426950408889634;
 

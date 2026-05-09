@@ -44,6 +44,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// robinson_foulds_cross_pairs
+IntegerMatrix robinson_foulds_cross_pairs(const List& tables_a, const List& tables_b);
+RcppExport SEXP _TreeDist_robinson_foulds_cross_pairs(SEXP tables_aSEXP, SEXP tables_bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type tables_a(tables_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type tables_b(tables_bSEXP);
+    rcpp_result_gen = Rcpp::wrap(robinson_foulds_cross_pairs(tables_a, tables_b));
+    return rcpp_result_gen;
+END_RCPP
+}
 // consensus_info
 double consensus_info(const List trees, const LogicalVector phylo, const NumericVector p);
 RcppExport SEXP _TreeDist_consensus_info(SEXP treesSEXP, SEXP phyloSEXP, SEXP pSEXP) {
@@ -173,6 +185,41 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_kc_vector
+IntegerVector cpp_kc_vector(IntegerMatrix edge, IntegerVector tip_order);
+RcppExport SEXP _TreeDist_cpp_kc_vector(SEXP edgeSEXP, SEXP tip_orderSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type edge(edgeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type tip_order(tip_orderSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_kc_vector(edge, tip_order));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vec_diff_euclidean
+NumericMatrix vec_diff_euclidean(const IntegerMatrix vec1, const IntegerMatrix vec2);
+RcppExport SEXP _TreeDist_vec_diff_euclidean(SEXP vec1SEXP, SEXP vec2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix >::type vec1(vec1SEXP);
+    Rcpp::traits::input_parameter< const IntegerMatrix >::type vec2(vec2SEXP);
+    rcpp_result_gen = Rcpp::wrap(vec_diff_euclidean(vec1, vec2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pair_diff_euclidean
+NumericVector pair_diff_euclidean(const IntegerMatrix vecs);
+RcppExport SEXP _TreeDist_pair_diff_euclidean(SEXP vecsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const IntegerMatrix >::type vecs(vecsSEXP);
+    rcpp_result_gen = Rcpp::wrap(pair_diff_euclidean(vecs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // lapjv
 Rcpp::List lapjv(Rcpp::NumericMatrix& x, Rcpp::NumericVector& maxX);
 RcppExport SEXP _TreeDist_lapjv(SEXP xSEXP, SEXP maxXSEXP) {
@@ -211,6 +258,196 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_mutual_clustering_all_pairs
+NumericVector cpp_mutual_clustering_all_pairs(const List& splits_list, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_mutual_clustering_all_pairs(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_mutual_clustering_all_pairs(splits_list, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_rf_info_all_pairs
+NumericVector cpp_rf_info_all_pairs(const List& splits_list, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_rf_info_all_pairs(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_rf_info_all_pairs(splits_list, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_msd_all_pairs
+NumericVector cpp_msd_all_pairs(const List& splits_list, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_msd_all_pairs(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_msd_all_pairs(splits_list, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_msi_all_pairs
+NumericVector cpp_msi_all_pairs(const List& splits_list, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_msi_all_pairs(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_msi_all_pairs(splits_list, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_shared_phylo_all_pairs
+NumericVector cpp_shared_phylo_all_pairs(const List& splits_list, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_shared_phylo_all_pairs(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_shared_phylo_all_pairs(splits_list, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_jaccard_all_pairs
+NumericVector cpp_jaccard_all_pairs(const List& splits_list, const int n_tip, const double k, const bool allow_conflict, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_jaccard_all_pairs(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP kSEXP, SEXP allow_conflictSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const double >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const bool >::type allow_conflict(allow_conflictSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_jaccard_all_pairs(splits_list, n_tip, k, allow_conflict, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_mutual_clustering_cross_pairs
+NumericMatrix cpp_mutual_clustering_cross_pairs(const List& splits_a, const List& splits_b, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_mutual_clustering_cross_pairs(SEXP splits_aSEXP, SEXP splits_bSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_a(splits_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type splits_b(splits_bSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_mutual_clustering_cross_pairs(splits_a, splits_b, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_rf_info_cross_pairs
+NumericMatrix cpp_rf_info_cross_pairs(const List& splits_a, const List& splits_b, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_rf_info_cross_pairs(SEXP splits_aSEXP, SEXP splits_bSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_a(splits_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type splits_b(splits_bSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_rf_info_cross_pairs(splits_a, splits_b, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_msd_cross_pairs
+NumericMatrix cpp_msd_cross_pairs(const List& splits_a, const List& splits_b, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_msd_cross_pairs(SEXP splits_aSEXP, SEXP splits_bSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_a(splits_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type splits_b(splits_bSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_msd_cross_pairs(splits_a, splits_b, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_msi_cross_pairs
+NumericMatrix cpp_msi_cross_pairs(const List& splits_a, const List& splits_b, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_msi_cross_pairs(SEXP splits_aSEXP, SEXP splits_bSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_a(splits_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type splits_b(splits_bSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_msi_cross_pairs(splits_a, splits_b, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_shared_phylo_cross_pairs
+NumericMatrix cpp_shared_phylo_cross_pairs(const List& splits_a, const List& splits_b, const int n_tip, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_shared_phylo_cross_pairs(SEXP splits_aSEXP, SEXP splits_bSEXP, SEXP n_tipSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_a(splits_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type splits_b(splits_bSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_shared_phylo_cross_pairs(splits_a, splits_b, n_tip, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_jaccard_cross_pairs
+NumericMatrix cpp_jaccard_cross_pairs(const List& splits_a, const List& splits_b, const int n_tip, const double k, const bool allow_conflict, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_jaccard_cross_pairs(SEXP splits_aSEXP, SEXP splits_bSEXP, SEXP n_tipSEXP, SEXP kSEXP, SEXP allow_conflictSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_a(splits_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type splits_b(splits_bSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const double >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const bool >::type allow_conflict(allow_conflictSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_jaccard_cross_pairs(splits_a, splits_b, n_tip, k, allow_conflict, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_clustering_entropy_batch
+NumericVector cpp_clustering_entropy_batch(const List& splits_list, const int n_tip);
+RcppExport SEXP _TreeDist_cpp_clustering_entropy_batch(SEXP splits_listSEXP, SEXP n_tipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_clustering_entropy_batch(splits_list, n_tip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_splitwise_info_batch
+NumericVector cpp_splitwise_info_batch(const List& splits_list, const int n_tip);
+RcppExport SEXP _TreeDist_cpp_splitwise_info_batch(SEXP splits_listSEXP, SEXP n_tipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_splitwise_info_batch(splits_list, n_tip));
+    return rcpp_result_gen;
+END_RCPP
+}
 // path_vector
 IntegerVector path_vector(IntegerMatrix edge);
 RcppExport SEXP _TreeDist_path_vector(SEXP edgeSEXP) {
@@ -219,29 +456,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerMatrix >::type edge(edgeSEXP);
     rcpp_result_gen = Rcpp::wrap(path_vector(edge));
-    return rcpp_result_gen;
-END_RCPP
-}
-// vec_diff_euclidean
-NumericMatrix vec_diff_euclidean(const IntegerMatrix vec1, const IntegerMatrix vec2);
-RcppExport SEXP _TreeDist_vec_diff_euclidean(SEXP vec1SEXP, SEXP vec2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const IntegerMatrix >::type vec1(vec1SEXP);
-    Rcpp::traits::input_parameter< const IntegerMatrix >::type vec2(vec2SEXP);
-    rcpp_result_gen = Rcpp::wrap(vec_diff_euclidean(vec1, vec2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// pair_diff_euclidean
-NumericVector pair_diff_euclidean(const IntegerMatrix vecs);
-RcppExport SEXP _TreeDist_pair_diff_euclidean(SEXP vecsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const IntegerMatrix >::type vecs(vecsSEXP);
-    rcpp_result_gen = Rcpp::wrap(pair_diff_euclidean(vecs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -317,6 +531,118 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::RawVector& >::type sp1(sp1SEXP);
     Rcpp::traits::input_parameter< const Rcpp::RawVector& >::type sp2(sp2SEXP);
     rcpp_result_gen = Rcpp::wrap(spr_table_7(sp1, sp2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_transfer_consensus
+List cpp_transfer_consensus(const List& splits_list, const int n_tip, const bool scale, const bool greedy_best_flag, const bool init_majority, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_transfer_consensus(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP scaleSEXP, SEXP greedy_best_flagSEXP, SEXP init_majoritySEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const bool >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< const bool >::type greedy_best_flag(greedy_best_flagSEXP);
+    Rcpp::traits::input_parameter< const bool >::type init_majority(init_majoritySEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_transfer_consensus(splits_list, n_tip, scale, greedy_best_flag, init_majority, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_tc_profile
+Rcpp::NumericVector cpp_tc_profile(const List& splits_list, const int n_tip, const bool scale, const bool greedy_best_flag, const bool init_majority, const int n_iter, const int n_threads);
+RcppExport SEXP _TreeDist_cpp_tc_profile(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP scaleSEXP, SEXP greedy_best_flagSEXP, SEXP init_majoritySEXP, SEXP n_iterSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< const bool >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< const bool >::type greedy_best_flag(greedy_best_flagSEXP);
+    Rcpp::traits::input_parameter< const bool >::type init_majority(init_majoritySEXP);
+    Rcpp::traits::input_parameter< const int >::type n_iter(n_iterSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_tc_profile(splits_list, n_tip, scale, greedy_best_flag, init_majority, n_iter, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_transfer_dist
+List cpp_transfer_dist(const RawMatrix& x, const RawMatrix& y, const IntegerVector& nTip);
+RcppExport SEXP _TreeDist_cpp_transfer_dist(SEXP xSEXP, SEXP ySEXP, SEXP nTipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const RawMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const RawMatrix& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type nTip(nTipSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_transfer_dist(x, y, nTip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_transfer_dist_scored
+List cpp_transfer_dist_scored(const RawMatrix& x, const RawMatrix& y, const IntegerVector& nTip, bool scale);
+RcppExport SEXP _TreeDist_cpp_transfer_dist_scored(SEXP xSEXP, SEXP ySEXP, SEXP nTipSEXP, SEXP scaleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const RawMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const RawMatrix& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type nTip(nTipSEXP);
+    Rcpp::traits::input_parameter< bool >::type scale(scaleSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_transfer_dist_scored(x, y, nTip, scale));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_transfer_dist_all_pairs
+NumericVector cpp_transfer_dist_all_pairs(const List& splits_list, int n_tip, bool scale, int n_threads);
+RcppExport SEXP _TreeDist_cpp_transfer_dist_all_pairs(SEXP splits_listSEXP, SEXP n_tipSEXP, SEXP scaleSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_list(splits_listSEXP);
+    Rcpp::traits::input_parameter< int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< bool >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_transfer_dist_all_pairs(splits_list, n_tip, scale, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_transfer_dist_cross_pairs
+NumericMatrix cpp_transfer_dist_cross_pairs(const List& splits_a, const List& splits_b, int n_tip, bool scale, int n_threads);
+RcppExport SEXP _TreeDist_cpp_transfer_dist_cross_pairs(SEXP splits_aSEXP, SEXP splits_bSEXP, SEXP n_tipSEXP, SEXP scaleSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type splits_a(splits_aSEXP);
+    Rcpp::traits::input_parameter< const List& >::type splits_b(splits_bSEXP);
+    Rcpp::traits::input_parameter< int >::type n_tip(n_tipSEXP);
+    Rcpp::traits::input_parameter< bool >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_transfer_dist_cross_pairs(splits_a, splits_b, n_tip, scale, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_mci_impl_score
+double cpp_mci_impl_score(const Rcpp::RawMatrix& x, const Rcpp::RawMatrix& y, int n_tips);
+RcppExport SEXP _TreeDist_cpp_mci_impl_score(SEXP xSEXP, SEXP ySEXP, SEXP n_tipsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::RawMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::RawMatrix& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type n_tips(n_tipsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_mci_impl_score(x, y, n_tips));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_sl_max_tips
+int cpp_sl_max_tips();
+RcppExport SEXP _TreeDist_cpp_sl_max_tips() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_sl_max_tips());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -401,15 +727,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_shared_phylo
-List cpp_shared_phylo(const RawMatrix& x, const RawMatrix& y, const IntegerVector& nTip);
-RcppExport SEXP _TreeDist_cpp_shared_phylo(SEXP xSEXP, SEXP ySEXP, SEXP nTipSEXP) {
+List cpp_shared_phylo(const RawMatrix& x, const RawMatrix& y, const IntegerVector& nTip, const bool force_slow);
+RcppExport SEXP _TreeDist_cpp_shared_phylo(SEXP xSEXP, SEXP ySEXP, SEXP nTipSEXP, SEXP force_slowSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const RawMatrix& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const RawMatrix& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type nTip(nTipSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_shared_phylo(x, y, nTip));
+    Rcpp::traits::input_parameter< const bool >::type force_slow(force_slowSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_shared_phylo(x, y, nTip, force_slow));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -418,6 +745,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_TreeDist_binary_entropy_counts", (DL_FUNC) &_TreeDist_binary_entropy_counts, 2},
     {"_TreeDist_COMCLUST", (DL_FUNC) &_TreeDist_COMCLUST, 1},
     {"_TreeDist_robinson_foulds_all_pairs", (DL_FUNC) &_TreeDist_robinson_foulds_all_pairs, 1},
+    {"_TreeDist_robinson_foulds_cross_pairs", (DL_FUNC) &_TreeDist_robinson_foulds_cross_pairs, 2},
     {"_TreeDist_consensus_info", (DL_FUNC) &_TreeDist_consensus_info, 3},
     {"_TreeDist_HMI_xptr", (DL_FUNC) &_TreeDist_HMI_xptr, 2},
     {"_TreeDist_HH_xptr", (DL_FUNC) &_TreeDist_HH_xptr, 1},
@@ -429,25 +757,48 @@ static const R_CallMethodDef CallEntries[] = {
     {"_TreeDist_relabel_hpart", (DL_FUNC) &_TreeDist_relabel_hpart, 2},
     {"_TreeDist_entropy_int", (DL_FUNC) &_TreeDist_entropy_int, 1},
     {"_TreeDist_expected_mi", (DL_FUNC) &_TreeDist_expected_mi, 2},
+    {"_TreeDist_cpp_kc_vector", (DL_FUNC) &_TreeDist_cpp_kc_vector, 2},
+    {"_TreeDist_vec_diff_euclidean", (DL_FUNC) &_TreeDist_vec_diff_euclidean, 2},
+    {"_TreeDist_pair_diff_euclidean", (DL_FUNC) &_TreeDist_pair_diff_euclidean, 1},
     {"_TreeDist_lapjv", (DL_FUNC) &_TreeDist_lapjv, 2},
     {"_TreeDist_cpp_mast", (DL_FUNC) &_TreeDist_cpp_mast, 3},
     {"_TreeDist_cpp_nni_distance", (DL_FUNC) &_TreeDist_cpp_nni_distance, 3},
+    {"_TreeDist_cpp_mutual_clustering_all_pairs", (DL_FUNC) &_TreeDist_cpp_mutual_clustering_all_pairs, 3},
+    {"_TreeDist_cpp_rf_info_all_pairs", (DL_FUNC) &_TreeDist_cpp_rf_info_all_pairs, 3},
+    {"_TreeDist_cpp_msd_all_pairs", (DL_FUNC) &_TreeDist_cpp_msd_all_pairs, 3},
+    {"_TreeDist_cpp_msi_all_pairs", (DL_FUNC) &_TreeDist_cpp_msi_all_pairs, 3},
+    {"_TreeDist_cpp_shared_phylo_all_pairs", (DL_FUNC) &_TreeDist_cpp_shared_phylo_all_pairs, 3},
+    {"_TreeDist_cpp_jaccard_all_pairs", (DL_FUNC) &_TreeDist_cpp_jaccard_all_pairs, 5},
+    {"_TreeDist_cpp_mutual_clustering_cross_pairs", (DL_FUNC) &_TreeDist_cpp_mutual_clustering_cross_pairs, 4},
+    {"_TreeDist_cpp_rf_info_cross_pairs", (DL_FUNC) &_TreeDist_cpp_rf_info_cross_pairs, 4},
+    {"_TreeDist_cpp_msd_cross_pairs", (DL_FUNC) &_TreeDist_cpp_msd_cross_pairs, 4},
+    {"_TreeDist_cpp_msi_cross_pairs", (DL_FUNC) &_TreeDist_cpp_msi_cross_pairs, 4},
+    {"_TreeDist_cpp_shared_phylo_cross_pairs", (DL_FUNC) &_TreeDist_cpp_shared_phylo_cross_pairs, 4},
+    {"_TreeDist_cpp_jaccard_cross_pairs", (DL_FUNC) &_TreeDist_cpp_jaccard_cross_pairs, 6},
+    {"_TreeDist_cpp_clustering_entropy_batch", (DL_FUNC) &_TreeDist_cpp_clustering_entropy_batch, 2},
+    {"_TreeDist_cpp_splitwise_info_batch", (DL_FUNC) &_TreeDist_cpp_splitwise_info_batch, 2},
     {"_TreeDist_path_vector", (DL_FUNC) &_TreeDist_path_vector, 1},
-    {"_TreeDist_vec_diff_euclidean", (DL_FUNC) &_TreeDist_vec_diff_euclidean, 2},
-    {"_TreeDist_pair_diff_euclidean", (DL_FUNC) &_TreeDist_pair_diff_euclidean, 1},
     {"_TreeDist_reduce_trees", (DL_FUNC) &_TreeDist_reduce_trees, 3},
     {"_TreeDist_mismatch_size", (DL_FUNC) &_TreeDist_mismatch_size, 2},
     {"_TreeDist_confusion", (DL_FUNC) &_TreeDist_confusion, 2},
     {"_TreeDist_keep_and_reroot", (DL_FUNC) &_TreeDist_keep_and_reroot, 3},
     {"_TreeDist_keep_and_reduce", (DL_FUNC) &_TreeDist_keep_and_reduce, 3},
     {"_TreeDist_spr_table_7", (DL_FUNC) &_TreeDist_spr_table_7, 2},
+    {"_TreeDist_cpp_transfer_consensus", (DL_FUNC) &_TreeDist_cpp_transfer_consensus, 6},
+    {"_TreeDist_cpp_tc_profile", (DL_FUNC) &_TreeDist_cpp_tc_profile, 7},
+    {"_TreeDist_cpp_transfer_dist", (DL_FUNC) &_TreeDist_cpp_transfer_dist, 3},
+    {"_TreeDist_cpp_transfer_dist_scored", (DL_FUNC) &_TreeDist_cpp_transfer_dist_scored, 4},
+    {"_TreeDist_cpp_transfer_dist_all_pairs", (DL_FUNC) &_TreeDist_cpp_transfer_dist_all_pairs, 4},
+    {"_TreeDist_cpp_transfer_dist_cross_pairs", (DL_FUNC) &_TreeDist_cpp_transfer_dist_cross_pairs, 5},
+    {"_TreeDist_cpp_mci_impl_score", (DL_FUNC) &_TreeDist_cpp_mci_impl_score, 3},
+    {"_TreeDist_cpp_sl_max_tips", (DL_FUNC) &_TreeDist_cpp_sl_max_tips, 0},
     {"_TreeDist_cpp_robinson_foulds_distance", (DL_FUNC) &_TreeDist_cpp_robinson_foulds_distance, 3},
     {"_TreeDist_cpp_robinson_foulds_info", (DL_FUNC) &_TreeDist_cpp_robinson_foulds_info, 3},
     {"_TreeDist_cpp_matching_split_distance", (DL_FUNC) &_TreeDist_cpp_matching_split_distance, 3},
     {"_TreeDist_cpp_jaccard_similarity", (DL_FUNC) &_TreeDist_cpp_jaccard_similarity, 5},
     {"_TreeDist_cpp_msi_distance", (DL_FUNC) &_TreeDist_cpp_msi_distance, 3},
     {"_TreeDist_cpp_mutual_clustering", (DL_FUNC) &_TreeDist_cpp_mutual_clustering, 3},
-    {"_TreeDist_cpp_shared_phylo", (DL_FUNC) &_TreeDist_cpp_shared_phylo, 3},
+    {"_TreeDist_cpp_shared_phylo", (DL_FUNC) &_TreeDist_cpp_shared_phylo, 4},
     {NULL, NULL, 0}
 };
 

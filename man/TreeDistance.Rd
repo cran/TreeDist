@@ -258,6 +258,21 @@ Trees with over 8192 leaves require further modification of the source code,
 which the maintainer plans to attempt in the future; please \href{https://github.com/ms609/TreeTools/issues/141}{comment on GitHub} if you would find this useful.
 }
 
+\section{Parallelism}{
+When \code{tree2 = NULL} and all trees share the same tip labels, pairwise
+distance calculation uses a multi-threaded \acronym{OpenMP} batch path
+automatically.  Control the number of threads with the \code{"mc.cores"} option:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{options(mc.cores = parallel::detectCores())  # use all cores
+options(mc.cores = 4L)                        # or a fixed number
+}\if{html}{\out{</div>}}
+
+Do \strong{not} call \code{\link[=StartParallel]{StartParallel()}} for these functions: a registered
+R cluster disables the \acronym{OpenMP} path and replaces it with slower
+inter-process communication.  See \code{\link[=StartParallel]{StartParallel()}} for full guidance
+on when an R cluster is appropriate.
+}
+
 \examples{
 tree1 <- ape::read.tree(text="((((a, b), c), d), (e, (f, (g, h))));")
 tree2 <- ape::read.tree(text="(((a, b), (c, d)), ((e, f), (g, h)));")
@@ -303,17 +318,18 @@ MutualClusteringInfoSplits(splits1, splits2)
 \insertAllCited{}
 }
 \seealso{
-Other tree distances: 
-\code{\link{HierarchicalMutualInfo}()},
-\code{\link{JaccardRobinsonFoulds}()},
-\code{\link{KendallColijn}()},
-\code{\link{MASTSize}()},
-\code{\link{MatchingSplitDistance}()},
-\code{\link{NNIDist}()},
-\code{\link{NyeSimilarity}()},
-\code{\link{PathDist}()},
+Other tree distances:
+\code{\link[=HierarchicalMutualInfo]{HierarchicalMutualInfo()}},
+\code{\link[=JaccardRobinsonFoulds]{JaccardRobinsonFoulds()}},
+\code{\link[=KendallColijn]{KendallColijn()}},
+\code{\link[=MASTSize]{MASTSize()}},
+\code{\link[=MatchingSplitDistance]{MatchingSplitDistance()}},
+\code{\link[=NNIDist]{NNIDist()}},
+\code{\link[=NyeSimilarity]{NyeSimilarity()}},
+\code{\link[=PathDist]{PathDist()}},
 \code{\link{Robinson-Foulds}},
-\code{\link{SPRDist}()}
+\code{\link[=SPRDist]{SPRDist()}},
+\code{\link[=TransferDist]{TransferDist()}}
 }
 \author{
 \href{https://orcid.org/0000-0001-5660-1727}{Martin R. Smith}

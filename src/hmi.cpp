@@ -5,6 +5,19 @@ using namespace Rcpp;
 
 namespace TreeDist {
 
+// Hardware POPCNT via inline asm (no -mpopcnt flag needed)
+static inline size_t popcnt64(uint64_t x) {
+#if (defined(__GNUC__) || defined(__clang__)) && defined(__x86_64__)
+  uint64_t result;
+  __asm__ ("popcnt %1, %0" : "=r" (result) : "r" (x));
+  return result;
+#elif defined(_MSC_VER) && defined(_M_X64)
+  return __popcnt64(x);
+#else
+  return __builtin_popcountll(x);
+#endif
+}
+
 static inline double x_log_x(size_t x) {
   return x > 1 ? x * std::log(x) : 0.0;
 }
@@ -16,7 +29,7 @@ static inline size_t intersection_size(const std::vector<uint64_t>& A,
   size_t size = A.size();
   
   for (size_t i = 0; i < size; ++i) {
-    count += __builtin_popcountll(A[i] & B[i]);
+    count += popcnt64(A[i] & B[i]);
   }
   return count;
 }
@@ -126,9 +139,8 @@ double hierarchical_self_info(const std::vector<TreeDist::HNode>& nodes, size_t 
 double HMI_xptr(SEXP ptr1, SEXP ptr2) {
   Rcpp::XPtr<TreeDist::HPart> hp1(ptr1);
   Rcpp::XPtr<TreeDist::HPart> hp2(ptr2);
-  if (hp1->nodes[hp1->root].n_tip != hp2->nodes[hp2->root].n_tip) {
-    Rcpp::stop("Trees must have the same number of leaves");
-  }
+  ASSERT(hp1->nodes[hp1->root].n_tip == hp2->nodes[hp2->root].n_tip
+         && "Trees must have the same number of leaves");
   return TreeDist::hierarchical_mutual_info(hp1->nodes, hp1->root,
                                             hp2->nodes, hp2->root).second;
 }
@@ -157,12 +169,8 @@ Rcpp::NumericVector EHMI_xptr(SEXP hp1_ptr, SEXP hp2_ptr,
                               double tolerance = 0.01,
                               int minResample = 36) {
   
-  if (minResample < 2) {
-    Rcpp::stop("Must perform at least one resampling");
-  }
-  if (tolerance < 1e-8) {
-    Rcpp::stop("Tolerance too low");
-  }
+  ASSERT(minResample >= 2 && "Must perform at least one resampling");
+  ASSERT(tolerance >= 1e-8 && "Tolerance too low");
   
   Rcpp::XPtr<TreeDist::HPart> hp1(hp1_ptr);
   Rcpp::XPtr<TreeDist::HPart> hp2(hp2_ptr);
