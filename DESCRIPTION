@@ -1,6 +1,6 @@
 Package: TreeDist
 Title: Calculate and Map Distances Between Phylogenetic Trees
-Version: 2.14.0
+Version: 2.14.1
 Authors@R: c(person("Martin R.", "Smith",
                     email = "martin.smith@durham.ac.uk", 
                     role = c("aut", "cre", "cph", "prg"), 
@@ -69,7 +69,7 @@ Encoding: UTF-8
 Language: en-GB
 X-schema.org-keywords: phylogenetics, tree-distance
 NeedsCompilation: yes
-Packaged: 2026-05-07 15:20:18 UTC; pjjg18
+Packaged: 2026-06-10 10:46:37 UTC; pjjg18
 Author: Martin R. Smith [aut, cre, cph, prg] (ORCID:
     <https://orcid.org/0000-0001-5660-1727>),
   Roy Jonker [prg, cph] (LAP algorithm),
@@ -78,4 +78,4 @@ Author: Martin R. Smith [aut, cre, cph, prg] (ORCID:
   Neil Kaye [cph] (Mercator image)
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2026-05-09 14:41:57 UTC
+Date/Publication: 2026-06-10 12:10:08 UTC

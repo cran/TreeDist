@@ -43,20 +43,31 @@ KMeansPP.matrix <- function(x, k = 2, nstart = 10, ...) {
   }
   
   n <- dim(x)[[1]]
+  nCol <- dim(x)[[2]]
   ret <- list(tot.withinss = Inf)
-  d <- as.matrix(dist(x))
-  
-  for (start in seq_len(nstart)) {  
-    centres <- c(sample.int(n, 1), numeric(k - 1))
-    
+
+  # k-means++ seeding needs, at each step, only the Euclidean distance from the
+  # chosen centre to all n points: an O(n * nCol) computation per centre.
+  # Computing these rows on the fly avoids materializing the full n * n distance
+  # matrix (O(n ^ 2) time and memory), so this method scales to large n.
+  .DistanceRow <- function(centre) {
+    sqrt(.rowSums((x - rep(x[centre, ], each = n)) ^ 2, n, nCol))
+  }
+
+  for (start in seq_len(nstart)) {
+    centres <- integer(k)
+    centres[1L] <- sample.int(n, 1L)
+    min_d <- .DistanceRow(centres[1L])
+
     for (i in 2:k) {
-      p <- apply(d[centres, , drop = FALSE], 2, min) ^ 2
+      p <- min_d ^ 2
       if (!any(p != 0)) {
         stop("Not enough distinct data points to compute clustering")
       }
-      centres[i] <- sample.int(n, 1, prob = p)
+      centres[i] <- sample.int(n, 1L, prob = p)
+      min_d <- pmin.int(min_d, .DistanceRow(centres[i]))
     }
-    
+
     proposal <- kmeans(x, centers = x[centres, ], ...)
     if (proposal[["tot.withinss"]] < ret[["tot.withinss"]]){
       ret <- proposal
@@ -80,20 +91,29 @@ KMeansPP.dist <- function(x, k = 2, nstart = 10, ...) {
   
   n <- attr(x, "Size")
   ret <- list(tot.withinss = Inf)
+  # This method clusters the n rows of the n * n distance matrix as
+  # n-dimensional vectors, so it is O(n ^ 2) by construction.  Callers that hold
+  # point coordinates should use KMeansPP.matrix(), which seeds in O(n * dim).
   d <- as.matrix(x)
-  
-  for (start in seq_len(nstart)) {  
-    centres <- c(sample.int(n, 1), numeric(k - 1))
-    
+
+  for (start in seq_len(nstart)) {
+    centres <- integer(k)
+    centres[1L] <- sample.int(n, 1L)
+    min_d <- d[centres[1L], ]
+
     for (i in 2:k) {
-      p <- apply(d[centres, , drop = FALSE], 2, min) ^ 2
+      p <- min_d ^ 2
       if (!any(p != 0)) {
         stop("Not enough distinct data points to compute clustering")
       }
-      centres[i] <- sample.int(n, 1, prob = p)
+      centres[i] <- sample.int(n, 1L, prob = p)
+      min_d <- pmin.int(min_d, d[centres[i], ])
     }
-    
-    proposal <- kmeans(x, centers = d[centres, ], ...)
+
+    # Pass the already-materialized matrix d: kmeans() coerces its data argument
+    # with as.matrix(), so passing the dist object x would build a second
+    # n * n matrix needlessly.
+    proposal <- kmeans(d, centers = d[centres, ], ...)
     if (proposal[["tot.withinss"]] < ret[["tot.withinss"]]){
       ret <- proposal
     }

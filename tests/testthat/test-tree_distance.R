@@ -1,3 +1,4 @@
+library("TreeTools")
 {
   # Labels in different order to confound as.Splits
   treeSym8 <- ape::read.tree(text="((e, (f, (g, h))), (((a, b), c), d));")
@@ -183,6 +184,23 @@ test_that("Output dimensions are correct", {
   }
   
   lapply(methodsToTest, Test)
+})
+
+test_that("Small trees work", {
+  TestDist <- function(Func) {
+    expect_equal(Func(BalancedTree(4), BalancedTree(4)), 0)
+    expect_gt(Func(BalancedTree(1:4), BalancedTree(c(1, 3, 2, 4))), 0)
+  }
+  lapply(list(DifferentPhylogeneticInfo, MatchingSplitInfoDistance,
+              ClusteringInfoDistance, MatchingSplitDistance,
+              RobinsonFoulds, InfoRobinsonFoulds), TestDist)
+
+  TestSim <- function(Func) {
+    expect_gt(Func(BalancedTree(4), BalancedTree(4)), 0)
+    expect_equal(Func(BalancedTree(1:4), BalancedTree(c(1, 3, 2, 4))), 0)
+  }
+  lapply(list(SharedPhylogeneticInfo, MatchingSplitInfo, MutualClusteringInfo),
+         TestSim)
 })
 
 test_that("RF Distance is correctly calculated", {
